@@ -1,5 +1,8 @@
 <template>
-  <HelloWorld />
+  <div id="home">
+    <HelloWorld />
+    <v-btn to="/login">Login</v-btn>
+  </div>
 </template>
 
 <script>
