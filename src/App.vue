@@ -1,7 +1,43 @@
 <template>
   <v-app>
-    <v-toolbar app>
-      <img src="./assets/pelogo.png" alt="Logo" width="auto" height="90%" top="50%" bottom="50%"/>
+    <v-navigation-drawer app v-model="drawerState" width="250px" clipped>
+      <v-toolbar flat>
+        <v-list>
+          <v-list-tile>
+            <v-list-tile-title class="title">
+              Menu
+            </v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-toolbar>
+
+      <v-divider></v-divider>
+
+      <v-list dense class="pt-0">
+        <v-list-tile v-for="item in items" :key="item.title" :to="item.to">
+          <v-list-tile-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-tile-action>
+
+          <v-list-tile-content>
+            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-toolbar app clipped-left>
+      <v-toolbar-side-icon
+        @click="drawerState = !drawerState"
+      ></v-toolbar-side-icon>
+      <img
+        @click="goToHome"
+        src="./assets/pelogo.png"
+        alt="Logo"
+        width="auto"
+        height="90%"
+        style="cursor: pointer"
+      />
       <v-toolbar-title class="headline">
         <span>Machine Maintenance Database v1.0</span>
       </v-toolbar-title>
@@ -10,25 +46,32 @@
         <span>Back to homepage</span>
       </v-btn>
     </v-toolbar>
-
     <v-content>
       <router-view />
     </v-content>
-
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
-
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  },
-  data () {
+  name: "App",
+  data() {
     return {
+      items: [
+        { title: "Home", icon: "home", to: "/" },
+        { title: "Add/Edit Staff", icon: "account_box", to: "/staff" }
+      ],
+      right: null,
+      drawerState: false
+    };
+  },
+  created() {
+    document.title = "Machine maintenance database v1.0";
+  },
+  methods: {
+    goToHome() {
+      return this.$router.push("/");
     }
   }
-}
+};
 </script>
