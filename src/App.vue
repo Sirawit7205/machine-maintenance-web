@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <v-toolbar app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
+      <img src="./assets/pelogo.png" alt="Logo" width="auto" height="90%" top="50%" bottom="50%"/>
+      <v-toolbar-title class="headline">
+        <span>Machine Maintenance Database v1.0</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
@@ -32,7 +32,6 @@ export default {
   },
   data () {
     return {
-      //
     }
   }
 }
