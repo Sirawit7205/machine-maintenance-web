@@ -3,6 +3,8 @@ import Router from "vue-router";
 import Home from "./views/Home.vue";
 import Login from "./views/Login.vue";
 import Staff from "./views/Staff.vue";
+import Contract from "./views/Contract.vue";
+
 Vue.use(Router);
 
 export default new Router({
@@ -30,6 +32,11 @@ export default new Router({
       path: "/staff",
       name: "staff",
       component: Staff
+    },
+    {
+      path: "/contract",
+      name: "contract",
+      component: Contract
     }
   ]
 });

@@ -59,7 +59,8 @@ export default {
     return {
       items: [
         { title: "Home", icon: "home", to: "/" },
-        { title: "Add/Edit Staff", icon: "account_box", to: "/staff" }
+        { title: "Add/Edit Staff", icon: "account_box", to: "/staff" },
+        { title: "Add/Edit Contract", icon: "assignment", to: "/contract" }
       ],
       right: null,
       drawerState: false
