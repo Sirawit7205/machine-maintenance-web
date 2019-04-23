@@ -7,7 +7,7 @@
         </div>
         <v-card>
           <v-card-text>
-            <v-form ref="StaffForm" v-model="valid" lazy-validation>
+            <v-form ref="StaffSrcAdd" v-model="valid" lazy-validation>
               Search for existing staff:
               <v-autocomplete placeholder="Search..."></v-autocomplete>
               <p class="text-xs-center">----- OR -----</p>

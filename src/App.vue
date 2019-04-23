@@ -4,9 +4,7 @@
       <v-toolbar flat>
         <v-list>
           <v-list-tile>
-            <v-list-tile-title class="title">
-              Menu
-            </v-list-tile-title>
+            <v-list-tile-title class="title">Menu</v-list-tile-title>
           </v-list-tile>
         </v-list>
       </v-toolbar>
@@ -27,9 +25,7 @@
     </v-navigation-drawer>
 
     <v-toolbar app clipped-left>
-      <v-toolbar-side-icon
-        @click="drawerState = !drawerState"
-      ></v-toolbar-side-icon>
+      <v-toolbar-side-icon @click="drawerState = !drawerState"></v-toolbar-side-icon>
       <img
         @click="goToHome"
         src="./assets/pelogo.png"
@@ -37,7 +33,7 @@
         width="auto"
         height="90%"
         style="cursor: pointer"
-      />
+      >
       <v-toolbar-title class="headline">
         <span>Machine Maintenance Database v1.0</span>
       </v-toolbar-title>
@@ -47,7 +43,7 @@
       </v-btn>
     </v-toolbar>
     <v-content>
-      <router-view />
+      <router-view/>
     </v-content>
   </v-app>
 </template>
@@ -60,7 +56,9 @@ export default {
       items: [
         { title: "Home", icon: "home", to: "/" },
         { title: "Add/Edit Staff", icon: "account_box", to: "/staff" },
-        { title: "Add/Edit Contract", icon: "assignment", to: "/contract" }
+        { title: "Add/Edit Contract", icon: "assignment", to: "/contract" },
+        { title: "Add/Edit Machine", icon: "developer_board", to: "/machine" },
+        { title: "Add log", icon: "info", to: "/addlog" }
       ],
       right: null,
       drawerState: false

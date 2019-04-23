@@ -4,6 +4,8 @@ import Home from "./views/Home.vue";
 import Login from "./views/Login.vue";
 import Staff from "./views/Staff.vue";
 import Contract from "./views/Contract.vue";
+import Machine from "./views/Machine.vue";
+import AddLog from "./views/Log.vue";
 
 Vue.use(Router);
 
@@ -37,6 +39,16 @@ export default new Router({
       path: "/contract",
       name: "contract",
       component: Contract
+    },
+    {
+      path: "/machine",
+      name: "machine",
+      component: Machine
+    },
+    {
+      path: "/addlog",
+      name: "addlog",
+      component: AddLog
     }
   ]
 });
