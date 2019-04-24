@@ -1,11 +1,14 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Home from "./views/Home.vue";
-import Login from "./views/Login.vue";
-import Staff from "./views/Staff.vue";
-import Contract from "./views/Contract.vue";
-import Machine from "./views/Machine.vue";
-import AddLog from "./views/Log.vue";
+const Home = () => import("./views/Home.vue");
+const Login = () => import("./views/Login.vue");
+const Staff = () => import("./views/Staff.vue");
+const Contract = () => import("./views/Contract.vue");
+const Machine = () => import("./views/Machine.vue");
+const AddLog = () => import("./views/Log.vue");
+const EditPart = () => import("./views/EditPart.vue");
+const PartsInOut = () => import("./views/PartsInOut.vue");
+const JobAssignment = () => import("./views/JobAssignment.vue");
 
 Vue.use(Router);
 
@@ -49,6 +52,21 @@ export default new Router({
       path: "/addlog",
       name: "addlog",
       component: AddLog
+    },
+    {
+      path: "/editpart",
+      name: "editpart",
+      component: EditPart
+    },
+    {
+      path: "/jobas",
+      name: "jobas",
+      component: JobAssignment
+    },
+    {
+      path: "/partsInOut",
+      name: "partsInOut",
+      component: PartsInOut
     }
   ]
 });

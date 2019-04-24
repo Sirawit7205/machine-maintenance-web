@@ -4,7 +4,7 @@
       <v-toolbar flat>
         <v-list>
           <v-list-tile>
-            <v-list-tile-title class="title">Menu</v-list-tile-title>
+            <v-list-tile-title class="title">{{ text }}</v-list-tile-title>
           </v-list-tile>
         </v-list>
       </v-toolbar>
@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "App",
   data() {
@@ -56,17 +58,26 @@ export default {
       items: [
         { title: "Home", icon: "home", to: "/" },
         { title: "Add/Edit Staff", icon: "account_box", to: "/staff" },
-        { title: "Add/Edit Contract", icon: "assignment", to: "/contract" },
+        { title: "Add/Edit Contract", icon: "book", to: "/contract" },
         { title: "Add/Edit Machine", icon: "developer_board", to: "/machine" },
-        { title: "Add log", icon: "info", to: "/addlog" }
+        { title: "Add/Edit parts", icon: "info", to: "/editpart" },
+        { title: "Add log", icon: "assignment", to: "/addlog" },
+        { title: "Job assignment", icon: "assignment_turned_in", to: "/jobas" },
+        { title: "Parts transasctions", icon: "toys", to: "/partsInOut" }
       ],
       right: null,
-      drawerState: false
+      drawerState: false,
+      text: ""
     };
   },
-  created() {
+  /*created: async function() {
     document.title = "Machine maintenance database v1.0";
-  },
+    let x = await axios.post("//localhost:8888", {
+      id: 3
+    });
+
+    this.text = x.data.Course;
+  },*/
   methods: {
     goToHome() {
       return this.$router.push("/");

@@ -31,7 +31,7 @@
                   ></v-text-field>
                   <v-autocomplete label="Model Number" placeholder="Search..."></v-autocomplete>
                   <v-text-field v-model="SerialNumber" type="text" label="Serial Number" required></v-text-field>
-                  <v-select :items="serviceTypeList" label="ServiceType" required></v-select>
+                  <v-select :items="serviceTypeList" label="Service Type" required></v-select>
                   <v-textarea v-model="Notes" label="Notes"></v-textarea>
                   <v-select :items="statusList" label="Status" required></v-select>
                 </v-flex>
