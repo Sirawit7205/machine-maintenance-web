@@ -2,25 +2,25 @@
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
       <v-flex lg3 sm9>
-        <div class="headline mb-1">
-          Add or edit contract
-        </div>
+        <div class="headline mb-1">Add or edit contract</div>
         <v-card>
           <v-card-text>
             <v-form ref="ContractSrcAdd" v-model="valid" lazy-validation>
               Search for existing contract:
-              <v-autocomplete placeholder="Search..."></v-autocomplete>
-              <p class="text-xs-center">----- OR -----</p>
-              Add new contract: <br />
-              <v-btn block>Add Contract</v-btn>
+              <v-autocomplete
+                v-model="contractId"
+                :items="existingContract"
+                placeholder="Search..."
+              ></v-autocomplete>
+              <p class="text-xs-center">----- OR -----</p>Add new contract:
+              <br>
+              <v-btn block @click="generateNewId">Add Contract</v-btn>
             </v-form>
           </v-card-text>
         </v-card>
       </v-flex>
       <v-flex lg6 sm9>
-        <div class="headline mb-1">
-          Contract Info
-        </div>
+        <div class="headline mb-1">Contract Info</div>
         <v-card>
           <v-card-text>
             <v-form ref="ContractForm" v-model="valid" lazy-validation>
@@ -28,67 +28,67 @@
                 <v-flex xs5>
                   <p class="text-xs-center">Customer Info</p>
                   <v-text-field
-                    v-model="ContractID"
+                    v-model="contractId"
+                    :rules="contractIdRules"
                     type="text"
                     label="Contract ID"
-                    required
                     disabled
                   ></v-text-field>
                   <v-autocomplete
-                    v-model="CustomerID"
+                    v-model="customerId"
+                    :items="existingCustomer"
                     label="Search for existing customer:"
                     placeholder="Search..."
-                    required
                   ></v-autocomplete>
                   <p class="text-xs-center">Or add new customer data:</p>
                   <v-text-field
-                    v-model="CustomerName"
+                    v-model="customerName"
+                    :rules="customerNameRules"
                     type="text"
                     label="Customer Name"
-                    required
                   ></v-text-field>
-                  <v-textarea
-                    v-model="Address"
-                    label="Address"
-                    required
-                  ></v-textarea>
-                  <v-text-field
-                    v-model="Phone"
-                    type="number"
-                    label="Phone"
-                    required
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="Email"
-                    type="email"
-                    label="Email"
-                  ></v-text-field>
+                  <v-textarea v-model="address" :rules="addressRules" label="Address"></v-textarea>
+                  <v-text-field v-model="phone" :rules="phoneRules" type="number" label="Phone"></v-text-field>
+                  <v-text-field v-model="email" :rules="emailRules" type="email" label="Email"></v-text-field>
                 </v-flex>
                 <v-flex xs5>
                   <p class="text-xs-center">Contract Info</p>
                   <v-autocomplete
+                    v-model="machineInContract"
+                    :rules="machineInContractRules"
+                    :items="machineInContractList"
                     label="Machines in this contract"
                     placeholder="Search..."
+                    multiple
+                    chips
                   ></v-autocomplete>
                   <v-text-field
-                    v-model="Price"
+                    v-model="price"
+                    :rules="priceRules"
                     type="number"
                     label="Contract Price"
-                    required
                   ></v-text-field>
-                  <DatePicker label="Start Date" />
-                  <br />
-                  <DatePicker label="End Date" />
+                  <DatePicker v-model="startDate" :rules="startDateRules" label="Start Date"/>
+                  <br>
+                  <DatePicker v-model="endDate" :rules="endDateRules" label="End Date"/>
                 </v-flex>
               </v-layout>
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-spacer />
+            <v-spacer/>
             <v-btn @click="validate">Save</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
+    </v-layout>
+    <v-layout align-end justify-end>
+      <v-alert v-model="success" type="success" dismissible>Save success</v-alert>
+      <v-alert
+        v-model="error"
+        type="error"
+        dismissible
+      >There's an error with your request, please try again</v-alert>
     </v-layout>
   </v-container>
 </template>
@@ -102,25 +102,68 @@ export default {
   },
   data: () => ({
     valid: true,
-    username: "",
-    usernameRules: [
-      v => !!v || "Username cannot be blank",
-      v => (v && v.length <= 20) || "Maximum length is 20 characters"
+    success: false,
+    error: false,
+
+    contractId: null,
+    uniqueId: "0001", //dummy
+    existingContract: ["CN1001", "CN1002"], //dummy
+    contractIdRules: [
+      v => !!v || "Please select a contract or create a new entry"
     ],
 
-    password: "",
-    passwordRules: [
-      v => !!v || "Password cannot be blank",
-      v => (v && v.length <= 20) || "Maximum length is 20 characters"
-    ]
+    customerId: null,
+    existingCustomer: ["CS1001", "CS1002"], //dummy
+
+    customerName: null,
+    customerNameRules: [
+      v => !!v || "Please select a contract or create a new entry"
+    ],
+
+    address: null,
+    addressRules: [
+      v => !!v || "Please select a contract or create a new entry"
+    ],
+
+    phone: null,
+    phoneRules: [v => !!v || "Please select a contract or create a new entry"],
+
+    email: null,
+    emailRules: [
+      v =>
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
+        !v ||
+        "Please enter a valid email address"
+    ],
+
+    machineInContract: null,
+    machineInContractList: ["A1", "A2", "A3", "A4"], //dummy
+    machineInContractRules: [
+      v => !!v || "Please select a contract or create a new entry"
+    ],
+
+    price: null,
+    priceRules: [v => !!v || "Please select a contract or create a new entry"],
+
+    startDate: null,
+    startDateRules: [
+      v => !!v || "Please select a contract or create a new entry"
+    ],
+
+    endDate: null,
+    endDateRules: [v => !!v || "Please select a contract or create a new entry"]
   }),
 
   methods: {
+    generateNewId() {
+      this.contractId = "CN" + this.uniqueId; //dummy
+    },
+
     validate() {
-      if (this.$refs.loginForm.validate()) {
-        alert("OK! Logged in as " + this.username);
+      if (this.$refs.ContractForm.validate()) {
+        this.success = true;
       } else {
-        alert("Error!");
+        this.error = true;
       }
     }
   }

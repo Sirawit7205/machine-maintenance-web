@@ -20,11 +20,7 @@
         v-on="on"
       ></v-text-field>
     </template>
-    <v-date-picker
-      v-model="date"
-      no-title
-      @input="datePickerMenu = false"
-    ></v-date-picker>
+    <v-date-picker v-model="date" no-title @input="emitDate"></v-date-picker>
   </v-menu>
 </template>
 
@@ -34,8 +30,16 @@ export default {
     datePickerMenu: false,
     date: new Date().toISOString().substr(0, 10)
   }),
+
   props: {
     label: String
+  },
+
+  methods: {
+    emitDate() {
+      this.$emit("input", this.date);
+      this.datePickerMenu = false;
+    }
   }
 };
 </script>

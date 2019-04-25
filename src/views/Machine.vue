@@ -7,10 +7,10 @@
           <v-card-text>
             <v-form ref="MachineSrcAdd" v-model="valid" lazy-validation>
               Search for existing machine:
-              <v-autocomplete placeholder="Search..."></v-autocomplete>
+              <v-autocomplete v-model="machineId" :items="existingMachine" placeholder="Search..."></v-autocomplete>
               <p class="text-xs-center">----- OR -----</p>Add new machine:
               <br>
-              <v-btn block>Add Machine</v-btn>
+              <v-btn block @click="generateNewId">Add Machine</v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -23,17 +23,38 @@
               <v-layout row>
                 <v-flex xs6>
                   <v-text-field
-                    v-model="MachineID"
+                    v-model="machineId"
+                    :rules="machineIdRules"
                     type="text"
                     label="Machine ID"
-                    required
                     disabled
                   ></v-text-field>
-                  <v-autocomplete label="Model Number" placeholder="Search..."></v-autocomplete>
-                  <v-text-field v-model="SerialNumber" type="text" label="Serial Number" required></v-text-field>
-                  <v-select :items="serviceTypeList" label="Service Type" required></v-select>
-                  <v-textarea v-model="Notes" label="Notes"></v-textarea>
-                  <v-select :items="statusList" label="Status" required></v-select>
+                  <v-autocomplete
+                    v-model="modelNumber"
+                    :rules="modelNumberRules"
+                    :items="existingModel"
+                    label="Model Number"
+                    placeholder="Search..."
+                  ></v-autocomplete>
+                  <v-text-field
+                    v-model="serialNumber"
+                    :rules="serialNumberRules"
+                    type="text"
+                    label="Serial Number"
+                  ></v-text-field>
+                  <v-select
+                    v-model="serviceType"
+                    :rules="serviceTypeRules"
+                    :items="serviceTypeList"
+                    label="Service Type"
+                  ></v-select>
+                  <v-textarea v-model="notes" label="Notes"></v-textarea>
+                  <v-select
+                    v-model="status"
+                    :rules="statusRules"
+                    :items="statusList"
+                    label="Status"
+                  ></v-select>
                 </v-flex>
                 <v-flex xs6>
                   <br>
@@ -51,6 +72,14 @@
         </v-card>
       </v-flex>
     </v-layout>
+    <v-layout align-end justify-end>
+      <v-alert v-model="success" type="success" dismissible>Save success</v-alert>
+      <v-alert
+        v-model="error"
+        type="error"
+        dismissible
+      >There's an error with your request, please try again</v-alert>
+    </v-layout>
   </v-container>
 </template>
 
@@ -64,28 +93,44 @@ export default {
 
   data: () => ({
     valid: true,
-    username: "",
-    usernameRules: [
-      v => !!v || "Username cannot be blank",
-      v => (v && v.length <= 20) || "Maximum length is 20 characters"
+    success: false,
+    error: false,
+
+    machineId: null,
+    uniqueId: "0001", //dummy
+    existingMachine: ["MC1001", "MC1002"], //dummy
+    machineIdRules: [
+      v => !!v || "Please select a machine or create a new entry"
     ],
 
-    password: "",
-    passwordRules: [
-      v => !!v || "Password cannot be blank",
-      v => (v && v.length <= 20) || "Maximum length is 20 characters"
-    ],
+    modelNumber: null,
+    existingModel: ["ABC1", "DEF2"], //dummy
+    modelNumberRules: [v => !!v || "This field cannot be blank"],
 
+    serialNumber: null,
+    serialNumberRules: [v => !!v || "This field cannot be blank"],
+
+    serviceType: null,
     serviceTypeList: ["On site", "Send in", "Other"],
-    statusList: ["Normal", "Down", "Repair pending", "Repairing"]
+    serviceTypeRules: [v => !!v || "This field cannot be blank"],
+
+    notes: null,
+
+    status: null,
+    statusList: ["Normal", "Down", "Repair pending", "Repairing"],
+    statusRules: [v => !!v || "This field cannot be blank"]
   }),
 
   methods: {
+    generateNewId() {
+      this.machineId = "MC" + this.uniqueId; //dummy
+    },
+
     validate() {
-      if (this.$refs.loginForm.validate()) {
-        alert("OK! Logged in as " + this.username);
+      if (this.$refs.MachineForm.validate()) {
+        this.success = true;
       } else {
-        alert("Error!");
+        this.error = true;
       }
     }
   }
