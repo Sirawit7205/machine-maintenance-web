@@ -20,7 +20,7 @@
         v-on="on"
       ></v-text-field>
     </template>
-    <v-time-picker v-model="time" format="24hr" full-width></v-time-picker>
+    <v-time-picker v-model="time" format="24hr" full-width @change="emitTime"></v-time-picker>
   </v-menu>
 </template>
 
@@ -32,6 +32,13 @@ export default {
   }),
   props: {
     label: String
+  },
+
+  methods: {
+    emitTime() {
+      this.$emit("input", this.time);
+      this.timePickerMenu = false;
+    }
   }
 };
 </script>

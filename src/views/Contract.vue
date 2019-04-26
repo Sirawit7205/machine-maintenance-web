@@ -19,7 +19,7 @@
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex lg6 sm9>
+      <v-flex lg9 sm9>
         <div class="headline mb-1">Contract Info</div>
         <v-card>
           <v-card-text>
@@ -121,12 +121,10 @@ export default {
     ],
 
     address: null,
-    addressRules: [
-      v => !!v || "Please select a contract or create a new entry"
-    ],
+    addressRules: [v => !!v || "This field cannot be blank"],
 
     phone: null,
-    phoneRules: [v => !!v || "Please select a contract or create a new entry"],
+    phoneRules: [v => !!v || "This field cannot be blank"],
 
     email: null,
     emailRules: [
@@ -138,20 +136,16 @@ export default {
 
     machineInContract: null,
     machineInContractList: ["A1", "A2", "A3", "A4"], //dummy
-    machineInContractRules: [
-      v => !!v || "Please select a contract or create a new entry"
-    ],
+    machineInContractRules: [v => !!v || "This field cannot be blank"],
 
     price: null,
-    priceRules: [v => !!v || "Please select a contract or create a new entry"],
+    priceRules: [v => !!v || "This field cannot be blank"],
 
     startDate: null,
-    startDateRules: [
-      v => !!v || "Please select a contract or create a new entry"
-    ],
+    startDateRules: [v => !!v || "This field cannot be blank"],
 
     endDate: null,
-    endDateRules: [v => !!v || "Please select a contract or create a new entry"]
+    endDateRules: [v => !!v || "This field cannot be blank"]
   }),
 
   methods: {

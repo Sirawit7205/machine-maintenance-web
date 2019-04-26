@@ -15,13 +15,13 @@
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex lg6 sm9>
+      <v-flex lg9 sm9>
         <div class="headline mb-1">Machine Info</div>
         <v-card>
           <v-card-text>
             <v-form ref="MachineForm" v-model="valid" lazy-validation>
               <v-layout row>
-                <v-flex xs6>
+                <v-flex xs8>
                   <v-text-field
                     v-model="machineId"
                     :rules="machineIdRules"
@@ -56,7 +56,7 @@
                     label="Status"
                   ></v-select>
                 </v-flex>
-                <v-flex xs6>
+                <v-flex xs4>
                   <br>
                   <br>
                   <br>

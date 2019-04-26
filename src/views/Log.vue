@@ -5,7 +5,7 @@
         <div class="headline mb-1">Add log data</div>
         <v-card>
           <v-card-text>
-            <v-form ref="StaffForm" v-model="valid" lazy-validation>
+            <v-form ref="AddLogForm" v-model="valid" lazy-validation>
               <v-layout row justify-space-around>
                 <v-flex xs3>
                   <p>Log type:</p>
@@ -20,11 +20,32 @@
                 </v-flex>
                 <v-flex xs9>
                   <p>Log details:</p>
-                  <v-select :items="subLogTypeList" label="Sub-log type" required></v-select>
-                  <v-autocomplete label="Machine" placeholder="Search..."></v-autocomplete>
-                  <v-textarea v-model="Details" label="Log details" required></v-textarea>
-                  <DatePicker v-if="logType === 'case'" label="Expected repair date"/>
-                  <TimePicker v-if="logType === 'case'" label="Expected repair time"/>
+                  <v-select
+                    v-model="subLogType"
+                    :rules="subLogTypeRules"
+                    :items="subLogTypeList"
+                    label="Sub-log type"
+                  ></v-select>
+                  <v-autocomplete
+                    v-model="machine"
+                    :rules="machineRules"
+                    :items="machineList"
+                    label="Machine"
+                    placeholder="Search..."
+                  ></v-autocomplete>
+                  <v-textarea v-model="details" :rules="detailsRules" label="Log details"></v-textarea>
+                  <DatePicker
+                    v-if="logType === 'case'"
+                    v-model="startDate"
+                    :rules="startDateRules"
+                    label="Expected repair date"
+                  />
+                  <TimePicker
+                    v-if="logType === 'case'"
+                    v-model="startTime"
+                    :rules="startTimeRules"
+                    label="Expected repair time"
+                  />
                 </v-flex>
               </v-layout>
             </v-form>
@@ -35,6 +56,14 @@
           </v-card-actions>
         </v-card>
       </v-flex>
+    </v-layout>
+    <v-layout align-end justify-end>
+      <v-alert v-model="success" type="success" dismissible>Save success</v-alert>
+      <v-alert
+        v-model="error"
+        type="error"
+        dismissible
+      >There's an error with your request, please try again</v-alert>
     </v-layout>
   </v-container>
 </template>
@@ -51,12 +80,17 @@ export default {
 
   data: () => ({
     valid: true,
+    success: false,
+    error: false,
 
+    logType: "case",
     logTypeList: [
       { label: "Case report", value: "case" },
       { label: "Machine log", value: "mach" },
       { label: "Operation log", value: "main" }
     ],
+
+    subLogType: null,
     subLogTypeList: [
       "Error",
       "Warning",
@@ -65,19 +99,28 @@ export default {
       "Repair",
       "Other"
     ],
+    subLogTypeRules: [v => !!v || "This field cannot be blank"],
 
-    positionList: ["Manager", "Supervisor", "Technician", "Call center"],
-    statusList: ["Idle", "On Site", "On job", "Vacation", "Sick"],
+    machine: null,
+    machineList: ["A1", "A2"],
+    machineRules: [v => !!v || "This field cannot be blank"],
 
-    logType: "case"
+    details: null,
+    detailsRules: [v => !!v || "This field cannot be blank"],
+
+    startDate: null,
+    startDateRules: [v => !!v || "This field cannot be blank"],
+
+    startTime: null,
+    startTimeRules: [v => !!v || "This field cannot be blank"]
   }),
 
   methods: {
     validate() {
-      if (this.$refs.loginForm.validate()) {
-        alert("OK! Logged in as " + this.username);
+      if (this.$refs.AddLogForm.validate()) {
+        this.success = true;
       } else {
-        alert("Error!");
+        this.error = true;
       }
     }
   }

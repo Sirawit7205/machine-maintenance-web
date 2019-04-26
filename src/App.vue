@@ -4,7 +4,7 @@
       <v-toolbar flat>
         <v-list>
           <v-list-tile>
-            <v-list-tile-title class="title">{{ text }}</v-list-tile-title>
+            <v-list-tile-title class="title">Forms</v-list-tile-title>
           </v-list-tile>
         </v-list>
       </v-toolbar>
@@ -60,10 +60,14 @@ export default {
         { title: "Add/Edit Staff", icon: "account_box", to: "/staff" },
         { title: "Add/Edit Contract", icon: "book", to: "/contract" },
         { title: "Add/Edit Machine", icon: "developer_board", to: "/machine" },
-        { title: "Add/Edit parts", icon: "info", to: "/editpart" },
+        { title: "Add/Edit parts", icon: "toys", to: "/editpart" },
         { title: "Add log", icon: "assignment", to: "/addlog" },
         { title: "Job assignment", icon: "assignment_turned_in", to: "/jobas" },
-        { title: "Parts transasctions", icon: "toys", to: "/partsInOut" }
+        {
+          title: "Parts transasctions",
+          icon: "compare_arrows",
+          to: "/partsInOut"
+        }
       ],
       right: null,
       drawerState: false,
@@ -71,7 +75,6 @@ export default {
     };
   },
   /*created: async function() {
-    document.title = "Machine maintenance database v1.0";
     let x = await axios.post("//localhost:8888", {
       id: 3
     });

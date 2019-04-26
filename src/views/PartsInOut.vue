@@ -5,13 +5,13 @@
         <div class="headline mb-1">Parts Order and Usage</div>
         <v-card>
           <v-card-text>
-            <v-form ref="MachineForm" v-model="valid" lazy-validation>
+            <v-form ref="PartsInOutForm" v-model="valid" lazy-validation>
               <v-layout row>
                 <v-flex xs3>
                   <p>Type:</p>
-                  <v-radio-group v-model="partType">
+                  <v-radio-group v-model="partsType">
                     <v-radio
-                      v-for="mainType in partTypeList"
+                      v-for="mainType in partsTypeList"
                       :key="mainType.label"
                       :label="mainType.label"
                       :value="mainType.value"
@@ -19,10 +19,20 @@
                   </v-radio-group>
                 </v-flex>
                 <v-flex xs9>
-                  <v-autocomplete label="Parts ID" placeholder="Search..."></v-autocomplete>
-                  <v-autocomplete label="Parts name" placeholder="Search..."></v-autocomplete>
-                  <v-text-field v-model="Amount" type="number" label="Amount" required></v-text-field>
-                  <v-textarea v-model="Details" type="text" label="Details" required></v-textarea>
+                  <v-autocomplete
+                    v-model="partsId"
+                    :rules="partsIdRules"
+                    label="Parts ID"
+                    placeholder="Search..."
+                  ></v-autocomplete>
+                  <v-autocomplete
+                    v-model="partsName"
+                    :rules="partsNameRules"
+                    label="Parts name"
+                    placeholder="Search..."
+                  ></v-autocomplete>
+                  <v-text-field v-model="amount" :rules="amountRules" type="number" label="Amount"></v-text-field>
+                  <v-textarea v-model="details" type="text" label="Details"></v-textarea>
                 </v-flex>
               </v-layout>
             </v-form>
@@ -41,21 +51,33 @@
 export default {
   data: () => ({
     valid: true,
+    success: false,
+    error: false,
 
-    partTypeList: [
+    partsType: "in",
+    partsTypeList: [
       { label: "Parts in", value: "in" },
       { label: "Parts out", value: "out" }
     ],
 
-    partType: "in"
+    partsId: null,
+    partsIdRules: [v => !!v || "This field cannot be blank"],
+
+    partsName: null,
+    partsNameRules: [v => !!v || "This field cannot be blank"],
+
+    amount: null,
+    amountRules: [v => !!v || "This field cannot be blank"],
+
+    details: null
   }),
 
   methods: {
     validate() {
-      if (this.$refs.loginForm.validate()) {
-        alert("OK! Logged in as " + this.username);
+      if (this.$refs.PartsInOutForm.validate()) {
+        this.success = true;
       } else {
-        alert("Error!");
+        this.error = true;
       }
     }
   }
