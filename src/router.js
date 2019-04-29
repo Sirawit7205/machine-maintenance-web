@@ -9,6 +9,7 @@ const AddLog = () => import("./views/Log.vue");
 const EditPart = () => import("./views/EditPart.vue");
 const PartsInOut = () => import("./views/PartsInOut.vue");
 const JobAssignment = () => import("./views/JobAssignment.vue");
+const ContractReport = () => import("./views/reports/ContractReport.vue");
 
 Vue.use(Router);
 
@@ -67,6 +68,11 @@ export default new Router({
       path: "/partsInOut",
       name: "partsInOut",
       component: PartsInOut
+    },
+    {
+      path: "/reports/Contract",
+      name: "contractReport",
+      component: ContractReport
     }
   ]
 });

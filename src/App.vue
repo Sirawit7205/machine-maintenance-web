@@ -12,7 +12,29 @@
       <v-divider></v-divider>
 
       <v-list dense class="pt-0">
-        <v-list-tile v-for="item in items" :key="item.title" :to="item.to">
+        <v-list-tile v-for="item in formItems" :key="item.title" :to="item.to">
+          <v-list-tile-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-tile-action>
+
+          <v-list-tile-content>
+            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+
+      <v-toolbar flat>
+        <v-list>
+          <v-list-tile>
+            <v-list-tile-title class="title">Reports</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-toolbar>
+
+      <v-divider></v-divider>
+
+      <v-list dense class="pt-0">
+        <v-list-tile v-for="item in reportItems" :key="item.title" :to="item.to">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
@@ -50,12 +72,13 @@
 
 <script>
 import axios from "axios";
+import Chart from "chart.js";
 
 export default {
   name: "App",
   data() {
     return {
-      items: [
+      formItems: [
         { title: "Home", icon: "home", to: "/" },
         { title: "Add/Edit Staff", icon: "account_box", to: "/staff" },
         { title: "Add/Edit Contract", icon: "book", to: "/contract" },
@@ -69,6 +92,11 @@ export default {
           to: "/partsInOut"
         }
       ],
+
+      reportItems: [
+        { title: "Contract report", icon: "book", to: "/reports/contract" }
+      ],
+
       right: null,
       drawerState: false,
       text: ""
