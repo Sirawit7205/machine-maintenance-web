@@ -48,6 +48,7 @@
                     label="Use in model(s)"
                     placeholder="Search..."
                     multiple
+                    chips
                   ></v-autocomplete>
                 </v-flex>
               </v-layout>
@@ -60,14 +61,16 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout align-end justify-end>
-      <v-alert v-model="success" type="success" dismissible>Save success</v-alert>
-      <v-alert
-        v-model="error"
-        type="error"
-        dismissible
-      >There's an error with your request, please try again</v-alert>
-    </v-layout>
+    <v-snackbar
+      v-model="snackbarActivate"
+      :bottom="true"
+      :right="true"
+      :color="snackbarMode"
+      :timeout="3000"
+    >
+      {{snackbarMessage}}
+      <v-btn flat @click="snackbarActivate = false">Close</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -75,8 +78,10 @@
 export default {
   data: () => ({
     valid: true,
-    success: false,
-    error: false,
+
+    snackbarActivate: false,
+    snackbarMode: null,
+    snackbarMessage: null,
 
     partsId: null,
     uniqueId: "0001", //dummy
@@ -99,11 +104,17 @@ export default {
       this.partsId = "PN" + this.uniqueId; //dummy
     },
 
+    openSnackbar(mode, message) {
+      this.snackbarMode = mode;
+      this.snackbarMessage = message;
+      this.snackbarActivate = true;
+    },
+
     validate() {
       if (this.$refs.EditPartForm.validate()) {
-        this.success = true;
+        this.openSnackbar("success", "Sucessfully save");
       } else {
-        this.error = true;
+        this.openSnackbar("error", "An error had occured, please try again.");
       }
     }
   }

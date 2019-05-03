@@ -22,12 +22,14 @@
                   <v-autocomplete
                     v-model="partsId"
                     :rules="partsIdRules"
+                    :items="existingPartsId"
                     label="Parts ID"
                     placeholder="Search..."
                   ></v-autocomplete>
                   <v-autocomplete
                     v-model="partsName"
                     :rules="partsNameRules"
+                    :items="existingPartsName"
                     label="Parts name"
                     placeholder="Search..."
                   ></v-autocomplete>
@@ -44,6 +46,16 @@
         </v-card>
       </v-flex>
     </v-layout>
+    <v-snackbar
+      v-model="snackbarActivate"
+      :bottom="true"
+      :right="true"
+      :color="snackbarMode"
+      :timeout="3000"
+    >
+      {{snackbarMessage}}
+      <v-btn flat @click="snackbarActivate = false">Close</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -51,8 +63,10 @@
 export default {
   data: () => ({
     valid: true,
-    success: false,
-    error: false,
+
+    snackbarActivate: false,
+    snackbarMode: null,
+    snackbarMessage: null,
 
     partsType: "in",
     partsTypeList: [
@@ -61,9 +75,11 @@ export default {
     ],
 
     partsId: null,
+    existingPartsId: ["PN1001", "PN1002"], //dummy
     partsIdRules: [v => !!v || "This field cannot be blank"],
 
     partsName: null,
+    existingPartsName: ["PN1001", "PN1002"], //dummy
     partsNameRules: [v => !!v || "This field cannot be blank"],
 
     amount: null,
@@ -73,11 +89,17 @@ export default {
   }),
 
   methods: {
+    openSnackbar(mode, message) {
+      this.snackbarMode = mode;
+      this.snackbarMessage = message;
+      this.snackbarActivate = true;
+    },
+
     validate() {
       if (this.$refs.PartsInOutForm.validate()) {
-        this.success = true;
+        this.openSnackbar("success", "Sucessfully save");
       } else {
-        this.error = true;
+        this.openSnackbar("error", "An error had occured, please try again.");
       }
     }
   }

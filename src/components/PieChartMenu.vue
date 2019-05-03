@@ -1,9 +1,22 @@
 <template>
-  <div class="flex_container">
-    <div>
-      <canvas id="piechart"></canvas>
+  <v-menu
+    v-model="pieChartMenu"
+    :close-on-content-click="false"
+    :nudge-bottom="10"
+    transition="slide-y-transition"
+    origin="top center"
+    offset-y
+    full-width
+  >
+    <template v-slot:activator="{ on }">
+      <v-btn flat v-on="on">View chart</v-btn>
+    </template>
+    <div class="flex_container">
+      <div>
+        <canvas id="piechartmenu"></canvas>
+      </div>
     </div>
-  </div>
+  </v-menu>
 </template>
 
 <style scoped>
@@ -23,6 +36,10 @@
 
 <script>
 export default {
+  data: () => ({
+    pieChartMenu: false
+  }),
+
   props: {
     chartData: null
   },
@@ -33,10 +50,10 @@ export default {
 
   methods: {
     generateChart(chartData) {
-      var ctx = document.getElementById("piechart");
+      var ctx = document.getElementById("piechartmenu");
       new Chart(ctx, {
         type: "pie",
-        data: chartData,
+        data: this.chartData,
         options: Chart.defaults.pie
       });
     }

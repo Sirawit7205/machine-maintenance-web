@@ -18,7 +18,7 @@
             <td class="text-xs-center">{{ props.item.avgContractPrice.toLocaleString() }}</td>
             <td class="text-xs-center">{{ props.item.avgContractDur.toLocaleString() }}</td>
             <td class="text-xs-center">
-              <PieChart :chartData="chartD"/>
+              <pie-chart-menu :chartData="chartD"/>
             </td>
           </template>
         </v-data-table>
@@ -43,11 +43,11 @@
 </template>
 
 <script>
-import PieChart from "../../components/PieChart.vue";
+import PieChartMenu from "../../components/PieChartMenu.vue";
 
 export default {
   components: {
-    PieChart
+    PieChartMenu
   },
 
   data: () => ({
@@ -138,7 +138,8 @@ export default {
     chartD: {
       datasets: [
         {
-          data: [124, 85, 116]
+          data: [124, 85, 116],
+          backgroundColor: ["#292049", "#489430", "#583928"]
         }
       ],
 

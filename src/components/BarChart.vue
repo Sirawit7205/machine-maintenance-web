@@ -1,7 +1,7 @@
 <template>
   <div class="flex_container">
     <div>
-      <canvas id="piechart"></canvas>
+      <canvas id="barchart"></canvas>
     </div>
   </div>
 </template>
@@ -23,6 +23,22 @@
 
 <script>
 export default {
+  data: () => ({
+    options: {
+      scales: {
+        yAxes: [
+          {
+            display: true,
+            ticks: {
+              suggestedMin: 0,
+              beginAtZero: true
+            }
+          }
+        ]
+      }
+    }
+  }),
+
   props: {
     chartData: null
   },
@@ -33,11 +49,11 @@ export default {
 
   methods: {
     generateChart(chartData) {
-      var ctx = document.getElementById("piechart");
+      var ctx = document.getElementById("barchart");
       new Chart(ctx, {
-        type: "pie",
+        type: "bar",
         data: chartData,
-        options: Chart.defaults.pie
+        options: this.options
       });
     }
   }

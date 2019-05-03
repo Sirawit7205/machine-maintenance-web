@@ -10,6 +10,8 @@ const EditPart = () => import("./views/EditPart.vue");
 const PartsInOut = () => import("./views/PartsInOut.vue");
 const JobAssignment = () => import("./views/JobAssignment.vue");
 const ContractReport = () => import("./views/reports/ContractReport.vue");
+const RepairDurationReport = () =>
+  import("./views/reports/RepairDurationReport.vue");
 
 Vue.use(Router);
 
@@ -73,6 +75,11 @@ export default new Router({
       path: "/reports/Contract",
       name: "contractReport",
       component: ContractReport
+    },
+    {
+      path: "/reports/RepairDuration",
+      name: "repairDurReport",
+      component: RepairDurationReport
     }
   ]
 });

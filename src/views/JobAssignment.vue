@@ -2,7 +2,7 @@
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
       <v-flex lg3 sm9>
-        <div class="headline mb-1">Add or edit assignments</div>
+        <div class="headline mb-1">Edit assignments</div>
         <v-card>
           <v-card-text>
             <v-form ref="StaffSrcAdd" v-model="valid" lazy-validation>
@@ -82,14 +82,16 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout align-end justify-end>
-      <v-alert v-model="success" type="success" dismissible>Save success</v-alert>
-      <v-alert
-        v-model="error"
-        type="error"
-        dismissible
-      >There's an error with your request, please try again</v-alert>
-    </v-layout>
+    <v-snackbar
+      v-model="snackbarActivate"
+      :bottom="true"
+      :right="true"
+      :color="snackbarMode"
+      :timeout="3000"
+    >
+      {{snackbarMessage}}
+      <v-btn flat @click="snackbarActivate = false">Close</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -105,8 +107,10 @@ export default {
 
   data: () => ({
     valid: true,
-    success: false,
-    error: false,
+
+    snackbarActivate: false,
+    snackbarMode: null,
+    snackbarMessage: null,
 
     jobId: null,
     existingJobs: ["JB1001", "JB1002"], //dummy
@@ -151,15 +155,17 @@ export default {
   }),
 
   methods: {
-    generateNewId() {
-      this.machineId = "JB" + this.uniqueId; //dummy
+    openSnackbar(mode, message) {
+      this.snackbarMode = mode;
+      this.snackbarMessage = message;
+      this.snackbarActivate = true;
     },
 
     validate() {
       if (this.$refs.JobAssignmentForm.validate()) {
-        this.success = true;
+        this.openSnackbar("success", "Sucessfully save");
       } else {
-        this.error = true;
+        this.openSnackbar("error", "An error had occured, please try again.");
       }
     }
   }

@@ -64,6 +64,7 @@
         <span>Back to homepage</span>
       </v-btn>
     </v-toolbar>
+
     <v-content>
       <router-view/>
     </v-content>
@@ -94,7 +95,12 @@ export default {
       ],
 
       reportItems: [
-        { title: "Contract report", icon: "book", to: "/reports/contract" }
+        { title: "Contract", icon: "book", to: "/reports/contract" },
+        {
+          title: "Repair duration",
+          icon: "alarm",
+          to: "/reports/repairDuration"
+        }
       ],
 
       right: null,
