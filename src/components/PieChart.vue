@@ -1,45 +1,29 @@
 <template>
-  <div class="flex_container">
-    <div>
-      <canvas id="piechart"></canvas>
-    </div>
+  <div class="piechart">
+    <pie-chart :chartData="chartData"/>
   </div>
 </template>
 
 <style scoped>
-.flex_container {
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  background-color: #ffffff;
-  width: 500px;
-  height: 300px;
-}
-.flex_container div {
-  width: 500px;
-  height: 300px;
+.piechart {
+  background-color: white;
+  max-width: 400px;
+  margin: 30px auto;
 }
 </style>
 
+
 <script>
+import PieChart from "./PieChartRenderer.js";
+
 export default {
+  components: {
+    PieChart
+  },
+
   props: {
     chartData: null
-  },
-
-  mounted() {
-    this.generateChart(this.chartData);
-  },
-
-  methods: {
-    generateChart(chartData) {
-      var ctx = document.getElementById("piechart");
-      new Chart(ctx, {
-        type: "pie",
-        data: chartData,
-        options: Chart.defaults.pie
-      });
-    }
   }
 };
 </script>
+

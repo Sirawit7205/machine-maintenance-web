@@ -1,6 +1,6 @@
 <template>
   <v-container grid-list-md fill-height>
-    <v-layout align-start justify-start fill-height wrap>
+    <v-layout align-start justify-space-around fill-height wrap>
       <v-flex lg6 sm9>
         <div class="headline mb-1">Total time usage - this month</div>
         <v-data-table
@@ -18,7 +18,7 @@
           </template>
         </v-data-table>
       </v-flex>
-      <v-flex lg9 sm12>
+      <v-flex lg6 sm9>
         <div class="headline mb-1">Average time usage by machine type</div>
         <bar-chart :chartData="chartD"/>
       </v-flex>
