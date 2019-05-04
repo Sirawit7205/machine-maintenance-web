@@ -110,7 +110,14 @@ export default {
           title: "Preventive Maintenance",
           icon: "check_circle",
           to: "/reports/preventive"
-        }
+        },
+        { title: "Repair", icon: "build", to: "/reports/repair" },
+        {
+          title: "Company Machine",
+          icon: "dvr",
+          to: "/reports/companyMachine"
+        },
+        { title: "Current Job", icon: "list_alt", to: "/reports/currentJob" }
       ],
 
       right: null,
