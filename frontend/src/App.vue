@@ -117,7 +117,8 @@ export default {
           icon: "dvr",
           to: "/reports/companyMachine"
         },
-        { title: "Current Job", icon: "list_alt", to: "/reports/currentJob" }
+        { title: "Current Job", icon: "list_alt", to: "/reports/currentJob" },
+        { title: "Customer Loyalty", icon: "sentiment_satisfied_alt", to: "/reports/customerLoyalty"}
       ],
 
       right: null,
