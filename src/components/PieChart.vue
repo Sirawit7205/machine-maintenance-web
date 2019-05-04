@@ -6,7 +6,7 @@
 
 <style scoped>
 .piechart {
-  background-color: white;
+  background-color: #f5f5f5;
   max-width: 400px;
   margin: 30px auto;
 }

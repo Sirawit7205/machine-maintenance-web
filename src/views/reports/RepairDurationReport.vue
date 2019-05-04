@@ -20,7 +20,27 @@
       </v-flex>
       <v-flex lg6 sm9>
         <div class="headline mb-1">Average time usage by machine type</div>
-        <bar-chart :chartData="chartD"/>
+        <v-card>
+          <v-card-text>
+            <bar-chart :chartData="chartD"/>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex lg6 sm9>
+        <div class="headline mb-1">Average on-site time usage per job</div>
+        <v-card>
+          <v-card-text>
+            <pie-chart :chartData="chartD2"/>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex lg6 sm9>
+        <div class="headline mb-1">Average carry-in time usage per job</div>
+        <v-card>
+          <v-card-text>
+            <pie-chart :chartData="chartD3"/>
+          </v-card-text>
+        </v-card>
       </v-flex>
     </v-layout>
   </v-container>
@@ -28,10 +48,12 @@
 
 <script>
 import BarChart from "../../components/BarChart.vue";
+import PieChart from "../../components/PieChart.vue";
 
 export default {
   components: {
-    BarChart
+    BarChart,
+    PieChart
   },
 
   data: () => ({
@@ -65,6 +87,24 @@ export default {
       ],
 
       labels: ["Pump", "Boiler", "Other"]
+    },
+    chartD2: {
+      datasets: [
+        {
+          data: ["10.5", "3.0", "1.0", "0.5"]
+        }
+      ],
+
+      labels: ["Working", "Travel", "Break", "Other"]
+    },
+    chartD3: {
+      datasets: [
+        {
+          data: ["7.0", "2.0", "1.0"]
+        }
+      ],
+
+      labels: ["Working", "Break", "Other"]
     }
   })
 };

@@ -12,6 +12,8 @@ const JobAssignment = () => import("./views/JobAssignment.vue");
 const ContractReport = () => import("./views/reports/ContractReport.vue");
 const RepairDurationReport = () =>
   import("./views/reports/RepairDurationReport.vue");
+const TransactionReport = () => import("./views/reports/TransactionReport.vue");
+const PreventiveReport = () => import("./views/reports/PreventiveReport.vue");
 
 Vue.use(Router);
 
@@ -80,6 +82,16 @@ export default new Router({
       path: "/reports/RepairDuration",
       name: "repairDurReport",
       component: RepairDurationReport
+    },
+    {
+      path: "/reports/Transaction",
+      name: "transactionReport",
+      component: TransactionReport
+    },
+    {
+      path: "/reports/Preventive",
+      name: "preventiveReport",
+      component: PreventiveReport
     }
   ]
 });

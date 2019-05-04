@@ -100,6 +100,16 @@ export default {
           title: "Repair duration",
           icon: "alarm",
           to: "/reports/repairDuration"
+        },
+        {
+          title: "Transaction",
+          icon: "attach_money",
+          to: "/reports/transaction"
+        },
+        {
+          title: "Preventive Maintenance",
+          icon: "check_circle",
+          to: "/reports/preventive"
         }
       ],
 
