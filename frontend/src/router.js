@@ -18,6 +18,7 @@ const RepairReport = () => import("./views/reports/RepairReport.vue");
 const CompanyMachine = () => import("./views/reports/CompanyMachine.vue");
 const CurrentJobReport = () => import("./views/reports/CurrentJobReport.vue");
 const CustomerLoyalty = () => import("./views/reports/CustomerLoyalty.vue");
+const StaffSalary = () => import("./views/reports/StaffSalary.vue");
 
 Vue.use(Router);
 
@@ -116,6 +117,11 @@ export default new Router({
       path: "/reports/customerLoyalty",
       name: "customerLoyalty",
       component: CustomerLoyalty
+    },
+    {
+      path: "/reports/staffSalary",
+      name: "staffSalary",
+      component: StaffSalary
     }
   ]
 });
