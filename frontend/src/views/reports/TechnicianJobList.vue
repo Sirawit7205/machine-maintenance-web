@@ -1,18 +1,19 @@
 <template>
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
-      <v-flex xs12 md6>
-        <div class="headline mb-1">Job List- {{workerName}}</div>
+      <v-flex xs12 md12>
+        <div class="headline mb-1">Job List - {{workerName}}</div>
         <v-data-table :headers="joblistHeaders" :items="joblistItems" class="elevation-1">
           <template v-slot:no-data>
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
+            <td class="text-xs-center">{{props.item.time}}</td>
             <td class="text-xs-center">{{props.item.machine}}</td>
-            <td class="text-xs-center">{{props.item.locaiton}}</td>
-            <td class="text-xs-cetner">{{props.item.priority}}</td>
-            <td class="text-xs-cetner">{{props.item.severity}}</td>
-            <td class="text-xs-cetner">{{props.item.details}}</td>
+            <td class="text-xs-center">{{props.item.location}}</td>
+            <td class="text-xs-center">{{props.item.priority}}</td>
+            <td class="text-xs-center">{{props.item.severity}}</td>
+            <td class="text-xs-center">{{props.item.details}}</td>
           </template>
         </v-data-table>
       </v-flex>
@@ -25,6 +26,11 @@ export default {
   data: () => ({
     workerName: "xxxxxx",
     joblistHeaders: [
+      {
+        text: "Start time",
+        value: "time",
+        align: "center"
+      },
       {
         text: "Machine",
         value: "machine",
@@ -53,6 +59,7 @@ export default {
     ],
     joblistItems: [
       {
+        time: "09:00",
         machine: "MC0017-Motor EDSX320",
         location: "KMUTT",
         priority: "4",
@@ -60,6 +67,7 @@ export default {
         details: "High pitch noise on start. Low torque"
       },
       {
+        time: "11:00",
         machine: "MC0255-Boiler THD050",
         location: "Syned Inc.",
         priority: "3",
@@ -67,6 +75,7 @@ export default {
         details: "No heat."
       },
       {
+        time: "15:00",
         machine: "MC0252-Boiler THD090",
         location: "Syned Inc.",
         priority: "3",
@@ -74,6 +83,7 @@ export default {
         details: "No heat. Error code E08"
       },
       {
+        time: "16:00",
         machine: "MC0019-Motor BSDX-118",
         location: "Quilium Engineering",
         priority: "1",
@@ -81,6 +91,7 @@ export default {
         details: "Monthly maintenance"
       },
       {
+        time: "17:00",
         machine: "MC0020-Motor BSDX-118",
         location: "Quilium Engineering",
         priority: "1",

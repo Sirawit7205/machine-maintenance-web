@@ -1,32 +1,32 @@
 <template>
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
-      <v-flex xs12 md3>
+      <v-flex xs12 md12>
         <div class="headline mb-1">Machine list</div>
         <v-data-table :headers="machHeaders" :items="machItems" class="elevation-1">
           <template v-slot:no-data>
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{props.item.machID}}</td>
-            <td class="text-xs-center">{{props.item.cusID}}</td>
-            <td class="text-xs-cetner">{{props.item.mach}}</td>
-            <td class="text-xs-cetner">{{props.item.totalbreakdown}}</td>
-            <td class="text-xs-cetner">{{props.item.breakdownreason}}</td>
+            <td class="text-xs-center">{{props.item.machineId}}</td>
+            <td class="text-xs-center">{{props.item.customerMachineId}}</td>
+            <td class="text-xs-center">{{props.item.machineName}}</td>
+            <td class="text-xs-center">{{props.item.totalBreakdown}}</td>
+            <td class="text-xs-center">{{props.item.lastBreakReason}}</td>
           </template>
         </v-data-table>
       </v-flex>
-      <v-flex xs6 md2>
-        <v-data-table :headers="mach2Headers" :items="mach2Items" class="elevation-1">
+      <v-flex xs12 md12>
+        <v-data-table :headers="mach2Headers" :items="machItems" class="elevation-1">
           <template v-slot:no-data>
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{props.item.machID2}}</td>
+            <td class="text-xs-center">{{props.item.machineId}}</td>
             <td class="text-xs-center">{{props.item.avgDowntime}}</td>
-            <td class="text-xs-center">{{props.item.hiavgSev}}</td>
-            <td class="text-xs-center">{{props.item.lastcheck}}</td>
-            <td class="text-xs-center">{{props.item.viewlog}}</td>
+            <td class="text-xs-center">{{props.item.severity}}</td>
+            <td class="text-xs-center">{{props.item.lastCheck}}</td>
+            <td class="text-xs-center">{{props.item.viewLog}}</td>
           </template>
         </v-data-table>
       </v-flex>
@@ -40,87 +40,79 @@ export default {
     machHeaders: [
       {
         text: "Machine ID",
-        value: "machID",
+        value: "machineId",
         align: "center"
       },
       {
         text: "Customer Machine ID",
-        value: "cusID",
+        value: "customerMachineId",
         align: "center"
       },
       {
         text: "Machine",
-        value: "mach",
+        value: "machineName",
         align: "center"
       },
       {
         text: "Total Breakdown Last Year",
-        value: "totalbreakdown",
+        value: "totalBreakdown",
         align: "center"
       },
       {
         text: "Last Breakdown Reason",
-        value: "breakdownreason",
+        value: "lastBreakReason",
         align: "center"
       }
     ],
     machItems: [
       {
-        machID: "MC0251",
-        cusID: "CDG-1",
-        mach: "Boiler THD090",
-        totalbreakdown: "5",
-        breakdownreason: "Temperature sensor#2 error"
+        machineId: "MC0251",
+        customerMachineId: "CDG-1",
+        machineName: "Boiler THD090",
+        totalBreakdown: "5",
+        lastBreakReason: "Temperature sensor#2 error",
+        avgDowntime: "1.5",
+        severity: "4",
+        lastCheck: "17/2/2018",
+        viewLog: "View"
       },
       {
-        machID: "MC0252",
-        cusID: "CDG-2",
-        mach: "Boiler THD090",
-        totalbreakdown: "2",
-        breakdownreason: "Heater #1 error"
+        machineId: "MC0252",
+        customerMachineId: "CDG-2",
+        machineName: "Boiler THD090",
+        totalBreakdown: "2",
+        lastBreakReason: "Heater #1 error",
+        avgDowntime: "1.0",
+        severity: "1",
+        lastCheck: "11/5/2018",
+        viewLog: "View"
       }
     ],
     mach2Headers: [
       {
         text: "Machine ID",
-        value: "machID2",
+        value: "machineId",
         align: "center"
       },
       {
-        text: " Average Downtime Per Month(hrs)",
+        text: " Average Downtime Per Month (hours)",
         value: "avgDowntime",
         align: "center"
       },
       {
-        text: "Highest/Average Problem Severity",
-        value: "hiavgSev",
+        text: "Highest Severity",
+        value: "severity",
         align: "center"
       },
       {
         text: "Last Check",
-        value: "lastcheck",
+        value: "lastCheck",
         align: "center"
       },
       {
         text: "View Log",
-        value: "viewlog",
+        value: "viewLog",
         align: "center"
-      }
-    ],
-    roleItems: [
-      {
-        machID2: "MC0251",
-        avgDowntime: "1.5",
-        hiavgSev: "3/1.1",
-        lastcheck: "15/01/2019 (1 month ago)",
-        viewlog: "View"
-      },
-      {
-        machID2: "MC0252",
-        avgDowntime: "2.5",
-        hiavgSev: "5/2.5",
-        lastcheck: "15/12/2018",
-        viewlog: "View"
       }
     ]
   })

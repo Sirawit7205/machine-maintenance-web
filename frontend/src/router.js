@@ -19,6 +19,14 @@ const CompanyMachine = () => import("./views/reports/CompanyMachine.vue");
 const CurrentJobReport = () => import("./views/reports/CurrentJobReport.vue");
 const CustomerLoyalty = () => import("./views/reports/CustomerLoyalty.vue");
 const StaffSalary = () => import("./views/reports/StaffSalary.vue");
+const TechnicianPerformance = () => import("./views/reports/TechnicianPerformance.vue");
+const TechnicianJobList = () => import("./views/reports/TechnicianJobList.vue");
+const StaffVacation = () => import("./views/reports/StaffVacation.vue");
+const MachineDetails = () => import("./views/reports/MachineDetails.vue");
+const JobAssignmentReport = () => import("./views/reports/JobAssignment.vue");
+const LogSummary = () => import("./views/reports/LogSummary.vue");
+const PartsReport = () => import("./views/reports/PartsReport.vue");
+const MachineSummary = () => import("./views/reports/MachineSummary.vue");
 
 Vue.use(Router);
 
@@ -122,6 +130,46 @@ export default new Router({
       path: "/reports/staffSalary",
       name: "staffSalary",
       component: StaffSalary
+    },
+    {
+      path: "/reports/technicianPerformance",
+      name: "technicianPerformance",
+      component: TechnicianPerformance
+    },
+    {
+      path: "/reports/technicianJobList",
+      name: "technicianJobList",
+      component: TechnicianJobList
+    },
+    {
+      path: "/reports/staffVacation",
+      name: "staffVacation",
+      component: StaffVacation
+    },
+    {
+      path: "/reports/machineDetails",
+      name: "machineDetails",
+      component: MachineDetails
+    },
+    {
+      path: "/reports/jobAssignmentReport",
+      name: "jobAssignmentReport",
+      component: JobAssignmentReport
+    },
+    {
+      path: "/reports/LogSummary",
+      name: "logSummary",
+      component: LogSummary
+    },
+    {
+      path: "/reports/PartsReport",
+      name: "partsReport",
+      component: PartsReport
+    },
+    {
+      path: "/reports/MachineSummary",
+      name: "machineSummary",
+      component: MachineSummary
     }
   ]
 });

@@ -86,7 +86,7 @@ export default {
         { title: "Add/Edit Machine", icon: "developer_board", to: "/machine" },
         { title: "Add/Edit parts", icon: "toys", to: "/editpart" },
         { title: "Add log", icon: "assignment", to: "/addlog" },
-        { title: "Job assignment", icon: "assignment_turned_in", to: "/jobas" },
+        { title: "Job assignment", icon: "edit", to: "/jobas" },
         {
           title: "Parts transasctions",
           icon: "compare_arrows",
@@ -119,7 +119,15 @@ export default {
         },
         { title: "Current Job", icon: "list_alt", to: "/reports/currentJob" },
         { title: "Customer Loyalty", icon: "sentiment_satisfied_alt", to: "/reports/customerLoyalty"},
-        { title: "Staff Salary", icon: "account_balance_wallet", to: "/reports/staffSalary" }
+        { title: "Staff Salary", icon: "account_balance_wallet", to: "/reports/staffSalary" },
+        { title: "Technician Performance", icon: "show_chart", to: "/reports/technicianPerformance"},
+        { title: "Technician Job List", icon: "format_list_numbered", to: "/reports/technicianJobList"},
+        { title: "Staff Vacation", icon: "brightness_5", to: "/reports/staffVacation"},
+        { title: "Machine Details", icon: "developer_board", to: "/reports/machineDetails"},
+        { title: "Job assignment", icon: "assignment_turned_in", to: "/reports/jobAssignmentReport"},
+        { title: "Log Summary", icon: "library_books", to: "/reports/logSummary"},
+        { title: "Parts Report", icon: "toys", to: "/reports/partsReport"},
+        { title: "Machine Summary", icon: "view_module", to: "/reports/machineSummary"}
       ],
 
       right: null,

@@ -1,43 +1,43 @@
 <template>
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
-      <v-flex xs12 md2>
+      <v-flex xs12 md12>
         <div class="headline mb-1">Log Generated</div>
-        <v-data-table :headers="logHeaders" :items="logItems" class="elevation-1">
+        <v-data-table :headers="logHeaders" :items="logItems" hide-actions class="elevation-1">
           <template v-slot:no-data>
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{props.item.thismonth}}</td>
+            <td class="text-xs-center">{{props.item.total}}</td>
             <td class="text-xs-center">{{props.item.info}}</td>
             <td class="text-xs-center">{{props.item.error}}</td>
             <td class="text-xs-center">{{props.item.maintenance}}</td>
-            <td class="text-xs-center">{{props.item.repiar}}</td>
+            <td class="text-xs-center">{{props.item.repair}}</td>
             <td class="text-xs-center">{{props.item.other}}</td>
           </template>
         </v-data-table>
       </v-flex>
-      <v-flex xs4 md3>
-        <div class="headline mb-1">Top Log Machine Type</div>
-        <v-data-table :headers="topmachineHeaders" :items="topmachineItems" class="elevation-1">
+      <v-flex xs9 md6>
+        <div class="headline mb-1">Top Log Per Machine Type</div>
+        <v-data-table :headers="topMachineHeaders" :items="topMachineItems" class="elevation-1">
           <template v-slot:no-data>
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{props.item.machinetype}}</td>
-            <td class="text-xs-center">{{props.item.loggen1}}</td>
+            <td class="text-xs-center">{{props.item.machineType}}</td>
+            <td class="text-xs-center">{{props.item.logCount}}</td>
           </template>
         </v-data-table>
       </v-flex>
-      <v-flex xs4 md3>
+      <v-flex xs9 md6>
         <div class="headline mb-1">Top Log Per Customer</div>
-        <v-data-table :headers="topcustomerHeaders" :items="topcustomerItems" class="elevation-1">
+        <v-data-table :headers="topCustomerHeaders" :items="topCustomerItems" class="elevation-1">
           <template v-slot:no-data>
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{props.item.customer}}</td>
-            <td class="text-xs-center">{{props.item.loggen2}}</td>
+            <td class="text-xs-center">{{props.item.customerName}}</td>
+            <td class="text-xs-center">{{props.item.logCount}}</td>
           </template>
         </v-data-table>
       </v-flex>
@@ -51,38 +51,44 @@ export default {
     logHeaders: [
       {
         text: "This month",
-        value: "thismonth",
+        sortable: false,
+        value: "total",
         align: "center"
       },
       {
         text: "Info",
+        sortable: false,
         value: "info",
         align: "center"
       },
       {
         text: "Error",
+        sortable: false,
         value: "error",
         align: "center"
       },
       {
         text: "Maintenance",
+        sortable: false,
         value: "maintenance",
         align: "center"
       },
       {
         text: "Repair",
+        sortable: false,
         value: "repair",
         align: "center"
       },
       {
         text: "Other",
+        sortable: false,
         value: "other",
         align: "center"
       }
     ],
     logItems: [
       {
-        thismonth: "409",
+        total: "409",
         info: "23",
         error: "127",
         maintenance: "148",
@@ -90,64 +96,64 @@ export default {
         other: "44"
       }
     ],
-    topmachineHeaders: [
+    topMachineHeaders: [
       {
         text: "Machine Type",
-        value: "machinetype",
+        value: "machineType",
         align: "center"
       },
       {
         text: "Log Generated",
-        value: "loggen1",
+        value: "logCount",
         align: "center"
       }
     ],
-    topmachineItems: [
+    topMachineItems: [
       {
-        machinetype: "Boiler",
-        loggen1: "45"
+        machineType: "Boiler",
+        logCount: "45"
       },
       {
-        machinetype: "Motor",
-        loggen1: "37"
+        machineType: "Motor",
+        logCount: "37"
       },
       {
-        machinetype: "Packer",
-        loggen1: "27"
+        machineType: "Packer",
+        logCount: "27"
       },
       {
-        machinetype: "Burner",
-        loggen1: "15"
+        machineType: "Burner",
+        logCount: "15"
       }
     ],
-    topcustomerHeaders: [
+    topCustomerHeaders: [
       {
         text: "Customer",
-        value: "customer",
+        value: "customerName",
         align: "center"
       },
       {
         text: "Log Generated",
-        value: "loggen2",
+        value: "logCount",
         align: "center"
       }
     ],
-    topcustomerItems: [
+    topCustomerItems: [
       {
-        customer: "Fority Inc",
-        loggen2: "67"
+        customerName: "Fority Inc",
+        logCount: "67"
       },
       {
-        customer: "Quilium Eng.",
-        loggen2: "31"
+        customerName: "Quilium Eng.",
+        logCount: "31"
       },
       {
-        customer: "KMUTT",
-        loggen2: "23"
+        customerName: "KMUTT",
+        logCount: "23"
       },
       {
-        customer: "Syend Inc.",
-        loggen2: "22"
+        customerName: "Syend Inc.",
+        logCount: "22"
       }
     ]
   })

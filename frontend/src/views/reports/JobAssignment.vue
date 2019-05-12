@@ -1,29 +1,29 @@
 <template>
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
-      <v-flex xs9 md6>
+      <v-flex xs9 md9>
         <div class="headline mb-1">Current Job Assignments</div>
-        <v-data-table :headers="currentjobHeaders" :items="currentjobItems" class="elevation-1">
+        <v-data-table :headers="currentJobHeaders" :items="currentJobItems" hide-actions class="elevation-1">
           <template v-slot:no-data>
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{props.item.Openjobs}}</td>
-            <td class="text-xs-center">{{props.item.Unjobs}}</td>
-            <td class="text-xs-center">{{props.item.Asjobs}}</td>
+            <td class="text-xs-center">{{props.item.openJob}}</td>
+            <td class="text-xs-center">{{props.item.unassignedJob}}</td>
+            <td class="text-xs-center">{{props.item.assignedJob}}</td>
           </template>
         </v-data-table>
       </v-flex>
-      <v-flex xs9 md6>
-        <div class="headline mb-1">Job Assign Per Day</div>
-        <v-data-table :headers="jobperdayHeaders" :item="jobperdayItems" class="elevation-1">
+      <v-flex xs9 md9>
+        <div class="headline mb-1">Job Assignment Per Technician</div>
+        <v-data-table :headers="technicianHeaders" :items="technicianItems" hide-actions class="elevation-1">
           <template v-slot:no-data>
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{props.item.avgTech}}</td>
-            <td class="text-xs-center">{{props.item.maxTech}}</td>
-            <td class="text-xs-center">{{props.item.minTech}}</td>
+            <td class="text-xs-center">{{props.item.avgPerTechnician}}</td>
+            <td class="text-xs-center">{{props.item.maxPerTechnician}}</td>
+            <td class="text-xs-center">{{props.item.minPerTechnician}}</td>
           </template>
         </v-data-table>
       </v-flex>
@@ -34,57 +34,58 @@
 <script>
 export default {
   data: () => ({
-    currentjobHeaders: [
+    currentJobHeaders: [
       {
         text: "Open Job",
-        value: "Openjobs",
+        sortable: false,
+        value: "openJob",
         align: "center"
       },
       {
         text: "Unassigned Job",
-        value: "Unjobs",
+        sortable: false,
+        value: "unassignedJob",
         align: "center"
       },
       {
         text: "Assigned Job",
-        value: "Asjobs",
+        sortable: false,
+        value: "assignedJob",
         align: "center"
       }
     ],
-    currentjobItems: [
+    currentJobItems: [
       {
-        Openjobs: "131",
-        Unjobs: "17",
-        Asjobs: "114"
-      },
-      {
-        Openjobs: "",
-        Unjobs: "",
-        Asjobs: ""
+        openJob: "131",
+        unassignedJob: "17",
+        assignedJob: "114"
       }
     ],
-    jobperdayHeaders: [
+    technicianHeaders: [
       {
         text: "Average per Technician",
-        value: "avgTech",
+        sortable: false,
+        value: "avgPerTechnician",
         align: "center"
       },
       {
         text: "Max per Technician",
-        value: "maxTech",
+        sortable: false,
+        value: "maxPerTechnician",
         align: "center"
       },
       {
         text: "Min per Technician",
-        value: "minTech",
+        sortable: false,
+        value: "minPerTechnician",
         align: "center"
       }
     ],
-    jobperdayItems: [
+    technicianItems: [
       {
-        avgTech: "1.6",
-        maxTech: "4",
-        minTech: "1"
+        avgPerTechnician: "1.6",
+        maxPerTechnician: "4",
+        minPerTechnician: "1"
       }
     ]
   })

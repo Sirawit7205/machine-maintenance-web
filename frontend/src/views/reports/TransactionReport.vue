@@ -138,11 +138,10 @@ export default {
     ],
     summaryItems: [
       {
-        profit: 3000000,
-        income: 5000000,
-        expense: 2000000,
-        avgProfitCust: 150000,
-        AvgProfitPerType: null
+        totalDiff: 3000000,
+        totalIncome: 5000000,
+        totalExpense: 2000000,
+        avgPerCustomer: 150000
       }
     ],
     incomeItems: [
