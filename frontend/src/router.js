@@ -1,14 +1,14 @@
 import Vue from "vue";
 import Router from "vue-router";
 const Home = () => import("./views/Home.vue");
-const Login = () => import("./views/Login.vue");
-const Staff = () => import("./views/Staff.vue");
-const Contract = () => import("./views/Contract.vue");
-const Machine = () => import("./views/Machine.vue");
-const AddLog = () => import("./views/Log.vue");
-const EditPart = () => import("./views/EditPart.vue");
-const PartsInOut = () => import("./views/PartsInOut.vue");
-const JobAssignment = () => import("./views/JobAssignment.vue");
+const Login = () => import("./views/forms/Login.vue");
+const Staff = () => import("./views/forms/Staff.vue");
+const Contract = () => import("./views/forms/Contract.vue");
+const Machine = () => import("./views/forms/Machine.vue");
+const AddLog = () => import("./views/forms/Log.vue");
+const EditPart = () => import("./views/forms/EditPart.vue");
+const PartsInOut = () => import("./views/forms/PartsInOut.vue");
+const JobAssignment = () => import("./views/forms/JobAssignment.vue");
 const ContractReport = () => import("./views/reports/ContractReport.vue");
 const RepairDurationReport = () =>
   import("./views/reports/RepairDurationReport.vue");
@@ -47,42 +47,42 @@ export default new Router({
         import(/* webpackChunkName: "about" */ "./views/About.vue")
     },
     {
-      path: "/login",
+      path: "/forms/login",
       name: "login",
       component: Login
     },
     {
-      path: "/staff",
+      path: "/forms/staff",
       name: "staff",
       component: Staff
     },
     {
-      path: "/contract",
+      path: "/forms/contract",
       name: "contract",
       component: Contract
     },
     {
-      path: "/machine",
+      path: "/forms/machine",
       name: "machine",
       component: Machine
     },
     {
-      path: "/addlog",
+      path: "/forms/addlog",
       name: "addlog",
       component: AddLog
     },
     {
-      path: "/editpart",
+      path: "/forms/editpart",
       name: "editpart",
       component: EditPart
     },
     {
-      path: "/jobas",
+      path: "/forms/jobas",
       name: "jobas",
       component: JobAssignment
     },
     {
-      path: "/partsInOut",
+      path: "/forms/partsInOut",
       name: "partsInOut",
       component: PartsInOut
     },

@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import AddMachineModel from "../components/AddMachineModel.vue";
+import AddMachineModel from "../../components/AddMachineModel.vue";
 
 export default {
   components: {

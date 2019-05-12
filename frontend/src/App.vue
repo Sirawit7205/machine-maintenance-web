@@ -81,16 +81,16 @@ export default {
     return {
       formItems: [
         { title: "Home", icon: "home", to: "/" },
-        { title: "Add/Edit Staff", icon: "account_box", to: "/staff" },
-        { title: "Add/Edit Contract", icon: "book", to: "/contract" },
-        { title: "Add/Edit Machine", icon: "developer_board", to: "/machine" },
-        { title: "Add/Edit parts", icon: "toys", to: "/editpart" },
-        { title: "Add log", icon: "assignment", to: "/addlog" },
-        { title: "Job assignment", icon: "edit", to: "/jobas" },
+        { title: "Add/Edit Staff", icon: "account_box", to: "/forms/staff" },
+        { title: "Add/Edit Contract", icon: "book", to: "/forms/contract" },
+        { title: "Add/Edit Machine", icon: "developer_board", to: "/forms/machine" },
+        { title: "Add/Edit parts", icon: "toys", to: "/forms/editpart" },
+        { title: "Add log", icon: "assignment", to: "/forms/addlog" },
+        { title: "Job assignment", icon: "edit", to: "/forms/jobas" },
         {
           title: "Parts transasctions",
           icon: "compare_arrows",
-          to: "/partsInOut"
+          to: "/forms/partsInOut"
         }
       ],
 

@@ -71,8 +71,8 @@
 </template>
 
 <script>
-import DatePicker from "../components/DatePicker.vue";
-import TimePicker from "../components/TimePicker.vue";
+import DatePicker from "../../components/DatePicker.vue";
+import TimePicker from "../../components/TimePicker.vue";
 
 export default {
   components: {
