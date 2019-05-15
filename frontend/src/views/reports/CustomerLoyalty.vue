@@ -33,6 +33,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
     valueHeaders: [
@@ -74,33 +76,19 @@ export default {
         align: "center"
       }
     ],
-    valueItems: [
-      {
-        customer: "ABCD",
-        contractCount: 33,
-        totalContractValue: 1000000
-      },
-      {
-        customer: "EFG",
-        contractCount: 15,
-        totalContractValue: 5000000
-      }
-    ],
-    expiredItems: [
-      {
-        contractId: "CN1008",
-        customer: "ABCD",
-        contractValue: 100000,
-        daysLeft: 10
-      },
-      {
-        contractId: "CN1009",
-        customer: "EFG",
-        contractValue: 50000,
-        daysLeft: 18
-      }
-    ]
-  })
+    valueItems: [],
+    expiredItems: []
+  }),
+
+  created: async function() {
+    let mostValued = await axios.get("//localhost:80/MachineMaintenance/public/api/customer/mostValued", {
+    });
+    let nearlyExpired = await axios.get("//localhost:80/MachineMaintenance/public/api/customer/nearlyExpired", {
+    });
+
+    this.valueItems = mostValued.data;
+    this.expiredItems = nearlyExpired.data;
+  }
 };
 </script>
 

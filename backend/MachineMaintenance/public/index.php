@@ -34,6 +34,7 @@ $app->get("/hello/{name}", function(Request $request, Response $response) {
 
 require "../src/config/dbaccess.php";
 require "../src/routes/salary.php";
+require "../src/routes/customer.php";
 
 $app->run();
 ?>

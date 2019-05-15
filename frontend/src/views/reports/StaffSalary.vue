@@ -54,23 +54,6 @@ export default {
         align: "center"
       }
     ],
-    staffItems: [
-      {
-        staffName: "Francis Jones",
-        position: "Technician",
-        salary: "22000"
-      },
-      {
-        staffName: "Sam Molina",
-        position: "Technician",
-        salary: "23000"
-      },
-      {
-        staffName: "Martin Jennings",
-        position: "Supervisor",
-        salary: "35000"
-      }
-    ],
     roleHeaders: [
       {
         text: "Position",
@@ -93,26 +76,8 @@ export default {
         align: "center"
       }
     ],
-    roleItems: [
-      {
-        position: "Technician",
-        avgSalary: "25000",
-        minSalary: "22000",
-        maxSalary: "28000"
-      },
-      {
-        position: "Supervisor",
-        avgSalary: "34000",
-        minSalary: "32000",
-        maxSalary: "35000"
-      },
-      {
-        position: "Manager",
-        avgSalary: "44800",
-        minSalary: "41500",
-        maxSalary: "46000"
-      }
-    ]
+    staffItems: [],
+    roleItems: []
   }),
 
   created: async function() {
