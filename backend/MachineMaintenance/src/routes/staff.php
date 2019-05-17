@@ -71,4 +71,55 @@ $app->get("/api/staff/salaryPosition", function(Request $request, Response $resp
   // }
 });
 
+$app->get("/api/staff/vacationList", function(Request $request, Response $response) {
+  $sql = "SELECT staffName, position, status, vacationTotal, vacationLeft FROM staff";
+
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
+$app->get("/api/staff/vacationGiven", function(Request $request, Response $response) {
+  $sql = "SELECT position, AVG(vacationTotal) AS avgGiven, MIN(vacationTotal) AS minGiven, MAX(vacationTotal) AS maxGiven FROM staff GROUP BY position";
+
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
+$app->get("/api/staff/vacationUsed", function(Request $request, Response $response) {
+  $sql = "SELECT position, AVG(vacationTotal - vacationLeft) AS avgUsed, MIN(vacationTotal - vacationLeft) AS minUsed, MAX(vacationTotal - vacationLeft) AS maxUsed FROM staff GROUP BY position";
+
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
 ?>

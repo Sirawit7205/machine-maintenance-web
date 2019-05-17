@@ -10,6 +10,7 @@
           <template v-slot:items="props">
             <td class="text-xs-center">{{props.item.staffName}}</td>
             <td class="text-xs-center">{{props.item.position}}</td>
+            <td class="text-xs-center">{{props.item.status}}</td>
             <td class="text-xs-center">{{props.item.vacationTotal}}</td>
             <td class="text-xs-center">{{props.item.vacationLeft}}</td>
           </template>
@@ -31,15 +32,15 @@
       </v-flex>
       <v-flex xs9 md9>
         <div class="headline mb-1">Vacation Days Used</div>
-        <v-data-table :headers="vacLeftHeaders" :items="vacLeftItems" class="elevation-1">
+        <v-data-table :headers="vacUsedHeaders" :items="vacUsedItems" class="elevation-1">
           <template v-slot:no-data>
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
             <td class="text-xs-center">{{props.item.position}}</td>
-            <td class="text-xs-center">{{props.item.avgLeft}}</td>
-            <td class="text-xs-center">{{props.item.minLeft}}</td>
-            <td class="text-xs-center">{{props.item.maxLeft}}</td>
+            <td class="text-xs-center">{{props.item.avgUsed}}</td>
+            <td class="text-xs-center">{{props.item.minUsed}}</td>
+            <td class="text-xs-center">{{props.item.maxUsed}}</td>
           </template>
         </v-data-table>
       </v-flex>
@@ -48,6 +49,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
     staffHeaders: [
@@ -62,6 +65,11 @@ export default {
         align: "center"
       },
       {
+        text: "Status",
+        value: "status",
+        align: "center"
+      },
+      {
         text: "Vacation Days Given",
         value: "vacationTotal",
         align: "center"
@@ -70,38 +78,6 @@ export default {
         text: "Vacation Days Left",
         value: "vacationLeft",
         align: "center"
-      }
-    ],
-    staffItems: [
-      {
-        staffName: "Francis Jones",
-        position: "Technician",
-        vacationLeft: "21",
-        vacationTotal: "30"
-      },
-      {
-        staffName: "Sam Molina",
-        position: "Technician",
-        vacationLeft: "16",
-        vacationTotal: "30"
-      },
-      {
-        staffName: "Martin Jennings",
-        position: "Supervisor",
-        vacationLeft: "34",
-        vacationTotal: "40"
-      },
-      {
-        staffName: "Randolph Rivera",
-        position: "Supervisor",
-        vacationLeft: "5",
-        vacationTotal: "40"
-      },
-      {
-        staffName: "Cheryl Odaniel",
-        position: "Manager",
-        vacationLeft: "21",
-        vacationTotal: "45"
       }
     ],
     vacGivenHeaders: [
@@ -126,27 +102,7 @@ export default {
         align: "center"
       }
     ],
-    vacGivenItems: [
-      {
-        position: "Technician",
-        avgGiven: "30",
-        minGiven: "30",
-        maxGiven: "30"
-      },
-      {
-        position: "Supervisor",
-        avgGiven: "40",
-        minGiven: "30",
-        maxGiven: "45"
-      },
-      {
-        position: "Manager",
-        avgGiven: "40",
-        minGiven: "30",
-        maxGiven: "60"
-      }
-    ],
-    vacLeftHeaders: [
+    vacUsedHeaders: [
       {
         text: "Role",
         value: "role2",
@@ -169,26 +125,22 @@ export default {
         align: "center"
       }
     ],
-    vacLeftItems: [
-      {
-        position: "Technician",
-        avgLeft: "24",
-        minLeft: "11",
-        maxLeft: "30"
-      },
-      {
-        position: "Supervisor",
-        avgLeft: "30",
-        minLeft: "20",
-        maxLeft: "36"
-      },
-      {
-        position: "Manager",
-        avgLeft: "32",
-        minLeft: "16",
-        maxLeft: "41"
-      }
-    ]
-  })
+    staffItems: [],
+    vacGivenItems: [],
+    vacUsedItems: []
+  }),
+
+  created: async function() {
+  let vacationList = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/vacationList", {
+  });
+  let vacationGiven = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/vacationGiven", {
+  });
+  let vacationUsed = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/vacationUsed", {
+  });
+
+  this.staffItems = vacationList.data;
+  this.vacGivenItems = vacationGiven.data;
+  this.vacUsedItems = vacationUsed.data;
+  }
 };
 </script>

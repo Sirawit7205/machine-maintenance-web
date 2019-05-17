@@ -33,7 +33,7 @@ $app->get("/hello/{name}", function(Request $request, Response $response) {
 });
 
 require "../src/config/dbaccess.php";
-require "../src/routes/salary.php";
+require "../src/routes/staff.php";
 require "../src/routes/customer.php";
 require "../src/routes/parts.php";
 
