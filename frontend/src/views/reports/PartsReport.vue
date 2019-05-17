@@ -8,8 +8,10 @@
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{props.item.partName}}</td>
-            <td class="text-xs-center">{{props.item.compatMachine}}</td>
+            <td class="text-xs-center">{{props.item.partsName}}</td>
+            <td class="text-xs-center">
+              <parts-menu :partsId="props.item.partsId"/>
+            </td>
             <td class="text-xs-center">{{props.item.stockAmount}}</td>
             <td class="text-xs-center">{{props.item.usedAmount}}</td>
             <td class="text-xs-center">{{props.item.price}}</td>
@@ -23,8 +25,10 @@
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{props.item.partName}}</td>
-            <td class="text-xs-center">{{props.item.compatMachine}}</td>
+            <td class="text-xs-center">{{props.item.partsName}}</td>
+            <td class="text-xs-center">
+              <parts-menu :partsId="props.item.partsId"/>
+            </td>
             <td class="text-xs-center">{{props.item.stockAmount}}</td>
             <td class="text-xs-center">{{props.item.usedAmount}}</td>
             <td class="text-xs-center">{{props.item.price}}</td>
@@ -36,7 +40,14 @@
 </template>
 
 <script>
+import axios from "axios";
+import PartsMenu from "../../components/PartsMenu.vue";
+
 export default {
+  components: {
+    PartsMenu
+  },
+
   data: () => ({
     partHeaders: [
       {
@@ -65,29 +76,6 @@ export default {
         align: "center"
       }
     ],
-    partItems: [
-      {
-        partName: "Belt-PPU-5",
-        compatMachine: "Boiler-THD090",
-        stockAmount: "356",
-        usedAmount: "14",
-        price: "500"
-      },
-      {
-        partName: "Ball Bearings-SYX-88",
-        compatMachine: "Motor-KSH5",
-        stockAmount: "312",
-        usedAmount: "23",
-        price: "1000"
-      },
-      {
-        partName: "Control Arm-CC-998",
-        compatMachine: "Pelletizer",
-        stockAmount: "30",
-        usedAmount: "10",
-        price: "20000"
-      }
-    ],
     runoutHeaders: [
       {
         text: "Part Name",
@@ -114,7 +102,15 @@ export default {
         value: "price",
         align: "center"
       }
-    ]
-  })
+    ],
+    partItems: []
+  }),
+
+  created: async function() {
+  let partList = await axios.get("//localhost:80/MachineMaintenance/public/api/parts/list", {
+  });
+
+  this.partItems = partList.data;
+  }
 };
 </script>

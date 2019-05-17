@@ -3,6 +3,7 @@
     <HelloWorld/>
     <v-btn to="/login">Login</v-btn>
     <v-btn to="/staff">Add/Edit staff</v-btn>
+    <parts-menu :partsId="partsId"/>
     <pie-chart-menu :chartData="chartD"/>
     <pie-chart-menu :chartData="chartD2"/>
     <pie-chart :chartData="chartD"/>
@@ -17,13 +18,15 @@ import HelloWorld from "../components/HelloWorld";
 import PieChart from "../components/PieChart.vue";
 import PieChartMenu from "../components/PieChartMenu.vue";
 import BarChart from "../components/BarChart.vue";
+import PartsMenu from "../components/PartsMenu.vue";
 
 export default {
   components: {
     HelloWorld,
     PieChart,
     PieChartMenu,
-    BarChart
+    BarChart,
+    PartsMenu
   },
   data: () => ({
     chartD: {
@@ -45,7 +48,8 @@ export default {
       ],
 
       labels: ["Pump", "Boiler", "Other"]
-    }
+    },
+    partsId: "PN0001"
   })
 };
 </script>
