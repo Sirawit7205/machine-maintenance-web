@@ -36,6 +36,7 @@ require "../src/config/dbaccess.php";
 require "../src/routes/staff.php";
 require "../src/routes/customer.php";
 require "../src/routes/parts.php";
+require "../src/routes/job.php";
 
 $app->run();
 ?>

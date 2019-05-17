@@ -27,7 +27,9 @@
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{ props.item.machine }}</td>
+            <td class="text-xs-center">
+              [{{ props.item.machineID }}] {{ props.item.machineType }} - {{ props.item.modelNumber }}
+            </td>
             <td class="text-xs-center">{{ props.item.status }}</td>
             <td class="text-xs-center">{{ props.item.severity }}</td>
             <td class="text-xs-center">{{ props.item.priority }}</td>
@@ -39,30 +41,10 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
-    jobHeaders: [
-      {
-        text: "Machine",
-        value: "machine",
-        align: "center"
-      },
-      {
-        text: "Status",
-        value: "status",
-        align: "center"
-      },
-      {
-        text: "Severity",
-        value: "severity",
-        align: "center"
-      },
-      {
-        text: "Priority",
-        value: "priority",
-        align: "center"
-      }
-    ],
     statusHeaders: [
       {
         text: "Average priority",
@@ -89,33 +71,41 @@ export default {
         align: "center"
       }
     ],
-    jobItems: [
+    jobHeaders: [
       {
-        machine: "MC1001",
-        status: "Waiting for repair",
-        severity: "Medium",
-        priority: "Medium"
+        text: "Machine",
+        value: "machine",
+        align: "center"
+      },
+      {
+        text: "Status",
+        value: "status",
+        align: "center"
+      },
+      {
+        text: "Severity",
+        value: "severity",
+        align: "center"
+      },
+      {
+        text: "Priority",
+        value: "priority",
+        align: "center"
       }
     ],
-    statusItems: [
-      {
-        avgPriority: 2.5,
-        stressScore: 3.1,
-        assignedTech: 115,
-        availTech: 50
-      }
-    ],
-    chartD: {
-      datasets: [
-        {
-          data: [124, 85, 116],
-          backgroundColor: ["#292049", "#489430", "#583928"]
-        }
-      ],
+    statusItems: [],
+    jobItems: []
+  }),
 
-      labels: ["Pump", "Boiler", "Other"]
-    }
-  })
+  created: async function() {
+  let resList = await axios.get("//localhost:80/MachineMaintenance/public/api/job/resource", {
+  });
+  let openList = await axios.get("//localhost:80/MachineMaintenance/public/api/job/open", {
+  });
+
+  this.statusItems = resList.data;
+  this.jobItems = openList.data;
+  }
 };
 </script>
 
