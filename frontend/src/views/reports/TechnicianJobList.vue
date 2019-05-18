@@ -2,15 +2,17 @@
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
       <v-flex xs12 md12>
-        <div class="headline mb-1">Job List - {{workerName}}</div>
+        <div class="headline mb-1">Job List - {{ staffName }}</div>
         <v-data-table :headers="joblistHeaders" :items="joblistItems" class="elevation-1">
           <template v-slot:no-data>
             <v-alert :value="true" type="warning">No data available</v-alert>
           </template>
           <template v-slot:items="props">
-            <td class="text-xs-center">{{props.item.time}}</td>
-            <td class="text-xs-center">{{props.item.machine}}</td>
-            <td class="text-xs-center">{{props.item.location}}</td>
+            <td class="text-xs-center">{{props.item.startTime}}</td>
+            <td class="text-xs-center">
+              [{{ props.item.machineId }}] {{ props.item.machineType }} - {{ props.item.modelNumber }}
+            </td>
+            <td class="text-xs-center">{{props.item.customerName}}</td>
             <td class="text-xs-center">{{props.item.priority}}</td>
             <td class="text-xs-center">{{props.item.severity}}</td>
             <td class="text-xs-center">{{props.item.details}}</td>
@@ -22,9 +24,10 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
-    workerName: "xxxxxx",
     joblistHeaders: [
       {
         text: "Start time",
@@ -98,7 +101,20 @@ export default {
         severity: "1",
         details: "Monthly maintenance"
       }
-    ]
-  })
+    ],
+
+    staffId: "ST0003",
+    staffName: String
+  }),
+
+  created: async function() {
+  let assign = await axios.get("//localhost:80/MachineMaintenance/public/api/job/assignment/"+this.staffId, {
+  });
+  let name = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/getName/"+this.staffId, {
+  });
+
+  this.joblistItems = assign.data;
+  this.staffName = name.data;
+  }
 };
 </script>

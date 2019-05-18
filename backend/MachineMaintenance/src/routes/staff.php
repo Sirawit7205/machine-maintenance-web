@@ -142,19 +142,36 @@ $app->get("/api/staff/performance", function(Request $request, Response $respons
 });
 
 $app->get("/api/staff/status", function(Request $request, Response $response) {
-    $sql = "SELECT COUNT(*) AS totalTechnician,AVG(experience) AS avgExperience FROM staff WHERE position='Technician'";
-    try {
-      $db = new db();
-      $db = $db->connect();
-  
-      $stmt = $db->query($sql);
-      $data = $stmt->fetchAll(PDO::FETCH_OBJ);
-      $db = null;
-  
-      echo json_encode($data);
-    } catch(PDOException $e) {
-      echo '{"error":{"text": '.$e->getMessage().'}}';
-    }
-  });
+  $sql = "SELECT COUNT(*) AS totalTechnician,AVG(experience) AS avgExperience FROM staff WHERE position='Technician'";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
+$app->get("/api/staff/getName/{staffId}", function(Request $request, Response $response) {
+  $staffId = $request->getAttribute('staffId');
+  $sql = "SELECT staffName FROM staff WHERE staffId = \"$staffId\"";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    print_r($data[0]->staffName);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
 
 ?>

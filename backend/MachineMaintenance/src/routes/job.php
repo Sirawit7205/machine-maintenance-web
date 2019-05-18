@@ -99,10 +99,11 @@ $app->get("/api/job/topRepair", function(Request $request, Response $response) {
   }
 });
 
-$app->get("/api/job/assignment", function(Request $request, Response $response) {
-  $sql = "SELECT TIMESTAMP(date,startTime) AS startTime,machine.machineID,machineType,modelNumber,customerName,priority,severity,details
+$app->get("/api/job/assignment/{staffId}", function(Request $request, Response $response) {
+  $staffId = $request->getAttribute('staffId');
+  $sql = "SELECT TIMESTAMP(date,startTime) AS startTime, machine.machineID AS machineId, machineType, modelNumber, customerName, priority, severity, details
   FROM job,machine,machinemodel,contract,customer,staff,assignment
-  WHERE machine.modelCode=machinemodel.modelCode AND job.machineID = machine.machineID AND machine.contractID=contract.contractID AND customer.customerID = contract.customerID AND staff.staffID = assignment.staffID AND assignment.jobID = job.jobID AND staff.staffID = 'ST0003'";
+  WHERE machine.modelCode=machinemodel.modelCode AND job.machineID = machine.machineID AND machine.contractID=contract.contractID AND customer.customerID = contract.customerID AND staff.staffID = assignment.staffID AND assignment.jobID = job.jobID AND staff.staffID = \"$staffId\"";
   try {
     $db = new db();
     $db = $db->connect();
