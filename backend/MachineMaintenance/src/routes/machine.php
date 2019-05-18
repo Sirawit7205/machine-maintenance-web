@@ -43,4 +43,26 @@ $app->get("/api/machine/details", function(Request $request, Response $response)
     }
   });
 
+  $app->get("/api/machine/byCustomer/{COMPANYNAME}", function(Request $request, Response $response) {
+    $companyName = $request->getAttribute('COMPANYNAME');
+    $sqlA = "SELECT COUNT(machineID) AS machineCount, COUNT(md.machineType) AS machineTypeCount FROM customer c, contract ct, machine mc, machinemodel md WHERE mc.contractID = ct.contractID AND ct.customerID = c.customerID AND md.modelCode = mc.modelCode AND c.customerName = \"$companyName\"";
+    $sqlB = "SELECT COUNT(ml.logID) AS totalBreakDown FROM machinelog ml, machine mc, contract ct, customer c WHERE ml.machineID = mc.machineID AND mc.contractID = ct.contractID AND ct.customerID = c.customerID AND ml.logType = 'Error' AND c.customerName = \"$companyName\"";
+    try {
+      $db = new db();
+      $db = $db->connect();
+  
+      $stmtA = $db->query($sqlA);
+      $dataA = $stmtA->fetchAll(PDO::FETCH_OBJ);
+      $stmtB = $db->query($sqlB);
+      $dataB = $stmtB->fetchAll(PDO::FETCH_OBJ);
+      $db = null;
+
+      $dataA[0] -> totalBreakDown = $dataB[0] -> totalBreakDown;
+  
+      echo json_encode($dataA);
+    } catch(PDOException $e) {
+      echo '{"error":{"text": '.$e->getMessage().'}}';
+    }
+  });
+
 ?>
