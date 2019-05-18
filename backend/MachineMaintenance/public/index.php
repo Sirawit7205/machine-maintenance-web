@@ -37,6 +37,7 @@ require "../src/routes/staff.php";
 require "../src/routes/customer.php";
 require "../src/routes/parts.php";
 require "../src/routes/job.php";
+require "../src/routes/log.php";
 
 $app->run();
 ?>
