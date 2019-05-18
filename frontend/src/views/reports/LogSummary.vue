@@ -46,6 +46,8 @@
 </template>
                                         
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
     logHeaders: [
@@ -156,6 +158,19 @@ export default {
         logCount: "22"
       }
     ]
-  })
+  }),
+
+  created: async function() {
+  let byLogType = await axios.get("//localhost:80/MachineMaintenance/public/api/log/byLogType", {
+  });
+  let byMachineType = await axios.get("//localhost:80/MachineMaintenance/public/api/log/byMachineType", {
+  });
+  let byCustomer = await axios.get("//localhost:80/MachineMaintenance/public/api/log/byCustomer", {
+  });
+
+  this.logItems = byLogType.data;
+  this.topMachineItems = byMachineType.data;
+  this.topCustomerItems = byCustomer.data;
+  }
 };
 </script>

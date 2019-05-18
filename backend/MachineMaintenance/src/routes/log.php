@@ -4,12 +4,12 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 $app->get("/api/log/byLogType", function(Request $request, Response $response) {
-  $sql1 = "SELECT COUNT(logType) AS Info FROM machinelog WHERE logtype='Info' AND YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp) GROUP BY logType";
-  $sql2 = "SELECT COUNT(logType) AS Error FROM machinelog WHERE logtype='Error' AND YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp) GROUP BY logType";
-  $sql3 = "SELECT COUNT(logType) AS Maintenance FROM machinelog WHERE logtype='Maintenance' AND YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp) GROUP BY logType";
-  $sql4 = "SELECT COUNT(logType) AS Repair FROM machinelog WHERE logtype='Repair' AND YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp) GROUP BY logType";
-  $sql5 = "SELECT COUNT(logType) AS Other FROM machinelog WHERE logtype='Other' AND YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp) GROUP BY logType";
-  $sql6 = "SELECT COUNT(logtype) AS TotalLogGenerated FROM machinelog WHERE YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp)";
+  $sql1 = "SELECT COUNT(logType) AS info FROM machinelog WHERE logtype='Info' AND YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp) GROUP BY logType";
+  $sql2 = "SELECT COUNT(logType) AS error FROM machinelog WHERE logtype='Error' AND YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp) GROUP BY logType";
+  $sql3 = "SELECT COUNT(logType) AS maintenance FROM machinelog WHERE logtype='Maintenance' AND YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp) GROUP BY logType";
+  $sql4 = "SELECT COUNT(logType) AS repair FROM machinelog WHERE logtype='Repair' AND YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp) GROUP BY logType";
+  $sql5 = "SELECT COUNT(logType) AS other FROM machinelog WHERE logtype='Other' AND YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp) GROUP BY logType";
+  $sql6 = "SELECT COUNT(logtype) AS totalLogGenerated FROM machinelog WHERE YEAR(NOW()) = YEAR(timestamp) AND MONTH(NOW()) = MONTH(timestamp)";
   try {
     $db = new db();
     $db = $db->connect();
@@ -34,11 +34,12 @@ $app->get("/api/log/byLogType", function(Request $request, Response $response) {
 
     $db = null;
 
-    $data1[0]->Error = $data2[0]->Error;
-    $data1[0]->Maintenance = $data3[0]->Maintenance;
-    $data1[0]->Repair = $data4[0]->Repair;
-    $data1[0]->Other = $data5[0]->Other;
-    $data1[0]->TotalLogGenerated = $data6[0]->TotalLogGenerated;
+    @$data1[0]->info = is_null($data1[0]->info) ? 0 : $data1[0]->info;
+    @$data1[0]->error = is_null($data2[0]->error) ? 0 : $data2[0]->error;
+    @$data1[0]->maintenance = is_null($data3[0]->maintenance) ? 0 : $data3[0]->maintenance;
+    @$data1[0]->repair = is_null($data4[0]->repair) ? 0 : $data4[0]->repair;
+    @$data1[0]->other = is_null($data5[0]->other) ? 0 : $data5[0]->other;
+    @$data1[0]->total = is_null($data6[0]->totalLogGenerated) ? 0 : $data6[0]->totalLogGenerated;
 
     echo json_encode($data1);
 
@@ -48,7 +49,7 @@ $app->get("/api/log/byLogType", function(Request $request, Response $response) {
 });
 
 $app->get("/api/log/byMachineType", function(Request $request, Response $response) {
-    $sql = "SELECT machineType,COUNT(machineType) AS logGenerated FROM machinelog,machine,machinemodel WHERE machinelog.machineID=machine.machineID AND machine.modelCode = machinemodel.modelCode GROUP BY machineType ORDER BY logGenerated DESC";
+    $sql = "SELECT machineType,COUNT(machineType) AS logCount FROM machinelog,machine,machinemodel WHERE machinelog.machineID=machine.machineID AND machine.modelCode = machinemodel.modelCode GROUP BY machineType";
     try {
       $db = new db();
       $db = $db->connect();
@@ -65,11 +66,10 @@ $app->get("/api/log/byMachineType", function(Request $request, Response $respons
   });
 
   $app->get("/api/log/byCustomer", function(Request $request, Response $response) {
-    $sql = "SELECT customerName,COUNT(customerName) AS LogGenerated 
+    $sql = "SELECT customerName,COUNT(customerName) AS logCount
     FROM machinelog,customer,contract,machine 
     WHERE machinelog.machineID=machine.machineID AND machine.contractID = contract.contractID AND contract.customerID = customer.customerID
-    GROUP BY customerName
-    ORDER BY LogGenerated DESC";
+    GROUP BY customer.customerID";
     try {
       $db = new db();
       $db = $db->connect();

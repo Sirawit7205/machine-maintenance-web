@@ -122,32 +122,7 @@ export default {
       }
     ],
     summaryItems: [],
-    listItems: [
-      {
-        contractId: "CN1001",
-        customer: "ABC",
-        startEndDate: "01/01/2018 - 01/01/2019",
-        price: "100000",
-        machines: "MC1001, MC1002, MC1003"
-      },
-      {
-        contractId: "CN1002",
-        customer: "BCD",
-        startEndDate: "01/01/2018 - 01/01/2019",
-        price: "200000",
-        machines: "MC1004, MC1005, MC1006"
-      }
-    ],
-    chartD: {
-      datasets: [
-        {
-          data: [124, 85, 116],
-          backgroundColor: ["#292049", "#489430", "#583928"]
-        }
-      ],
-
-      labels: ["Pump", "Boiler", "Other"]
-    }
+    listItems: []
   }),
 
   created: async function() {
