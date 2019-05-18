@@ -65,23 +65,41 @@ $app->get("/api/log/byMachineType", function(Request $request, Response $respons
     }
   });
 
-  $app->get("/api/log/byCustomer", function(Request $request, Response $response) {
-    $sql = "SELECT customerName,COUNT(customerName) AS logCount
-    FROM machinelog,customer,contract,machine 
-    WHERE machinelog.machineID=machine.machineID AND machine.contractID = contract.contractID AND contract.customerID = customer.customerID
-    GROUP BY customer.customerID";
-    try {
-      $db = new db();
-      $db = $db->connect();
+$app->get("/api/log/byCustomer", function(Request $request, Response $response) {
+  $sql = "SELECT customerName,COUNT(customerName) AS logCount
+  FROM machinelog,customer,contract,machine 
+  WHERE machinelog.machineID=machine.machineID AND machine.contractID = contract.contractID AND contract.customerID = customer.customerID
+  GROUP BY customer.customerID";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
   
-      $stmt = $db->query($sql);
-      $data = $stmt->fetchAll(PDO::FETCH_OBJ);
-    
-      $db = null;
+    $db = null;
+
+    echo json_encode($data);  
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
+$app->get("/api/log/lastTen/{machineId}", function(Request $request, Response $response) {
+  $machineId = $request->getAttribute('machineId');
+  $sql = "SELECT logID AS logId, logType, details FROM machinelog WHERE machineID = \"$machineId\" ORDER BY timestamp DESC LIMIT 10";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
   
-      echo json_encode($data);  
-    } catch(PDOException $e) {
-      echo '{"error":{"text": '.$e->getMessage().'}}';
-    }
-  });
+    $db = null;
+
+    echo json_encode($data);  
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
 ?>

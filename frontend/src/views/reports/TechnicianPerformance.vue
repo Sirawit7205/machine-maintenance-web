@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
     techHeaders: [
@@ -56,26 +58,6 @@ export default {
         align: "center"
       }
     ],
-    techItems: [
-      {
-        staffName: "Francis Jones",
-        experience: "203",
-        jobCount: "21",
-        avgTime: "3.6"
-      },
-      {
-        staffName: "Sam Molina",
-        experience: "196",
-        jobCount: "16",
-        avgTime: "3.9"
-      },
-      {
-        staffName: "Dominic Shumpert",
-        experience: "117",
-        jobCount: "13",
-        avgTime: "4.2"
-      }
-    ],
     statusHeaders: [
       {
         text: "Total Technician",
@@ -90,12 +72,18 @@ export default {
         align: "center"
       }
     ],
-    statusItems: [
-      {
-        totalTechnician: "308",
-        avgExperience: "214"
-      }
-    ]
-  })
+    techItems: [],
+    statusItems: []
+  }),
+
+  created: async function() {
+  let perfData = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/performance", {
+  });
+  let statData = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/status", {
+  });
+
+  this.techItems = perfData.data;
+  this.statusItems = statData.data;
+  }
 };
 </script>

@@ -32,6 +32,8 @@ $app->get("/hello/{name}", function(Request $request, Response $response) {
 	return $response;
 });
 
+mt_srand(68678);
+
 function rand_color() {
   return sprintf('#%06X', mt_rand(0, 0xFFFFFF));
 }
@@ -45,7 +47,6 @@ require "../src/routes/transaction.php";
 require "../src/routes/machine.php";
 require "../src/routes/contract.php";
 require "../src/routes/log.php";
-require "../src/routes/performance.php";
 
 $app->run();
 ?>

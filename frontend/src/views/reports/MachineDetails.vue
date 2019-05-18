@@ -9,8 +9,10 @@
           </template>
           <template v-slot:items="props">
             <td class="text-xs-center">{{props.item.machineId}}</td>
-            <td class="text-xs-center">{{props.item.customerMachineId}}</td>
-            <td class="text-xs-center">{{props.item.machineName}}</td>
+            <td class="text-xs-center">{{props.item.serialNumber}}</td>
+            <td class="text-xs-center">
+              {{props.item.machineType}} - {{props.item.modelNumber}}
+            </td>
             <td class="text-xs-center">{{props.item.totalBreakdown}}</td>
             <td class="text-xs-center">{{props.item.lastBreakReason}}</td>
           </template>
@@ -24,9 +26,13 @@
           <template v-slot:items="props">
             <td class="text-xs-center">{{props.item.machineId}}</td>
             <td class="text-xs-center">{{props.item.avgDowntime}}</td>
-            <td class="text-xs-center">{{props.item.severity}}</td>
+            <td class="text-xs-center">
+              {{props.item.maxSeverity}} / {{props.item.avgSeverity}}
+            </td>
             <td class="text-xs-center">{{props.item.lastCheck}}</td>
-            <td class="text-xs-center">{{props.item.viewLog}}</td>
+            <td class="text-xs-center">
+              <machine-log-menu :machineId="props.item.machineId"/>
+            </td>
           </template>
         </v-data-table>
       </v-flex>
@@ -35,7 +41,14 @@
 </template>
 
 <script>
+import axios from "axios";
+import MachineLogMenu from "../../components/MachineLogMenu.vue";
+
 export default {
+  components: {
+    MachineLogMenu
+  },
+
   data: () => ({
     machHeaders: [
       {
@@ -64,30 +77,6 @@ export default {
         align: "center"
       }
     ],
-    machItems: [
-      {
-        machineId: "MC0251",
-        customerMachineId: "CDG-1",
-        machineName: "Boiler THD090",
-        totalBreakdown: "5",
-        lastBreakReason: "Temperature sensor#2 error",
-        avgDowntime: "1.5",
-        severity: "4",
-        lastCheck: "17/2/2018",
-        viewLog: "View"
-      },
-      {
-        machineId: "MC0252",
-        customerMachineId: "CDG-2",
-        machineName: "Boiler THD090",
-        totalBreakdown: "2",
-        lastBreakReason: "Heater #1 error",
-        avgDowntime: "1.0",
-        severity: "1",
-        lastCheck: "11/5/2018",
-        viewLog: "View"
-      }
-    ],
     mach2Headers: [
       {
         text: "Machine ID",
@@ -95,12 +84,12 @@ export default {
         align: "center"
       },
       {
-        text: " Average Downtime Per Month (hours)",
+        text: " Average Downtime (hours)",
         value: "avgDowntime",
         align: "center"
       },
       {
-        text: "Highest Severity",
+        text: "Max/Avg Severity",
         value: "severity",
         align: "center"
       },
@@ -110,11 +99,19 @@ export default {
         align: "center"
       },
       {
-        text: "View Log",
+        text: "Last 10 logs",
         value: "viewLog",
         align: "center"
       }
-    ]
-  })
+    ],
+    machItems: []
+  }),
+
+  created: async function() {
+  let machine = await axios.get("//localhost:80/MachineMaintenance/public/api/machine/details", {
+  });
+
+  this.machItems = machine.data;
+  }
 };
 </script>
