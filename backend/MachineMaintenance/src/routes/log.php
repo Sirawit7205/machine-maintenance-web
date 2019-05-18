@@ -68,7 +68,7 @@ $app->get("/api/log/byMachineType", function(Request $request, Response $respons
     $sql = "SELECT customerName,COUNT(customerName) AS LogGenerated 
     FROM machinelog,customer,contract,machine 
     WHERE machinelog.machineID=machine.machineID AND machine.contractID = contract.contractID AND contract.customerID = customer.customerID
-    GROUP BY customerName
+    GROUP BY customer.customerID
     ORDER BY LogGenerated DESC";
     try {
       $db = new db();

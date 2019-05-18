@@ -38,6 +38,7 @@ require "../src/routes/customer.php";
 require "../src/routes/parts.php";
 require "../src/routes/job.php";
 require "../src/routes/log.php";
+require "../src/routes/performance.php";
 
 $app->run();
 ?>
