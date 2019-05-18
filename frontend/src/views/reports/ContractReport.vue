@@ -18,7 +18,7 @@
             <td class="text-xs-center">{{ props.item.avgContractPrice.toLocaleString() }}</td>
             <td class="text-xs-center">{{ props.item.avgContractDur.toLocaleString() }}</td>
             <td class="text-xs-center">
-              <pie-chart-menu :chartData="chartD"/>
+              <pie-chart-menu :chartData="props.item.avgContractType"/>
             </td>
           </template>
         </v-data-table>
@@ -32,9 +32,12 @@
           <template v-slot:items="props">
             <td class="text-xs-center">{{ props.item.contractId }}</td>
             <td class="text-xs-center">{{ props.item.customer }}</td>
-            <td class="text-xs-center">{{ props.item.startEndDate }}</td>
+            <td class="text-xs-center">{{ props.item.startDate }}</td>
+            <td class="text-xs-center">{{ props.item.endDate }}</td>
             <td class="text-xs-center">{{ props.item.price.toLocaleString() }}</td>
-            <td class="text-xs-center">{{ props.item.machines }}</td>
+            <td class="text-xs-center">
+              <contract-menu :contractId="props.item.contractId"/>
+            </td>
           </template>
         </v-data-table>
       </v-flex>
@@ -43,11 +46,14 @@
 </template>
 
 <script>
+import axios from "axios";
 import PieChartMenu from "../../components/PieChartMenu.vue";
+import ContractMenu from "../../components/ContractMenu.vue";
 
 export default {
   components: {
-    PieChartMenu
+    PieChartMenu,
+    ContractMenu
   },
 
   data: () => ({
@@ -95,8 +101,13 @@ export default {
         align: "center"
       },
       {
-        text: "Start - End Date",
-        value: "startEndDate",
+        text: "Start Date",
+        value: "startDate",
+        align: "center"
+      },
+      {
+        text: "End Date",
+        value: "endDate",
         align: "center"
       },
       {
@@ -110,15 +121,7 @@ export default {
         align: "center"
       }
     ],
-    summaryItems: [
-      {
-        total: 1511,
-        avgContractCust: 52,
-        avgContractPrice: 500000,
-        avgContractDur: 15,
-        AvgContractType: null
-      }
-    ],
+    summaryItems: [],
     listItems: [
       {
         contractId: "CN1001",
@@ -145,7 +148,17 @@ export default {
 
       labels: ["Pump", "Boiler", "Other"]
     }
-  })
+  }),
+
+  created: async function() {
+  let sumData = await axios.get("//localhost:80/MachineMaintenance/public/api/contract/summary", {
+  });
+  let conList = await axios.get("//localhost:80/MachineMaintenance/public/api/contract/list", {
+  });
+
+  this.summaryItems = sumData.data;
+  this.listItems = conList.data;
+  }
 };
 </script>
 
