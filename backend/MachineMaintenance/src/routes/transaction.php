@@ -17,22 +17,6 @@ $app->get("/api/transaction/income", function(Request $request, Response $respon
     } catch(PDOException $e) {
       echo '{"error":{"text": '.$e->getMessage().'}}';
     }
-  });
-
-$app->get("/api/transaction/income", function(Request $request, Response $response) {
-    $sql = "SELECT timestamp, amount, transType AS Type, details  FROM income";
-    try {
-      $db = new db();
-      $db = $db->connect();
-  
-      $stmt = $db->query($sql);
-      $data = $stmt->fetchAll(PDO::FETCH_OBJ);
-      $db = null;
-  
-      echo json_encode($data);
-    } catch(PDOException $e) {
-      echo '{"error":{"text": '.$e->getMessage().'}}';
-    }
 });
 
 $app->get("/api/transaction/expense", function(Request $request, Response $response) {
@@ -60,10 +44,10 @@ $app->get("/api/transaction/expense", function(Request $request, Response $respo
   
       $stmtA = $db->query($sqlA);
       $dataA = $stmtA->fetchAll(PDO::FETCH_OBJ);
-      
+
       $db = null;
   
-      echo json_encode($data);
+      echo json_encode($dataA);
     } catch(PDOException $e) {
       echo '{"error":{"text": '.$e->getMessage().'}}';
     }
