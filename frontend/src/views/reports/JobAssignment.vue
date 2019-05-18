@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
     currentJobHeaders: [
@@ -54,13 +56,6 @@ export default {
         align: "center"
       }
     ],
-    currentJobItems: [
-      {
-        openJob: "131",
-        unassignedJob: "17",
-        assignedJob: "114"
-      }
-    ],
     technicianHeaders: [
       {
         text: "Average per Technician",
@@ -81,13 +76,18 @@ export default {
         align: "center"
       }
     ],
-    technicianItems: [
-      {
-        avgPerTechnician: "1.6",
-        maxPerTechnician: "4",
-        minPerTechnician: "1"
-      }
-    ]
-  })
+    currentJobItems: [],
+    technicianItems: []
+  }),
+
+  created: async function() {
+    let current = await axios.get("//localhost:80/MachineMaintenance/public/api/job/currentAssignment", {
+    });
+    let tech = await axios.get("//localhost:80/MachineMaintenance/public/api/job/techStats", {
+    });
+
+    this.currentJobItems = current.data;
+    this.technicianItems = tech.data;
+  }
 };
 </script>

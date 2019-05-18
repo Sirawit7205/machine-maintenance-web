@@ -32,6 +32,10 @@ $app->get("/hello/{name}", function(Request $request, Response $response) {
 	return $response;
 });
 
+function rand_color() {
+  return sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+}
+
 require "../src/config/dbaccess.php";
 require "../src/routes/staff.php";
 require "../src/routes/customer.php";

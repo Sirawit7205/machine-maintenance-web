@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
-      <v-flex lg12 sm12>
+      <v-flex lg9 sm9>
         <div class="headline mb-1">Transaction Summary</div>
         <v-data-table
           :headers="summaryHeaders"
@@ -16,10 +16,6 @@
             <td class="text-xs-center">{{ props.item.totalDiff.toLocaleString() }}</td>
             <td class="text-xs-center">{{ props.item.totalIncome.toLocaleString() }}</td>
             <td class="text-xs-center">{{ props.item.totalExpense.toLocaleString() }}</td>
-            <td class="text-xs-center">{{ props.item.avgPerCustomer.toLocaleString() }}</td>
-            <td class="text-xs-center">
-              <pie-chart-menu :chartData="chartD"/>
-            </td>
           </template>
         </v-data-table>
       </v-flex>
@@ -27,7 +23,7 @@
         <div class="headline mb-1">Type of income</div>
         <v-card>
           <v-card-text>
-            <pie-chart :chartData="chartD"/>
+            <pie-chart :chartData="incomeChartData"/>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -35,7 +31,7 @@
         <div class="headline mb-1">Type of expense</div>
         <v-card>
           <v-card-text>
-            <pie-chart :chartData="chartD"/>
+            <pie-chart :chartData="expenseChartData"/>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -72,13 +68,12 @@
 </template>
 
 <script>
+import axios from "axios";
 import PieChart from "../../components/PieChart.vue";
-import PieChartMenu from "../../components/PieChartMenu.vue";
 
 export default {
   components: {
-    PieChart,
-    PieChartMenu
+    PieChart
   },
 
   data: () => ({
@@ -99,18 +94,6 @@ export default {
         text: "Total expense (Baht)",
         sortable: false,
         value: "totalExpense",
-        align: "center"
-      },
-      {
-        text: "Avg profit per customer (Baht)",
-        sortable: false,
-        value: "avgPerCustomer",
-        align: "center"
-      },
-      {
-        text: "Avg profit per machine type",
-        sortable: false,
-        value: "avgPerType",
         align: "center"
       }
     ],
@@ -136,53 +119,31 @@ export default {
         align: "center"
       }
     ],
-    summaryItems: [
-      {
-        totalDiff: 3000000,
-        totalIncome: 5000000,
-        totalExpense: 2000000,
-        avgPerCustomer: 150000
-      }
-    ],
-    incomeItems: [
-      {
-        timestamp: "17/2/2019 13:16",
-        amount: 150000,
-        type: "Contract",
-        details: "CN1001"
-      },
-      {
-        timestamp: "19/2/2019 14:00",
-        amount: 1200,
-        type: "Job income",
-        details: "JB1003"
-      }
-    ],
-    expenseItems: [
-      {
-        timestamp: "17/2/2019 08:40",
-        amount: 1700,
-        type: "Part cost",
-        details: "PT1001"
-      },
-      {
-        timestamp: "19/2/2019 11:00",
-        amount: 1200,
-        type: "Travel cost",
-        details: "JB1003"
-      }
-    ],
-    chartD: {
-      datasets: [
-        {
-          data: [124, 85, 116],
-          backgroundColor: ["#292049", "#489430", "#583928"]
-        }
-      ],
+    summaryItems: [],
+    incomeItems: [],
+    expenseItems: [],
+    incomeChartData: [],
+    expenseChartData: []
+  }),
+  
+  created: async function() {
+  let incList = await axios.get("//localhost:80/MachineMaintenance/public/api/transaction/income", {
+  });
+  let excList = await axios.get("//localhost:80/MachineMaintenance/public/api/transaction/expense", {
+  });
+  let summaryList = await axios.get("//localhost:80/MachineMaintenance/public/api/transaction/summary", {
+  });
+  let incChart = await axios.get("//localhost:80/MachineMaintenance/public/api/transaction/incomeChart", {
+  });
+  let excChart = await axios.get("//localhost:80/MachineMaintenance/public/api/transaction/expenseChart", {
+  });
 
-      labels: ["Pump", "Boiler", "Other"]
-    }
-  })
+  this.incomeItems = incList.data;
+  this.expenseItems = excList.data;
+  this.summaryItems = summaryList.data;
+  this.incomeChartData = incChart.data;
+  this.expenseChartData = excChart.data;
+  }
 };
 </script>
 

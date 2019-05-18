@@ -88,16 +88,6 @@ export default {
         align: "center"
       }
     ],
-    logItems: [
-      {
-        total: "409",
-        info: "23",
-        error: "127",
-        maintenance: "148",
-        repair: "167",
-        other: "44"
-      }
-    ],
     topMachineHeaders: [
       {
         text: "Machine Type",
@@ -108,24 +98,6 @@ export default {
         text: "Log Generated",
         value: "logCount",
         align: "center"
-      }
-    ],
-    topMachineItems: [
-      {
-        machineType: "Boiler",
-        logCount: "45"
-      },
-      {
-        machineType: "Motor",
-        logCount: "37"
-      },
-      {
-        machineType: "Packer",
-        logCount: "27"
-      },
-      {
-        machineType: "Burner",
-        logCount: "15"
       }
     ],
     topCustomerHeaders: [
@@ -140,24 +112,9 @@ export default {
         align: "center"
       }
     ],
-    topCustomerItems: [
-      {
-        customerName: "Fority Inc",
-        logCount: "67"
-      },
-      {
-        customerName: "Quilium Eng.",
-        logCount: "31"
-      },
-      {
-        customerName: "KMUTT",
-        logCount: "23"
-      },
-      {
-        customerName: "Syend Inc.",
-        logCount: "22"
-      }
-    ]
+    logItems: [],
+    topMachineItems: [],
+    topCustomerItems: []
   }),
 
   created: async function() {

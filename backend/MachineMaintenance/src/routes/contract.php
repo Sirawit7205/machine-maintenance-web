@@ -3,7 +3,7 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-class pieChartClass {
+class pieChartContractClass {
   var $datasets;
   var $labels;
 
@@ -16,12 +16,8 @@ class pieChartClass {
   }
 }
 
-function rand_color() {
-  return sprintf('#%06X', mt_rand(0, 0xFFFFFF));
-}
-
 $app->get("/api/contract/summary", function(Request $request, Response $response) {
-  $chartData = new pieChartClass;
+  $chartData = new pieChartContractClass;
   $sqlA = "SELECT COUNT(c.contractID) AS total, AVG(c.price) AS avgContractPrice, ROUND(AVG(DATEDIFF(c.endDate, c.startDate)) /30, 2) AS avgContractDur FROM contract c";
   $sqlB = "SELECT AVG(contractCount) AS avgContractCust FROM ( SELECT COUNT(contractID) AS contractCount FROM contract GROUP BY customerID ) aggTable";
   $sqlC = "SELECT mm.machineType, AVG(c.price) AS avgContractType FROM machine m, machinemodel mm, contract c WHERE m.modelCode = mm.modelCode AND m.contractID = c.contractID GROUP BY mm.machineType";
