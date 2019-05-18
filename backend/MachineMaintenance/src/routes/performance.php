@@ -4,9 +4,9 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 $app->get("/api/staff/performance", function(Request $request, Response $response) {
-  $sql = "SELECT staffName,experience,COUNT(jobtype) AS jobCount, AVG(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(enddate,endTime))) AS averageWorkingHours
+  $sql = "SELECT staffName,experience,COUNT(jobtype) AS jobCount, AVG(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(endDate,endTime))) AS averageWorkingHours
         FROM staff,assignment,job
-        WHERE staff.staffID = assignment.staffID AND job.jobID = assignment.jobID AND enddate IS NOT NULL
+        WHERE staff.staffID = assignment.staffID AND job.jobID = assignment.jobID AND endDate IS NOT NULL
         GROUP BY assignment.staffID";
   try {
     $db = new db();
