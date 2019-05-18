@@ -15,7 +15,6 @@ const RepairDurationReport = () =>
 const TransactionReport = () => import("./views/reports/TransactionReport.vue");
 const PreventiveReport = () => import("./views/reports/PreventiveReport.vue");
 const RepairReport = () => import("./views/reports/RepairReport.vue");
-const CompanyMachine = () => import("./views/reports/CompanyMachine.vue");
 const CurrentJobReport = () => import("./views/reports/CurrentJobReport.vue");
 const CustomerLoyalty = () => import("./views/reports/CustomerLoyalty.vue");
 const StaffSalary = () => import("./views/reports/StaffSalary.vue");
@@ -110,11 +109,6 @@ export default new Router({
       path: "/reports/Repair",
       name: "repairReport",
       component: RepairReport
-    },
-    {
-      path: "/reports/companyMachine",
-      name: "companyMachine",
-      component: CompanyMachine
     },
     {
       path: "/reports/currentJob",

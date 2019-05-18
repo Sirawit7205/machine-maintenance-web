@@ -60,48 +60,7 @@ export default {
         align: "center"
       }
     ],
-    joblistItems: [
-      {
-        time: "09:00",
-        machine: "MC0017-Motor EDSX320",
-        location: "KMUTT",
-        priority: "4",
-        severity: "2",
-        details: "High pitch noise on start. Low torque"
-      },
-      {
-        time: "11:00",
-        machine: "MC0255-Boiler THD050",
-        location: "Syned Inc.",
-        priority: "3",
-        severity: "3",
-        details: "No heat."
-      },
-      {
-        time: "15:00",
-        machine: "MC0252-Boiler THD090",
-        location: "Syned Inc.",
-        priority: "3",
-        severity: "2",
-        details: "No heat. Error code E08"
-      },
-      {
-        time: "16:00",
-        machine: "MC0019-Motor BSDX-118",
-        location: "Quilium Engineering",
-        priority: "1",
-        severity: "1",
-        details: "Monthly maintenance"
-      },
-      {
-        time: "17:00",
-        machine: "MC0020-Motor BSDX-118",
-        location: "Quilium Engineering",
-        priority: "1",
-        severity: "1",
-        details: "Monthly maintenance"
-      }
-    ],
+    joblistItems: [],
 
     staffId: "ST0003",
     staffName: String

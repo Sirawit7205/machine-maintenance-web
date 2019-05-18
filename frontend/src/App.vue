@@ -112,11 +112,6 @@ export default {
           to: "/reports/preventive"
         },
         { title: "Repair", icon: "build", to: "/reports/repair" },
-        {
-          title: "Company Machine",
-          icon: "dvr",
-          to: "/reports/companyMachine"
-        },
         { title: "Current Job", icon: "list_alt", to: "/reports/currentJob" },
         { title: "Customer Loyalty", icon: "sentiment_satisfied_alt", to: "/reports/customerLoyalty"},
         { title: "Staff Salary", icon: "account_balance_wallet", to: "/reports/staffSalary" },
