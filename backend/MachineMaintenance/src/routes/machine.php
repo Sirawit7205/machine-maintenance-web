@@ -9,6 +9,7 @@ $app->get("/api/machine/details", function(Request $request, Response $response)
     $sqlC = "SELECT details FROM machinelog WHERE timestamp IN (SELECT MAX(timestamp) FROM machinelog WHERE logType = 'Error' GROUP BY machineID) GROUP BY machineID ORDER BY machineID";
     $sqlD = "SELECT MAX(severity) AS maxSeverity, AVG(severity) AS avgSeverity FROM job GROUP BY machineID ORDER BY machineID";
     $sqlE = "SELECT timestamp AS lastCheck FROM machinelog WHERE timestamp IN (SELECT MAX(timestamp) FROM machinelog WHERE logType = 'Maintenance' GROUP BY machineID) GROUP BY machineID ORDER BY machineID";
+    $sqlF = "SELECT AVG(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(endDate,endTime))) AS avgDowntime FROM job GROUP BY machineID ORDER by machineID";
     try {
       $db = new db();
       $db = $db->connect();
@@ -23,6 +24,8 @@ $app->get("/api/machine/details", function(Request $request, Response $response)
       $dataD = $stmtD->fetchAll(PDO::FETCH_OBJ);
       $stmtE = $db->query($sqlE);
       $dataE = $stmtE->fetchAll(PDO::FETCH_OBJ);
+      $stmtF = $db->query($sqlF);
+      $dataF = $stmtF->fetchAll(PDO::FETCH_OBJ);
       $db = null;
 
       foreach($dataA as $idx => $item){
@@ -31,6 +34,7 @@ $app->get("/api/machine/details", function(Request $request, Response $response)
           $item -> maxSeverity = $dataD[$idx] -> maxSeverity;
           $item -> avgSeverity = $dataD[$idx] -> avgSeverity;
           @$item -> lastCheck = $dataE[$idx] -> lastCheck;
+          $item -> avgDowntime = $dataF[$idx] -> avgDowntime;
       }
 
       echo json_encode($dataA);
