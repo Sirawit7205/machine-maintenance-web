@@ -16,6 +16,19 @@ class pieChartReason {
   }
 }
 
+class pieChartJobClass {
+  var $datasets;
+  var $labels;
+
+  function convertToPie($data) {
+    foreach($data as $idx=>$item) {
+      $this->datasets[0]->data[$idx] = $item->hoursPerType;
+      $this->datasets[0]->backgroundColor[$idx] = rand_color();
+      $this->labels[$idx] = $item->machineType;
+    }
+  }
+}
+
 $app->get("/api/job/open", function(Request $request, Response $response) {
   $sql = "SELECT j.machineID, mm.modelNumber, mm.machineType, j.jobStatus AS status, j.severity, j.priority FROM job j, machine m, machinemodel mm WHERE j.machineID = m.machineID AND m.modelCode = mm.modelCode AND j.jobStatus != \"Finished\"";
   try {
@@ -179,6 +192,34 @@ $app->get("/api/job/assignment/{staffId}", function(Request $request, Response $
     $db = null;
 
     echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
+$app->get("/api/job/repairDuration", function(Request $request, Response $response) {
+  $chartDataA = new pieChartJobClass;
+  $sqlA = "SELECT SUM(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(endDate,endTime))) AS maintenanceHours FROM job WHERE jobType = 'Maintenance' AND MONTH(endDate) = MONTH(NOW())";
+  $sqlB = "SELECT SUM(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(endDate,endTime))) AS repairHours FROM job WHERE jobType = 'Repair' AND MONTH(endDate) = MONTH(NOW())";
+  $sqlC = "SELECT md.machineType,SUM(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(endDate,endTime))) AS hoursPerType FROM job j, machine mc, machinemodel md WHERE j.machineID = mc.machineID AND mc.modelCode = md.modelCode GROUP BY machineType";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmtA = $db->query($sqlA);
+    $dataA = $stmtA->fetchAll(PDO::FETCH_OBJ);
+    $stmtB = $db->query($sqlB);
+    $dataB = $stmtB->fetchAll(PDO::FETCH_OBJ);
+    $stmtC = $db->query($sqlC);
+    $dataC = $stmtC->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    $chartDataA->convertToPie($dataC);
+
+    $dataA[0] -> repairHours = $dataB[0] -> repairHours;
+    $dataA[0] -> hoursPerType = $chartDataA;
+
+    echo json_encode($dataA);
   } catch(PDOException $e) {
     echo '{"error":{"text": '.$e->getMessage().'}}';
   }

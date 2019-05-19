@@ -60,8 +60,11 @@
         <span>Machine Maintenance Database v1.0</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn flat to="/">
-        <span>Back to homepage</span>
+      <v-btn flat outline to="/forms/register">
+        <span>Register</span>
+      </v-btn>
+      <v-btn flat outline to="/forms/login">
+        <span>Login</span>
       </v-btn>
     </v-toolbar>
 
