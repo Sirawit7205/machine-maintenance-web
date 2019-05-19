@@ -7,7 +7,14 @@
           <v-card-text>
             <v-form ref="StaffSrcAdd" v-model="valid" lazy-validation>
               Search for existing staff:
-              <v-autocomplete v-model="staffId" :items="existingStaff" placeholder="Search..."></v-autocomplete>
+              <v-autocomplete
+                v-model="staffId"
+                :items="existingStaff"
+                item-text="staffName"
+                item-value="staffId"
+                placeholder="Search..."
+                @change="setUpdate"
+                ></v-autocomplete>
               <p class="text-xs-center">----- OR -----</p>Add new staff:
               <br>
               <v-btn block @click="generateNewId">Add Staff</v-btn>
@@ -76,6 +83,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
+            <v-btn @click="deleteData">Delete</v-btn>
             <v-spacer/>
             <v-btn @click="validate">Save</v-btn>
           </v-card-actions>
@@ -96,18 +104,23 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
     valid: true,
+
+    //type 0: insert, type 1: update, type2: delete
+    actionType: 0,
 
     snackbarActivate: false,
     snackbarMode: null,
     snackbarMessage: null,
 
     staffId: null,
-    uniqueId: "0001", //dummy
-    existingStaff: ["ST1001", "ST1002"], //dummy
-    staffIdRules: [v => !!v || "Please select a machine or create a new entry"],
+    uniqueId: "",
+    existingStaff: [],
+    staffIdRules: [v => !!v || "Please select a staff or create a new entry"],
 
     staffName: null,
     staffNameRules: [v => !!v || "This field cannot be blank"],
@@ -149,7 +162,58 @@ export default {
 
   methods: {
     generateNewId() {
-      this.staffId = "ST" + this.uniqueId; //dummy
+      this.staffId = "ST" + this.uniqueId;
+      this.actionType = 0;
+    },
+
+    async getCurrentData() {
+      let allData = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/all/"+this.staffId, {
+      });
+
+      this.staffId = allData.data[0].staffId,
+      this.staffName = allData.data[0].staffName,
+      this.address = allData.data[0].address,
+      this.phone = allData.data[0].phone,
+      this.email = allData.data[0].email,
+      this.position = allData.data[0].position,
+      this.salary = allData.data[0].salary,
+      this.status = allData.data[0].status,
+      this.experience = allData.data[0].experience,
+      this.vacationTotal = allData.data[0].vacationTotal,
+      this.vacationLeft = allData.data[0].vacationLeft
+    },
+
+    setUpdate() {
+      this.actionType = 1;
+      this.getCurrentData();
+    },
+
+    commitChanges() {
+      return axios.post("//localhost:80/MachineMaintenance/public/api/staff/submit", {
+        actionType: this.actionType,
+        staffId: this.staffId,
+        staffName: this.staffName,
+        address: this.address,
+        phone: this.phone,
+        email: this.email,
+        position: this.position,
+        salary: this.salary,
+        status: this.status,
+        experience: this.experience,
+        vacationTotal: this.vacationTotal,
+        vacationLeft: this.vacationLeft
+      }).then(response => response.data);
+    },
+
+    deleteData() {
+      this.actionType = 2;
+      this.commitChanges().then(response => {
+        if(response == 0)
+          this.openSnackbar("success","Delete successfully");
+        else
+          this.openSnackbar("error","Delete error");
+      });
+      //send delete request
     },
 
     openSnackbar(mode, message) {
@@ -160,11 +224,25 @@ export default {
 
     validate() {
       if (this.$refs.StaffForm.validate()) {
-        this.openSnackbar("success", "Sucessfully save");
+        this.commitChanges().then(response => {
+          if(response == 0 && this.actionType == 0)
+            this.openSnackbar("success","Update successfully");
+          else if(response == 0 && this.actionType == 1)
+            this.openSnackbar("success","Insert successfully");
+          else
+            this.openSnackbar("error","Insert/Update error");
+        });        
       } else {
-        this.openSnackbar("error", "An error had occured, please try again.");
+        this.openSnackbar("error", "Error, please check your input.");
       }
     }
+  },
+
+  created: async function() {
+  let currentList = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/getCurrentIds", {
+  }).then(response => { this.existingStaff = response.data });
+  let staffCount = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/count", {
+  }).then(response => { this.uniqueId = response.data });
   }
 };
 </script>
