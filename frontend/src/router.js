@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
-const Home = () => import("./views/Home.vue");
+const PublicHome = () => import("./views/PublicHome.vue");
+const InternalHome = () => import("./views/InternalHome.vue");
 const Login = () => import("./views/forms/Login.vue");
 const Register = () => import("./views/forms/Register.vue");
 const Staff = () => import("./views/forms/Staff.vue");
@@ -34,8 +35,13 @@ export default new Router({
   routes: [
     {
       path: "/",
-      name: "home",
-      component: Home
+      name: "publicHome",
+      component: PublicHome
+    },
+    {
+      path: "/internalHome",
+      name: "internalHome",
+      component: InternalHome
     },
     {
       path: "/about",
