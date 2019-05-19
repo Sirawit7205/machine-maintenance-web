@@ -3,6 +3,19 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+class pieChartStatus {
+  var $datasets;
+  var $labels;
+
+  function convertToPie($data) {
+    foreach($data as $idx=>$item) {
+      $this->datasets[0]->data[$idx] = $item->count;
+      $this->datasets[0]->backgroundColor[$idx] = rand_color();
+      $this->labels[$idx] = $item->status;
+    }
+  }
+}
+
 $app->get("/api/machine/details", function(Request $request, Response $response) {
     $sqlA = "SELECT mc.machineID AS machineId, mc.serialNumber, md.modelNumber, md.machineType FROM machine mc, machinemodel md WHERE mc.modelCode = md.modelCode ORDER BY mc.machineID";
     $sqlB = "SELECT mc.machineID AS machineId, COUNT(ml.machineID) AS TotalBreakdown FROM machinelog ml,machine mc WHERE ml.machineID = mc.machineID AND ml.logType = 'error' AND YEAR(ml.timestamp) = YEAR(NOW()) GROUP BY ml.machineID ORDER BY mc.machineID";
@@ -65,4 +78,49 @@ $app->get("/api/machine/details", function(Request $request, Response $response)
     }
   });
 
+  $app->get("/api/machine/leastMaintain", function(Request $request, Response $response) {
+    $sql = "SELECT machinelog.machineID,machineType,modelNumber,MAX(DATE(timestamp)) AS lastCheck
+            FROM machinelog,machine,machinemodel
+            WHERE logType = 'Maintenance' AND machine.modelCode = machinemodel.modelCode AND machinelog.machineID = machine.machineID
+            GROUP BY machinelog.machineID";
+    try {
+      $db = new db();
+      $db = $db->connect();
+  
+      $stmt = $db->query($sql);
+      $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    
+      $db = null;
+  
+      echo json_encode($data);  
+    } catch(PDOException $e) {
+      echo '{"error":{"text": '.$e->getMessage().'}}';
+    }
+  });
+
+  $app->get("/api/machine/lastStatus/{machineId}", function(Request $request, Response $response) {
+    $machineId = $request->getAttribute('machineId');
+    $chartData = new pieChartStatus;
+    $sql = "SELECT details AS status,COUNT(details) AS count
+            FROM machinelog
+            WHERE machineID=\"$machineId\" AND logType = 'Maintenance'
+            GROUP BY details";
+    try {
+      $db = new db(); 
+      $db = $db->connect();
+  
+      $stmt = $db->query($sql);
+      $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+      $db = null;
+  
+      $chartData->convertToPie($data);
+      $data[0]->problemCount = $chartData;
+  
+      echo json_encode($data);
+    } catch(PDOException $e) {
+      echo '{"error":{"text": '.$e->getMessage().'}}';
+    }
+  });
+  
+  
 ?>
