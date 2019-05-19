@@ -3,6 +3,19 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+class pieChartReason {
+  var $datasets;
+  var $labels;
+
+  function convertToPie($data) {
+    foreach($data as $idx=>$item) {
+      $this->datasets[0]->data[$idx] = $item->problemCount;
+      $this->datasets[0]->backgroundColor[$idx] = rand_color();
+      $this->labels[$idx] = $item->problemType;
+    }
+  }
+}
+
 class pieChartJobClass {
   var $datasets;
   var $labels;
@@ -97,9 +110,12 @@ $app->get("/api/job/techStats", function(Request $request, Response $response) {
 });
 
 $app->get("/api/job/topRepair", function(Request $request, Response $response) {
-  $sql = "";
+  $sql = "SELECT machine.machineID AS machineId,machineType,modelNumber,COUNT(job.jobID) AS repairAmount,AVG(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(endDate,endTime))) AS avgRepairDuration
+          FROM machine,machinelog,machinemodel,job
+          WHERE job.machineID = machine.machineID AND machine.modelCode = machinemodel.modelCode AND machine.machineID = machinelog.machineID AND job.jobType = 'Repair' AND job.jobStatus = 'Finished'
+          GROUP BY job.machineID";
   try {
-    $db = new db();
+    $db = new db(); 
     $db = $db->connect();
 
     $stmt = $db->query($sql);
@@ -111,6 +127,56 @@ $app->get("/api/job/topRepair", function(Request $request, Response $response) {
     echo '{"error":{"text": '.$e->getMessage().'}}';
   }
 });
+
+$app->get("/api/job/getId/{machineId}", function(Request $request, Response $response) {
+  $machineId = $request->getAttribute('machineId');
+  $chartData = new pieChartReason;
+  $sql = "SELECT problemType, COUNT(problemType) AS problemCount
+          FROM machinelog
+          WHERE problemType IS NOT NULL AND machineID = \"$machineId\"
+          GROUP BY problemType
+          HAVING problemCount > 0";
+  try {
+    $db = new db(); 
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    $chartData->convertToPie($data);
+    $data[0]->problemCount = $chartData;
+
+    echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
+$app->get("/api/job/topReason", function(Request $request, Response $response) {
+  $chartData = new pieChartReason;
+  $sql = "SELECT problemType, COUNT(problemType) AS problemCount
+          FROM machinelog
+          WHERE problemType IS NOT NULL 
+          GROUP BY problemType
+          HAVING problemCount > 0";
+  try {
+    $db = new db(); 
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    $chartData->convertToPie($data);
+    $data[0]->problemCount = $chartData;
+
+    echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
 
 $app->get("/api/job/assignment/{staffId}", function(Request $request, Response $response) {
   $staffId = $request->getAttribute('staffId');

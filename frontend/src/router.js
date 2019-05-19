@@ -2,6 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 const Home = () => import("./views/Home.vue");
 const Login = () => import("./views/forms/Login.vue");
+const Register = () => import("./views/forms/Register.vue");
 const Staff = () => import("./views/forms/Staff.vue");
 const Contract = () => import("./views/forms/Contract.vue");
 const Machine = () => import("./views/forms/Machine.vue");
@@ -49,6 +50,11 @@ export default new Router({
       path: "/forms/login",
       name: "login",
       component: Login
+    },
+    {
+      path: "/forms/register",
+      name: "register",
+      component: Register
     },
     {
       path: "/forms/staff",

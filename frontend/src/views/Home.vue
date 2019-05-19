@@ -10,6 +10,7 @@
     <pie-chart :chartData="chartD2"/>
     <bar-chart :chartData="chartD"/>
     <bar-chart :chartData="chartD2"/>
+    {{$root.authInfo}}
   </div>
 </template>
 
