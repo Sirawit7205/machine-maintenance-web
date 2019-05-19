@@ -3,6 +3,34 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+class pieChartMachineType {
+  var $datasets;
+  var $labels;
+
+  function convertToPie($data) {
+    foreach($data as $idx=>$item) {
+      $this->datasets[0]->data[$idx] = $item->machineAmount;
+      $this->datasets[0]->backgroundColor[$idx] = rand_color();
+      $this->labels[$idx] = $item->machineType;
+    }
+  }
+}
+
+class barChartContractPrice {
+  var $datasets;
+  var $labels;
+  var $label;
+
+  function convertToBar($data) {
+    $this->label = "contractPricePerType";
+    foreach($data as $idx=>$item) {
+      $this->datasets[0]->data[$idx] = $item->totalContractPrice;
+      $this->labels[$idx] = $item->machineType;
+    }
+    $this->datasets[0]->backgroundColor = "#4286F4";
+  }
+}
+
 $app->get("/api/machine/details", function(Request $request, Response $response) {
     $sqlA = "SELECT mc.machineID AS machineId, mc.serialNumber, md.modelNumber, md.machineType FROM machine mc, machinemodel md WHERE mc.modelCode = md.modelCode ORDER BY mc.machineID";
     $sqlB = "SELECT mc.machineID AS machineId, COUNT(ml.machineID) AS TotalBreakdown FROM machinelog ml,machine mc WHERE ml.machineID = mc.machineID AND ml.logType = 'error' AND YEAR(ml.timestamp) = YEAR(NOW()) GROUP BY ml.machineID ORDER BY mc.machineID";
@@ -44,9 +72,14 @@ $app->get("/api/machine/details", function(Request $request, Response $response)
   });
 
   $app->get("/api/machine/byCustomer/{COMPANYNAME}", function(Request $request, Response $response) {
+    $chartDataA = new pieChartMachineType;
+    $chartDataB = new barChartContractPrice;
     $companyName = $request->getAttribute('COMPANYNAME');
     $sqlA = "SELECT COUNT(machineID) AS machineCount, COUNT(md.machineType) AS machineTypeCount FROM customer c, contract ct, machine mc, machinemodel md WHERE mc.contractID = ct.contractID AND ct.customerID = c.customerID AND md.modelCode = mc.modelCode AND c.customerName = \"$companyName\"";
     $sqlB = "SELECT COUNT(ml.logID) AS totalBreakDown FROM machinelog ml, machine mc, contract ct, customer c WHERE ml.machineID = mc.machineID AND mc.contractID = ct.contractID AND ct.customerID = c.customerID AND ml.logType = 'Error' AND c.customerName = \"$companyName\"";
+    $sqlC = "SELECT md.machineType, COUNT(mc.machineID) AS machineAmount FROM customer c, contract ct, machine mc, machinemodel md WHERE c.customerID = ct.customerID AND ct.contractID = mc.contractID AND mc.modelCode = md.modelCode AND c.customerName = \"$companyName\" GROUP BY md.machineType";
+    $sqlD = "SELECT md.machineType, SUM(ct.price) AS totalContractPrice FROM customer c, contract ct, machine mc, machinemodel md WHERE c.customerID = ct.customerID AND ct.contractID = mc.contractID AND mc.modelCode = md.modelCode AND c.customerName = \"$companyName\" GROUP BY md.machineType";
+    $sqlE = "SELECT mc.machineID, md.machineType, mc.serviceType FROM customer c, contract ct, machine mc, machinemodel md WHERE c.customerID = ct.customerID AND ct.contractID = mc.contractID AND mc.modelCode = md.modelCode AND c.customerName = \"$companyName\" GROUP BY md.machineType";
     try {
       $db = new db();
       $db = $db->connect();
@@ -55,9 +88,21 @@ $app->get("/api/machine/details", function(Request $request, Response $response)
       $dataA = $stmtA->fetchAll(PDO::FETCH_OBJ);
       $stmtB = $db->query($sqlB);
       $dataB = $stmtB->fetchAll(PDO::FETCH_OBJ);
+      $stmtC = $db->query($sqlC);
+      $dataC = $stmtC->fetchAll(PDO::FETCH_OBJ);
+      $stmtD = $db->query($sqlD);
+      $dataD = $stmtD->fetchAll(PDO::FETCH_OBJ);
+      $stmtE = $db->query($sqlE);
+      $dataE = $stmtE->fetchAll(PDO::FETCH_OBJ);
       $db = null;
 
+      $chartDataA->convertToPie($dataC);
+      $chartDataB->convertToBar($dataD);
+
       $dataA[0] -> totalBreakDown = $dataB[0] -> totalBreakDown;
+      $dataA[0] -> machineAmount = $chartDataA;
+      $dataA[0] -> contractPricePerType = $chartDataB;
+      $dataA[0] -> machineList = $dataE;
   
       echo json_encode($dataA);
     } catch(PDOException $e) {
