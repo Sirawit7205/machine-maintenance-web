@@ -22,12 +22,12 @@ class barChartContractPrice {
   var $label;
 
   function convertToBar($data) {
-    $this->label = "contractPricePerType";
     foreach($data as $idx=>$item) {
       $this->datasets[0]->data[$idx] = $item->totalContractPrice;
       $this->labels[$idx] = $item->machineType;
     }
     $this->datasets[0]->backgroundColor = "#4286F4";
+    $this->datasets[0]->label = "Price (Baht)";
   }
 }
 
@@ -71,15 +71,15 @@ $app->get("/api/machine/details", function(Request $request, Response $response)
     }
   });
 
-  $app->get("/api/machine/byCustomer/{COMPANYNAME}", function(Request $request, Response $response) {
+  $app->get("/api/machine/byCustomer/{customerId}", function(Request $request, Response $response) {
     $chartDataA = new pieChartMachineType;
     $chartDataB = new barChartContractPrice;
-    $companyName = $request->getAttribute('COMPANYNAME');
-    $sqlA = "SELECT COUNT(machineID) AS machineCount, COUNT(md.machineType) AS machineTypeCount FROM customer c, contract ct, machine mc, machinemodel md WHERE mc.contractID = ct.contractID AND ct.customerID = c.customerID AND md.modelCode = mc.modelCode AND c.customerName = \"$companyName\"";
-    $sqlB = "SELECT COUNT(ml.logID) AS totalBreakDown FROM machinelog ml, machine mc, contract ct, customer c WHERE ml.machineID = mc.machineID AND mc.contractID = ct.contractID AND ct.customerID = c.customerID AND ml.logType = 'Error' AND c.customerName = \"$companyName\"";
-    $sqlC = "SELECT md.machineType, COUNT(mc.machineID) AS machineAmount FROM customer c, contract ct, machine mc, machinemodel md WHERE c.customerID = ct.customerID AND ct.contractID = mc.contractID AND mc.modelCode = md.modelCode AND c.customerName = \"$companyName\" GROUP BY md.machineType";
-    $sqlD = "SELECT md.machineType, SUM(ct.price) AS totalContractPrice FROM customer c, contract ct, machine mc, machinemodel md WHERE c.customerID = ct.customerID AND ct.contractID = mc.contractID AND mc.modelCode = md.modelCode AND c.customerName = \"$companyName\" GROUP BY md.machineType";
-    $sqlE = "SELECT mc.machineID, md.machineType, mc.serviceType FROM customer c, contract ct, machine mc, machinemodel md WHERE c.customerID = ct.customerID AND ct.contractID = mc.contractID AND mc.modelCode = md.modelCode AND c.customerName = \"$companyName\" GROUP BY md.machineType";
+    $customerId = $request->getAttribute('customerId');
+    $sqlA = "SELECT COUNT(machineID) AS machineCount, COUNT(md.machineType) AS machineTypeCount FROM customer c, contract ct, machine mc, machinemodel md WHERE mc.contractID = ct.contractID AND ct.customerID = c.customerID AND md.modelCode = mc.modelCode AND c.customerId = \"$customerId\"";
+    $sqlB = "SELECT COUNT(ml.logID) AS totalBreakdown FROM machinelog ml, machine mc, contract ct, customer c WHERE ml.machineID = mc.machineID AND mc.contractID = ct.contractID AND ct.customerID = c.customerID AND ml.logType = 'Error' AND c.customerId = \"$customerId\"";
+    $sqlC = "SELECT md.machineType, COUNT(mc.machineID) AS machineAmount FROM customer c, contract ct, machine mc, machinemodel md WHERE c.customerID = ct.customerID AND ct.contractID = mc.contractID AND mc.modelCode = md.modelCode AND c.customerId = \"$customerId\" GROUP BY md.machineType";
+    $sqlD = "SELECT md.machineType, SUM(ct.price) AS totalContractPrice FROM customer c, contract ct, machine mc, machinemodel md WHERE c.customerID = ct.customerID AND ct.contractID = mc.contractID AND mc.modelCode = md.modelCode AND c.customerId = \"$customerId\" GROUP BY md.machineType";
+    //$sqlE = "SELECT mc.machineID, md.machineType, mc.serviceType FROM customer c, contract ct, machine mc, machinemodel md WHERE c.customerID = ct.customerID AND ct.contractID = mc.contractID AND mc.modelCode = md.modelCode AND c.customerId = \"$customerId\" GROUP BY md.machineType";
     try {
       $db = new db();
       $db = $db->connect();
@@ -92,17 +92,14 @@ $app->get("/api/machine/details", function(Request $request, Response $response)
       $dataC = $stmtC->fetchAll(PDO::FETCH_OBJ);
       $stmtD = $db->query($sqlD);
       $dataD = $stmtD->fetchAll(PDO::FETCH_OBJ);
-      $stmtE = $db->query($sqlE);
-      $dataE = $stmtE->fetchAll(PDO::FETCH_OBJ);
       $db = null;
 
       $chartDataA->convertToPie($dataC);
       $chartDataB->convertToBar($dataD);
 
-      $dataA[0] -> totalBreakDown = $dataB[0] -> totalBreakDown;
+      $dataA[0] -> totalBreakdown = $dataB[0] -> totalBreakdown;
       $dataA[0] -> machineAmount = $chartDataA;
       $dataA[0] -> contractPricePerType = $chartDataB;
-      $dataA[0] -> machineList = $dataE;
   
       echo json_encode($dataA);
     } catch(PDOException $e) {
@@ -110,4 +107,21 @@ $app->get("/api/machine/details", function(Request $request, Response $response)
     }
   });
 
+  $app->get("/api/machine/listByCustomer/{customerId}", function(Request $request, Response $response) {
+    $customerId = $request->getAttribute('customerId');
+    $sql = "SELECT mc.machineID, md.machineType, md.modelNumber, mc.serviceType FROM customer c, contract ct, machine mc, machinemodel md WHERE c.customerID = ct.customerID AND ct.contractID = mc.contractID AND mc.modelCode = md.modelCode AND c.customerId = \"$customerId\" GROUP BY md.machineType";
+    try {
+      $db = new db();
+      $db = $db->connect();
+  
+      $stmt = $db->query($sql);
+      $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+      $db = null;
+
+      echo json_encode($data);
+    } catch(PDOException $e) {
+      echo '{"error":{"text": '.$e->getMessage().'}}';
+    }
+  });
 ?>

@@ -2,7 +2,7 @@
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
       <v-flex lg12 sm12>
-        <div class="headline mb-1">Machine Summary - {{companyName}}</div>
+        <div class="headline mb-1">Machine Summary - {{customerName}}</div>
         <v-data-table
           :headers="summaryHeaders"
           :items="summaryItems"
@@ -16,8 +16,9 @@
             <td class="text-xs-center">{{ props.item.machineCount.toLocaleString() }}</td>
             <td class="text-xs-center">{{ props.item.machineTypeCount.toLocaleString() }}</td>
             <td class="text-xs-center">{{ props.item.totalBreakdown.toLocaleString() }}</td>
-            <td class="text-xs-center">{{ props.item.totalRepairCost.toLocaleString() }}</td>
-            <td class="text-xs-center">{{ props.item.machineList }}</td>
+            <td class="text-xs-center">
+              <machine-list-menu :customerId="customerId"/>
+            </td>
           </template>
         </v-data-table>
       </v-flex>
@@ -25,15 +26,15 @@
         <div class="headline mb-1">Machine types</div>
         <v-card>
           <v-card-text>
-            <pie-chart :chartData="chartD"/>
+            <pie-chart :chartData="summaryItems[0].machineAmount"/>
           </v-card-text>
         </v-card>
       </v-flex>
       <v-flex lg6 sm9>
-        <div class="headline mb-1">Avg cost of repair</div>
+        <div class="headline mb-1">Contract price by type</div>
         <v-card>
           <v-card-text>
-            <bar-chart :chartData="chartD2"/>
+            <bar-chart :chartData="summaryItems[0].contractPricePerType"/>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -42,18 +43,19 @@
 </template>
 
 <script>
+import axios from "axios";
 import BarChart from "../../components/BarChart.vue";
 import PieChart from "../../components/PieChart.vue";
+import MachineListMenu from "../../components/MachineListMenu.vue";
 
 export default {
   components: {
     BarChart,
-    PieChart
+    PieChart,
+    MachineListMenu
   },
 
   data: () => ({
-    companyName: "XXXXX",
-
     summaryHeaders: [
       {
         text: "Total machines",
@@ -74,50 +76,27 @@ export default {
         align: "center"
       },
       {
-        text: "Total repair cost last year (Baht)",
-        sortable: false,
-        value: "totalRepairCost",
-        align: "center"
-      },
-      {
         text: "Machine list",
         sortable: false,
         value: "machineList",
         align: "center"
       }
     ],
-    summaryItems: [
-      {
-        machineCount: 20,
-        machineTypeCount: 5,
-        totalBreakdown: 10,
-        totalRepairCost: 10000,
-        machineList: "View"
-      }
-    ],
-    chartD: {
-      datasets: [
-        {
-          data: [124, 85, 116],
-          backgroundColor: ["#292049", "#489430", "#583928"]
-        }
-      ],
+    summaryItems: [],
 
-      labels: ["Pump", "Boiler", "Other"]
-    },
+    customerId: "CS0001",
+    customerName: ""
+  }),
 
-    chartD2: {
-      datasets: [
-        {
-          label: "Time usage",
-          data: [124, 85, 116],
-          backgroundColor: "#4286F4"
-        }
-      ],
+  created: async function() {
+  let summary = await axios.get("//localhost:80/MachineMaintenance/public/api/machine/byCustomer/"+this.customerId, {
+  });
+  let name = await axios.get("//localhost:80/MachineMaintenance/public/api/customer/getName/"+this.customerId, {
+  });
 
-      labels: ["Pump", "Boiler", "Other"]
-    },
-  })
+  this.summaryItems = summary.data;
+  this.customerName = name.data;
+  }
 };
 </script>
 
