@@ -47,6 +47,7 @@ require "../src/routes/transaction.php";
 require "../src/routes/machine.php";
 require "../src/routes/contract.php";
 require "../src/routes/log.php";
+require "../src/routes/login.php";
 
 $app->run();
 ?>
