@@ -94,7 +94,7 @@ export default {
             this.$root.authInfo.accessLevel = this.checkResponse.accessLevel;
             this.$root.authInfo.userId = this.checkResponse.userId;
 
-            this.$router.push({ path: "/"});
+            this.$router.push({ path: "/internalHome"});
           } else {
             this.openSnackbar("error", "Incorrect username or password");
           }

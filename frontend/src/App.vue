@@ -50,7 +50,7 @@
       <v-toolbar-side-icon @click="drawerState = !drawerState"></v-toolbar-side-icon>
       <img
         @click="goToHome"
-        src="./assets/pelogo.png"
+        src="./assets/logo.png"
         alt="Logo"
         width="auto"
         height="90%"
@@ -59,12 +59,21 @@
       <v-toolbar-title class="headline">
         <span>Machine Maintenance Database v1.0</span>
       </v-toolbar-title>
+
       <v-spacer></v-spacer>
-      <v-btn flat outline to="/forms/register">
+
+      <v-btn flat outline to="/forms/register" v-if="$root.authInfo.authStatus == 0">
         <span>Register</span>
       </v-btn>
-      <v-btn flat outline to="/forms/login">
+      <v-btn flat outline to="/forms/login" v-if="$root.authInfo.authStatus == 0">
         <span>Login</span>
+      </v-btn>
+
+      <div class="subheading" v-if="$root.authInfo.authStatus == 1">
+        <span>Logged in as {{name}}</span>
+      </div>
+      <v-btn flat outline @click="resetAuthState" v-if="$root.authInfo.authStatus == 1">
+        <span>Logout</span>
       </v-btn>
     </v-toolbar>
 
@@ -130,20 +139,39 @@ export default {
 
       right: null,
       drawerState: false,
-      text: ""
+      name: ""
     };
   },
-  /*created: async function() {
-    let x = await axios.post("//localhost:8888", {
-      id: 3
-    });
-
-    this.text = x.data.Course;
-  },*/
   methods: {
     goToHome() {
-      return this.$router.push("/");
+      if(this.$root.authInfo.authStatus == 1) {
+        return this.$router.push("/internalHome");
+      } else {  
+        return this.$router.push("/");
+      }
+    },
+
+    resetAuthState() {
+      this.$root.authInfo.authStatus = 0;
+      this.$root.authInfo.accessLevel = null;
+      this.$root.authInfo.userId = null;
+
+      this.$router.push("/");
     }
+  },
+
+  updated: async function() {
+  let staffName = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/getName/"+this.$root.authInfo.userId, {
+  });
+  let custrName = await axios.get("//localhost:80/MachineMaintenance/public/api/customer/getName/"+this.$root.authInfo.userId, {
+  });
+
+  if(!staffName.data && custrName.data)
+    this.name = custrName.data;
+  else if(staffName.data && !custrName.data)
+    this.name = staffName.data;
+  else
+    this.name = null;
   }
 };
 </script>

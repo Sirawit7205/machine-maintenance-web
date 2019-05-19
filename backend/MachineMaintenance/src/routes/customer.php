@@ -35,4 +35,21 @@ $app->get("/api/customer/nearlyExpired", function(Request $request, Response $re
   }
 });
 
+$app->get("/api/customer/getName/{customerId}", function(Request $request, Response $response) {
+  $customerId = $request->getAttribute('customerId');
+  $sql = "SELECT customerName FROM customer WHERE customerId = \"$customerId\"";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    @print_r($data[0]->customerName);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
 ?>

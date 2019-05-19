@@ -168,7 +168,7 @@ $app->get("/api/staff/getName/{staffId}", function(Request $request, Response $r
     $data = $stmt->fetchAll(PDO::FETCH_OBJ);
     $db = null;
 
-    print_r($data[0]->staffName);
+    @print_r($data[0]->staffName);
   } catch(PDOException $e) {
     echo '{"error":{"text": '.$e->getMessage().'}}';
   }
