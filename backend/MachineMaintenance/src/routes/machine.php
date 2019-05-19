@@ -158,12 +158,11 @@ $app->get("/api/machine/leastMaintain", function(Request $request, Response $res
   }
 });
 
-$app->get("/api/machine/lastStatus/{machineId}", function(Request $request, Response $response) {
-  $machineId = $request->getAttribute('machineId');
+$app->get("/api/machine/lastStatus", function(Request $request, Response $response) {
   $chartData = new pieChartStatus;
   $sql = "SELECT details AS status,COUNT(details) AS count
           FROM machinelog
-          WHERE machineID=\"$machineId\" AND logType = 'Maintenance'
+          WHERE logType = 'Maintenance'
           GROUP BY details";
   try {
     $db = new db(); 
@@ -174,9 +173,8 @@ $app->get("/api/machine/lastStatus/{machineId}", function(Request $request, Resp
     $db = null;
 
     $chartData->convertToPie($data);
-    $data[0]->problemCount = $chartData;
 
-    echo json_encode($data);
+    echo json_encode($chartData);
   } catch(PDOException $e) {
     echo '{"error":{"text": '.$e->getMessage().'}}';
   }

@@ -16,16 +16,18 @@ class pieChartReason {
   }
 }
 
-class pieChartJobClass {
+class barChartJobClass {
   var $datasets;
   var $labels;
 
-  function convertToPie($data) {
+  function convertToBar($data) {
     foreach($data as $idx=>$item) {
       $this->datasets[0]->data[$idx] = $item->hoursPerType;
       $this->datasets[0]->backgroundColor[$idx] = rand_color();
       $this->labels[$idx] = $item->machineType;
     }
+    $this->datasets[0]->backgroundColor = "#4286F4";
+    $this->datasets[0]->label = "Time usage (Hours)";
   }
 }
 
@@ -128,7 +130,7 @@ $app->get("/api/job/topRepair", function(Request $request, Response $response) {
   }
 });
 
-$app->get("/api/job/getId/{machineId}", function(Request $request, Response $response) {
+$app->get("/api/job/breakReasonChart/{machineId}", function(Request $request, Response $response) {
   $machineId = $request->getAttribute('machineId');
   $chartData = new pieChartReason;
   $sql = "SELECT problemType, COUNT(problemType) AS problemCount
@@ -145,9 +147,8 @@ $app->get("/api/job/getId/{machineId}", function(Request $request, Response $res
     $db = null;
 
     $chartData->convertToPie($data);
-    $data[0]->problemCount = $chartData;
 
-    echo json_encode($data);
+    echo json_encode($chartData);
   } catch(PDOException $e) {
     echo '{"error":{"text": '.$e->getMessage().'}}';
   }
@@ -169,9 +170,8 @@ $app->get("/api/job/topReason", function(Request $request, Response $response) {
     $db = null;
 
     $chartData->convertToPie($data);
-    $data[0]->problemCount = $chartData;
 
-    echo json_encode($data);
+    echo json_encode($chartData);
   } catch(PDOException $e) {
     echo '{"error":{"text": '.$e->getMessage().'}}';
   }
@@ -198,7 +198,7 @@ $app->get("/api/job/assignment/{staffId}", function(Request $request, Response $
 });
 
 $app->get("/api/job/repairDuration", function(Request $request, Response $response) {
-  $chartDataA = new pieChartJobClass;
+  $chartDataA = new barChartJobClass;
   $sqlA = "SELECT SUM(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(endDate,endTime))) AS maintenanceHours FROM job WHERE jobType = 'Maintenance' AND MONTH(endDate) = MONTH(NOW())";
   $sqlB = "SELECT SUM(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(endDate,endTime))) AS repairHours FROM job WHERE jobType = 'Repair' AND MONTH(endDate) = MONTH(NOW())";
   $sqlC = "SELECT md.machineType,SUM(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(endDate,endTime))) AS hoursPerType FROM job j, machine mc, machinemodel md WHERE j.machineID = mc.machineID AND mc.modelCode = md.modelCode GROUP BY machineType";
@@ -214,10 +214,13 @@ $app->get("/api/job/repairDuration", function(Request $request, Response $respon
     $dataC = $stmtC->fetchAll(PDO::FETCH_OBJ);
     $db = null;
 
-    $chartDataA->convertToPie($dataC);
+    $chartDataA->convertToBar($dataC);
 
     $dataA[0] -> repairHours = $dataB[0] -> repairHours;
     $dataA[0] -> hoursPerType = $chartDataA;
+
+    @$dataA[0]->maintenanceHours = is_null($dataA[0]->maintenanceHours) ? 0 : $dataA[0]->maintenanceHours;
+    @$dataA[0]->repairHours = is_null($dataA[0]->repairHours) ? 0 : $dataA[0]->repairHours;
 
     echo json_encode($dataA);
   } catch(PDOException $e) {

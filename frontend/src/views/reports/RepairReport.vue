@@ -9,12 +9,13 @@
               <v-alert :value="true" type="warning">No data available</v-alert>
             </template>
             <template v-slot:items="props">
-              <td class="text-xs-center">{{ props.item.machine }}</td>
+              <td class="text-xs-center">
+                [{{ props.item.machineId }}] {{ props.item.machineType }} - {{ props.item.modelNumber }}
+              </td>
               <td class="text-xs-center">{{ props.item.repairAmount }}</td>
               <td class="text-xs-center">{{ props.item.avgRepairDuration }}</td>
-              <td class="text-xs-center">{{ props.item.avgPartsUsage }}</td>
               <td class="text-xs-center">
-                <pie-chart-menu :chartData="props.item.reason"/>
+                <pie-chart-menu-multi :machineId="props.item.machineId"/>
               </td>
             </template>
           </v-data-table>
@@ -27,7 +28,7 @@
           <div class="headline mb-1">Overall breakdown reasons - this month</div>
           <v-card>
             <v-card-text>
-              <pie-chart :chartData="chartD"/>
+              <pie-chart :chartData="topBreakdownReason"/>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -37,13 +38,14 @@
 </template>
 
 <script>
+import axios from "axios";
 import PieChart from "../../components/PieChart.vue";
-import PieChartMenu from "../../components/PieChartMenu.vue";
+import PieChartMenuMulti from "../../components/PieChartMenuMulti.vue";
 
 export default {
   components: {
     PieChart,
-    PieChartMenu
+    PieChartMenuMulti
   },
 
   data: () => ({
@@ -64,69 +66,27 @@ export default {
         align: "center"
       },
       {
-        text: "Avg parts usage",
-        value: "avgPartsUsage",
-        align: "center"
-      },
-      {
         text: "Breakdown reasons",
         value: "reason",
         align: "center"
       }
     ],
-    repairItems: [
-      {
-        machine: "MC1001",
-        repairAmount: 6,
-        avgRepairDuration: 1.5,
-        avgPartsUsage: 2,
-        reason: {
-          datasets: [
-            {
-              data: ["1", "2", "4"]
-            }
-          ],
+    repairItems: [],
+    topBreakdownReason: []
+  }),
 
-          labels: ["A", "B", "C"]
-        }
-      },
-      {
-        machine: "MC1004",
-        repairAmount: 5,
-        avgRepairDuration: 3.5,
-        avgPartsUsage: 7,
-        reason: {
-          datasets: [
-            {
-              data: ["3", "1", "1"]
-            }
-          ],
+  created: async function() {
+  let topRepair = await axios.get("//localhost:80/MachineMaintenance/public/api/job/topRepair", {
+  });
+  let topReason = await axios.get("//localhost:80/MachineMaintenance/public/api/job/topReason", {
+  });
+  let byCustomer = await axios.get("//localhost:80/MachineMaintenance/public/api/log/byCustomer", {
+  });
 
-          labels: ["A", "B", "C"]
-        }
-      }
-    ],
-    chartD: {
-      datasets: [
-        {
-          label: "Time usage",
-          data: [124, 85, 116],
-          backgroundColor: "#4286F4"
-        }
-      ],
-
-      labels: ["A", "B", "Other"]
-    },
-    chartD2: {
-      datasets: [
-        {
-          data: ["10.5", "3.0", "1.0", "0.5"]
-        }
-      ],
-
-      labels: ["Working", "Travel", "Break", "Other"]
-    }
-  })
+  this.repairItems = topRepair.data;
+  this.topBreakdownReason = topReason.data;
+  this.topCustomerItems = byCustomer.data;
+  }
 };
 </script>
 
