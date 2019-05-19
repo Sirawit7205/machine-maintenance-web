@@ -37,7 +37,7 @@ $app->get("/api/staff/count", function(Request $request, Response $response) {
 
 $app->get("/api/staff/all/{staffId}", function(Request $request, Response $response) {
   $staffId = $request->getAttribute('staffId');
-  $sql = "SELECT staffID AS staffId, staffName, address, phone, email, position, salary, experience, status, vacationTotal, vacationLeft FROM staff WHERE staffId=\"$staffId\"";
+  $sql = "SELECT staffID AS staffId, staffUsername, staffName, address, phone, email, position, salary, experience, status, vacationTotal, vacationLeft FROM staff WHERE staffId=\"$staffId\"";
   try {
     $db = new db();
     $db = $db->connect();

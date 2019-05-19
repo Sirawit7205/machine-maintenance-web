@@ -45,6 +45,7 @@
                   <v-textarea v-model="address" :rules="addressRules" label="Address"></v-textarea>
                   <v-text-field v-model="phone" :rules="phoneRules" type="number" label="Phone"></v-text-field>
                   <v-text-field v-model="email" :rules="emailRules" type="email" label="Email"></v-text-field>
+                  <v-text-field v-model="username" :rules="usernameRules" type="text" label="Username"></v-text-field>
                 </v-flex>
                 <v-flex xs6>
                   <v-select
@@ -77,6 +78,18 @@
                     :rules="vacationLeftRules"
                     type="number"
                     label="Vacation days left"
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="password"
+                    :rules="passwordRules"
+                    type="password"
+                    label="New password"
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="cfmPassword"
+                    :rules="passwordRules"
+                    type="password"
+                    label="Confirm password"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
@@ -157,13 +170,26 @@ export default {
     vacationTotalRules: [v => !!v || "This field cannot be blank"],
 
     vacationLeft: null,
-    vacationLeftRules: [v => !!v || "This field cannot be blank"]
+    vacationLeftRules: [v => !!v || "This field cannot be blank"],
+
+    username: "",
+    usernameRules: [
+      v => !!v || "Username cannot be blank",
+      v => (v && v.length <= 20) || "Maximum length is 20 characters"
+    ],
+
+    password: "",
+    cfmPassword: "",
+    passwordRules: [
+      v => (v && v.length >= 8 && v.length <= 20) || !v || "Password length must be 8-20 characters"
+    ],
   }),
 
   methods: {
     generateNewId() {
       this.staffId = "ST" + this.uniqueId;
       this.actionType = 0;
+      this.resetAllFields();
     },
 
     async getCurrentData() {
@@ -171,6 +197,7 @@ export default {
       });
 
       this.staffId = allData.data[0].staffId,
+      this.username = allData.data[0].staffUsername,
       this.staffName = allData.data[0].staffName,
       this.address = allData.data[0].address,
       this.phone = allData.data[0].phone,
@@ -183,6 +210,22 @@ export default {
       this.vacationLeft = allData.data[0].vacationLeft
     },
 
+    resetAllFields() {
+      this.username = null,
+      this.password = null,
+      this.cfmPassword = null,
+      this.staffName = null,
+      this.address = null,
+      this.phone = null,
+      this.email = null,
+      this.position = null,
+      this.salary = null,
+      this.status = null,
+      this.experience = null,
+      this.vacationTotal = null,
+      this.vacationLeft = null
+    },
+
     setUpdate() {
       this.actionType = 1;
       this.getCurrentData();
@@ -192,6 +235,8 @@ export default {
       return axios.post("//localhost:80/MachineMaintenance/public/api/staff/submit", {
         actionType: this.actionType,
         staffId: this.staffId,
+        staffUsername: this.username,
+        staffPassword: this.password,
         staffName: this.staffName,
         address: this.address,
         phone: this.phone,
@@ -202,7 +247,7 @@ export default {
         experience: this.experience,
         vacationTotal: this.vacationTotal,
         vacationLeft: this.vacationLeft
-      }).then(response => response.data);
+      }).then(response => response.data).catch(error => console.log(error));
     },
 
     deleteData() {
@@ -224,14 +269,18 @@ export default {
 
     validate() {
       if (this.$refs.StaffForm.validate()) {
-        this.commitChanges().then(response => {
-          if(response == 0 && this.actionType == 0)
-            this.openSnackbar("success","Update successfully");
-          else if(response == 0 && this.actionType == 1)
-            this.openSnackbar("success","Insert successfully");
-          else
-            this.openSnackbar("error","Insert/Update error");
-        });        
+        if(this.password == this.cfmPassword) {
+          this.commitChanges().then(response => {
+            if(response == 0 && this.actionType == 0)
+              this.openSnackbar("success","Update successfully");
+            else if(response == 0 && this.actionType == 1)
+              this.openSnackbar("success","Insert successfully");
+            else
+              this.openSnackbar("error","Insert/Update error");
+          });
+        } else {
+          this.openSnackbar("error", "Error, password does not matched.");
+        }
       } else {
         this.openSnackbar("error", "Error, please check your input.");
       }
