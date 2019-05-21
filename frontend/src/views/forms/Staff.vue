@@ -253,12 +253,15 @@ export default {
     deleteData() {
       this.actionType = 2;
       this.commitChanges().then(response => {
-        if(response == 0)
+        if(response == true)
           this.openSnackbar("success","Delete successfully");
         else
           this.openSnackbar("error","Delete error");
       });
-      //send delete request
+
+      //clear deleted data from the form
+      this.getCurrentData();
+      this.resetAllFields();
     },
 
     openSnackbar(mode, message) {
@@ -271,10 +274,14 @@ export default {
       if (this.$refs.StaffForm.validate()) {
         if(this.password == this.cfmPassword) {
           this.commitChanges().then(response => {
-            if(response == 0 && this.actionType == 0)
-              this.openSnackbar("success","Update successfully");
-            else if(response == 0 && this.actionType == 1)
+            if(response == true && this.actionType == 0) {
               this.openSnackbar("success","Insert successfully");
+
+              //show new data in dropdown
+              this.getCurrentData();
+            }
+            else if(response == true && this.actionType == 1)
+              this.openSnackbar("success","Update successfully");
             else
               this.openSnackbar("error","Insert/Update error");
           });
