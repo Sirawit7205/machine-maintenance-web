@@ -187,9 +187,16 @@ export default {
 
   methods: {
     generateNewId() {
+      this.resetAllFields();
       this.staffId = "ST" + this.uniqueId;
       this.actionType = 0;
-      this.resetAllFields();
+    },
+
+    async refreshData() {
+      let currentList = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/getCurrentIds", {
+      }).then(response => { this.existingStaff = response.data });
+      let staffCount = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/count", {
+      }).then(response => { this.uniqueId = response.data });
     },
 
     async getCurrentData() {
@@ -211,6 +218,7 @@ export default {
     },
 
     resetAllFields() {
+      this.staffId = null,
       this.username = null,
       this.password = null,
       this.cfmPassword = null,
@@ -260,7 +268,7 @@ export default {
       });
 
       //clear deleted data from the form
-      this.getCurrentData();
+      this.refreshData();
       this.resetAllFields();
     },
 
@@ -278,7 +286,7 @@ export default {
               this.openSnackbar("success","Insert successfully");
 
               //show new data in dropdown
-              this.getCurrentData();
+              this.refreshData();
             }
             else if(response == true && this.actionType == 1)
               this.openSnackbar("success","Update successfully");
@@ -295,10 +303,7 @@ export default {
   },
 
   created: async function() {
-  let currentList = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/getCurrentIds", {
-  }).then(response => { this.existingStaff = response.data });
-  let staffCount = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/count", {
-  }).then(response => { this.uniqueId = response.data });
+    this.refreshData();
   }
 };
 </script>
