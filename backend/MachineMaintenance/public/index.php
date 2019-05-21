@@ -48,6 +48,7 @@ require "../src/routes/machine.php";
 require "../src/routes/contract.php";
 require "../src/routes/log.php";
 require "../src/routes/login.php";
+require "../src/routes/register.php";
 
 require "../src/routes/staffForm.php";
 
