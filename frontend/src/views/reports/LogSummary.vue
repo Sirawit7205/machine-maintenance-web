@@ -92,11 +92,13 @@ export default {
       {
         text: "Machine Type",
         value: "machineType",
+        sortable: false,
         align: "center"
       },
       {
         text: "Log Generated",
         value: "logCount",
+        sortable: false,
         align: "center"
       }
     ],
@@ -104,11 +106,13 @@ export default {
       {
         text: "Customer",
         value: "customerName",
+        sortable: false,
         align: "center"
       },
       {
         text: "Log Generated",
         value: "logCount",
+        sortable: false,
         align: "center"
       }
     ],

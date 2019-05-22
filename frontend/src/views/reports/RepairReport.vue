@@ -53,21 +53,25 @@ export default {
       {
         text: "Machine",
         value: "machine",
+        sortable: false,
         align: "center"
       },
       {
         text: "Times of repair",
         value: "repairAmount",
+        sortable: false,
         align: "center"
       },
       {
         text: "Avg repair duration (Hours)",
         value: "avgRepairDuration",
+        sortable: false,
         align: "center"
       },
       {
         text: "Breakdown reasons",
         value: "reason",
+        sortable: false,
         align: "center"
       }
     ],

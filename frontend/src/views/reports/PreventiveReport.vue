@@ -43,11 +43,13 @@ export default {
       {
         text: "Machine",
         value: "machine",
+        sortable: false,
         align: "center"
       },
       {
         text: "Last check",
         value: "lastCheck",
+        sortable: false,
         align: "center"
       }
     ],

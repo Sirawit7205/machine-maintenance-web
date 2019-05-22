@@ -41,16 +41,19 @@ export default {
       {
         text: "Customer",
         value: "customer",
+        sortable: false,
         align: "center"
       },
       {
         text: "Contracts Signed",
         value: "contractCount",
+        sortable: false,
         align: "center"
       },
       {
         text: "Total contract value (Baht)",
         value: "totalContractValue",
+        sortable: false,
         align: "center"
       }
     ],
@@ -58,21 +61,25 @@ export default {
       {
         text: "Contract ID",
         value: "contractId",
+        sortable: false,
         align: "center"
       },
       {
         text: "Customer",
         value: "customer",
+        sortable: false,
         align: "center"
       },
       {
         text: "Contract value (Baht)",
         value: "contractValue",
+        sortable: false,
         align: "center"
       },
       {
         text: "Days left",
         value: "daysLeft",
+        sortable: false,
         align: "center"
       }
     ],

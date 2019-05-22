@@ -4,7 +4,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 $app->get("/api/customer/mostValued", function(Request $request, Response $response) {
-  $sql = "SELECT cn.customerID, cs.customerName AS customer, SUM(cn.price) AS totalContractValue, COUNT(cn.contractID) AS contractCount FROM contract cn, customer cs WHERE cn.customerID = cs.customerID GROUP BY cn.customerID";
+  $sql = "SELECT cn.customerID, cs.customerName AS customer, SUM(cn.price) AS totalContractValue, COUNT(cn.contractID) AS contractCount FROM contract cn, customer cs WHERE cn.customerID = cs.customerID GROUP BY cn.customerID ORDER BY totalContractValue DESC";
   try {
     $db = new db();
     $db = $db->connect();
@@ -20,7 +20,7 @@ $app->get("/api/customer/mostValued", function(Request $request, Response $respo
 });
 
 $app->get("/api/customer/nearlyExpired", function(Request $request, Response $response) {
-  $sql = "SELECT cn.customerID, cs.customerName AS customer, cn.contractID AS contractId, cn.price AS contractValue, DATEDIFF(cn.endDate, NOW()) AS daysLeft FROM contract cn, customer cs WHERE cn.customerID = cs.customerID HAVING daysLeft >= 0";
+  $sql = "SELECT cn.customerID, cs.customerName AS customer, cn.contractID AS contractId, cn.price AS contractValue, DATEDIFF(cn.endDate, NOW()) AS daysLeft FROM contract cn, customer cs WHERE cn.customerID = cs.customerID HAVING daysLeft >= 0 ORDER BY daysLeft";
   try {
     $db = new db();
     $db = $db->connect();

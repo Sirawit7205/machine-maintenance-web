@@ -49,7 +49,7 @@ $app->get("/api/log/byLogType", function(Request $request, Response $response) {
 });
 
 $app->get("/api/log/byMachineType", function(Request $request, Response $response) {
-    $sql = "SELECT machineType,COUNT(machineType) AS logCount FROM machinelog,machine,machinemodel WHERE machinelog.machineID=machine.machineID AND machine.modelCode = machinemodel.modelCode GROUP BY machineType";
+    $sql = "SELECT machineType,COUNT(machineType) AS logCount FROM machinelog, machine, machinemodel WHERE machinelog.machineID=machine.machineID AND machine.modelCode = machinemodel.modelCode GROUP BY machineType ORDER BY logCount DESC";
     try {
       $db = new db();
       $db = $db->connect();
@@ -69,7 +69,8 @@ $app->get("/api/log/byCustomer", function(Request $request, Response $response) 
   $sql = "SELECT customerName,COUNT(customerName) AS logCount
   FROM machinelog,customer,contract,machine 
   WHERE machinelog.machineID=machine.machineID AND machine.contractID = contract.contractID AND contract.customerID = customer.customerID
-  GROUP BY customer.customerID";
+  GROUP BY customer.customerID
+  ORDER BY logCount DESC";
   try {
     $db = new db();
     $db = $db->connect();

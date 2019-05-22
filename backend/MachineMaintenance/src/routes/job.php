@@ -32,7 +32,7 @@ class barChartJobClass {
 }
 
 $app->get("/api/job/open", function(Request $request, Response $response) {
-  $sql = "SELECT j.machineID, mm.modelNumber, mm.machineType, j.jobStatus AS status, j.severity, j.priority FROM job j, machine m, machinemodel mm WHERE j.machineID = m.machineID AND m.modelCode = mm.modelCode AND j.jobStatus != \"Finished\"";
+  $sql = "SELECT j.machineID, mm.modelNumber, mm.machineType, j.jobStatus AS status, j.severity, j.priority FROM job j, machine m, machinemodel mm WHERE j.machineID = m.machineID AND m.modelCode = mm.modelCode AND j.jobStatus != \"Finished\" ORDER BY j.priority DESC";
   try {
     $db = new db();
     $db = $db->connect();
@@ -115,7 +115,8 @@ $app->get("/api/job/topRepair", function(Request $request, Response $response) {
   $sql = "SELECT machine.machineID AS machineId,machineType,modelNumber,COUNT(job.jobID) AS repairAmount,AVG(TIMESTAMPDIFF(HOUR,TIMESTAMP(date,startTime),TIMESTAMP(endDate,endTime))) AS avgRepairDuration
           FROM machine,machinelog,machinemodel,job
           WHERE job.machineID = machine.machineID AND machine.modelCode = machinemodel.modelCode AND machine.machineID = machinelog.machineID AND job.jobType = 'Repair' AND job.jobStatus = 'Finished'
-          GROUP BY job.machineID";
+          GROUP BY job.machineID
+          ORDER BY repairAmount DESC";
   try {
     $db = new db(); 
     $db = $db->connect();
