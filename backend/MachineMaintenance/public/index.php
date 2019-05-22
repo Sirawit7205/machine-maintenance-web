@@ -51,7 +51,10 @@ require "../src/routes/login.php";
 require "../src/routes/register.php";
 
 require "../src/routes/staffForm.php";
+require "../src/routes/contractForm.php";
 require "../src/routes/logForm.php";
+require "../src/routes/partsInOutForm.php";
+require "../src/routes/partsEditForm.php";
 
 $app->run();
 ?>
