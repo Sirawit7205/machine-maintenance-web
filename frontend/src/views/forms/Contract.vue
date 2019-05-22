@@ -76,6 +76,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
+            <v-btn @click="deleteData">Delete</v-btn>
             <v-spacer/>
             <v-btn @click="validate">Save</v-btn>
           </v-card-actions>
@@ -159,7 +160,12 @@ export default {
     generateNewId() {
       this.contractId = "CN" + this.uniqueId; //dummy
     },
-    async refreshData() {},
+    async refreshData() {
+      let currentList = await axios.get(
+        "//localhost:80/Machine/public/api/contract/getCurrentIds",
+        {}
+      );
+    },
 
     async getCurrentData() {
       let allData = await axios.get(
@@ -212,9 +218,8 @@ export default {
     },
 
     commitChanges() {
-      return axios.post(
-        "//localhost:80/MachineMaintenance/public/api/contract/submit",
-        {
+      return axios
+        .post("//localhost:80/MachineMaintenance/public/api/contract/submit", {
           actionType: this.actionType,
           contractId: this.contractId,
           customerId: this.customerId,
@@ -226,8 +231,9 @@ export default {
           price: this.price,
           startData: this.startDate,
           endDate: this.endDate
-        }
-      );
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error));
     },
 
     openSnackbar(mode, message) {

@@ -55,6 +55,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
+            <v-btn @click="deleteData">Delete</v-btn>
             <v-spacer/>
             <v-btn @click="validate">Save</v-btn>
           </v-card-actions>
@@ -88,8 +89,8 @@ export default {
     snackbarMessage: null,
 
     partsId: null,
-    uniqueId: "0001", //dummy
-    existingParts: ["PN1001", "PN1002"], //dummy
+    uniqueId: "", //dummy
+    existingParts: [], //dummy
     partsIdRules: [v => !!v || "Please select a part or create a new entry"],
 
     partsName: null,
@@ -109,7 +110,14 @@ export default {
     },
 
     async refreshData() {
-      let currentList = await axios.get("", {}).then(response => {});
+      let currentList = await axios
+        .get(
+          "//localhost:80/MachineMaintenance/public/api/editpart/getCurrentIds",
+          {}
+        )
+        .then(response => {
+          this.existingParts = response.data;
+        });
     },
 
     async getCurrentData() {
@@ -136,19 +144,6 @@ export default {
       this.getCurrentData();
     },
 
-    commitChanges() {
-      return axios
-        .post("//localhost:80/MachineMaintenance/public/api/editpart/submit", {
-          actionType: this.actionType,
-          partsId: this.partsId,
-          partsName: this.partsName,
-          pricePerUnit: this.pricePerUnit,
-          useInModel: this.useInModel
-        })
-        .then(response => response.data)
-        .catch(error => console.log(error));
-    },
-
     deleteData() {
       this.actionType = 2;
       this.commitChanges().then(response => {
@@ -160,6 +155,18 @@ export default {
       //clear deleted data from the form
       this.refreshData();
       this.resetAllFields();
+    },
+    commitChanges() {
+      return axios
+        .post("//localhost:80/MachineMaintenance/public/api/editpart/submit", {
+          actionType: this.actionType,
+          partsId: this.partsId,
+          partsName: this.partsName,
+          pricePerUnit: this.pricePerUnit,
+          useInModel: this.useInModel
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error));
     },
 
     openSnackbar(mode, message) {
