@@ -7,7 +7,7 @@
           <v-card-text>
             <v-form ref="MachineSrcAdd" v-model="valid" lazy-validation>
               Search for existing machine:
-              <v-autocomplete v-model="machineId" :items="existingMachine" placeholder="Search..."></v-autocomplete>
+              <v-autocomplete v-model="machineId" :items="existingMachine" item-text="machineId" item-value="machineId" placeholder="Search..." @change="setUpdate"></v-autocomplete>
               <p class="text-xs-center">----- OR -----</p>Add new machine:
               <br>
               <v-btn block @click="generateNewId">Add Machine</v-btn>
@@ -33,6 +33,8 @@
                     v-model="modelNumber"
                     :rules="modelNumberRules"
                     :items="existingModel"
+                    item-text="modelNumber"
+                    item-value="modelCode"
                     label="Model Number"
                     placeholder="Search..."
                   ></v-autocomplete>
@@ -97,40 +99,43 @@ export default {
   data: () => ({
     valid: true,
 
+    actionType: 0,
+
     snackbarActivate: false,
     snackbarMode: null,
     snackbarMessage: null,
 
     machineId: null,
-    uniqueId: "", //dummy
-    existingMachine: [], //dummy
+    uniqueId: "",
+    existingMachine: [],
     machineIdRules: [
       v => !!v || "Please select a machine or create a new entry"
     ],
 
-    modelNumber: null,
-    existingModel: [], //dummy
+    modelNumber: "",
+    existingModel: [],
     modelNumberRules: [v => !!v || "This field cannot be blank"],
 
     serialNumber: null,
     serialNumberRules: [v => !!v || "This field cannot be blank"],
 
     serviceType: null,
-    serviceTypeList: ["On site", "Send in", "Other"],
+    serviceTypeList: ["On site", "Carry in", "Other"],
     serviceTypeRules: [v => !!v || "This field cannot be blank"],
 
     notes: null,
 
     status: null,
-    statusList: [],
+    statusList: ["Normal", "Down", "Repair pending", "Repairing"],
     statusRules: [v => !!v || "This field cannot be blank"]
   }),
 
   methods: {
     generateNewId() {
       this.resetAllFields();
-      this.machineId = "MC" + this.uniqueId; //dummy
+      this.machineId = "MC" + this.uniqueId;
       this.actionType = 0;
+      this.getAllModels();
     },
 
     async refreshData() {
@@ -142,6 +147,12 @@ export default {
         .then(response => {
           this.existingMachine = response.data;
         });
+
+      let machineCount = await axios
+        .get("//localhost:80/MachineMaintenance/public/api/machine/count", {})
+        .then(response => {
+          this.uniqueId = response.data;
+        });
     },
     async getCurrentData() {
       let allData = await axios.get(
@@ -149,26 +160,36 @@ export default {
           this.machineId,
         {}
       );
-      (this.machineId = allData.data[0].machineId),
-        (this.modelNumber = allData.data[0].modelNumber),
+        (this.modelNumber = allData.data[0].currentModel[0].modelCode),
         (this.serialNumber = allData.data[0].serialNumber),
         (this.serviceType = allData.data[0].serviceType),
         (this.notes = allData.data[0].notes),
-        (this.status = allData.data[0].status);
+        (this.status = allData.data[0].status),
+        (this.existingModel = allData.data[0].allModel)
     },
+
+    async getAllModels() {
+      let allData = await axios.get(
+        "//localhost:80/MachineMaintenance/public/api/machine/getAllModels",
+        {}
+      );
+        (this.existingModel = allData.data)
+    },      
 
     commitChanges() {
       return axios.post(
         "//localhost:80/MachineMaintenance/public/api/machine/submit",
         {
+          actionType: this.actionType,
           machineId: this.machineId,
-          modelNumber: this.modelNumber,
+          modelCode: this.modelNumber,
           serialNumber: this.serialNumber,
           serviceType: this.serviceType,
           notes: this.notes,
           status: this.status
-        }
-      );
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error));
     },
     resetAllFields() {
       (this.machineId = null),
@@ -205,9 +226,14 @@ export default {
 
     validate() {
       if (this.$refs.MachineForm.validate()) {
-        this.openSnackbar("success", "Sucessfully save");
+        this.commitChanges().then(response => {
+          if(response == 1)
+            this.openSnackbar("success", "Insert/Update success");
+          else
+            this.openSnackbar("error", "Insert/Update error");
+        });
       } else {
-        this.openSnackbar("error", "An error had occured, please try again.");
+        this.openSnackbar("error", "Error, please check your input.");
       }
     }
   },

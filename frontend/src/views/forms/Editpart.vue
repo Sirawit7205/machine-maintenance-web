@@ -192,10 +192,10 @@ export default {
           if(response == 11)
             this.openSnackbar("success", "Insert/Update success");
           else
-            this.openSnackbar("error", "Insert/Update error" + this.response);
+            this.openSnackbar("error", "Insert/Update error");
         });
       } else {
-        this.openSnackbar("error", "An error had occured, please try again.");
+        this.openSnackbar("error", "Error, please check your input.");
       }
     }
   },
