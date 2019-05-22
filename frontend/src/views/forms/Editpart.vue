@@ -7,7 +7,7 @@
           <v-card-text>
             <v-form ref="EditPartSrcAdd" v-model="valid" lazy-validation>
               Search For Existing Part:
-              <v-autocomplete v-model="partsId" :items="existingParts" placeholder="Search..."></v-autocomplete>
+              <v-autocomplete v-model="partsId" :items="existingParts" item-text="partsName" item-value="partsId" placeholder="Search..." @change="setUpdate"></v-autocomplete>
               <p class="text-xs-center">----- OR -----</p>Add New Part:
               <br>
               <v-btn block @click="generateNewId">Add Part</v-btn>
@@ -46,6 +46,8 @@
                     :rules="useInModelRules"
                     :items="useInModelList"
                     label="Use in model(s)"
+                    item-text="modelNumber"
+                    item-value="modelCode"
                     placeholder="Search..."
                     multiple
                     chips
@@ -89,8 +91,8 @@ export default {
     snackbarMessage: null,
 
     partsId: null,
-    uniqueId: "", //dummy
-    existingParts: [], //dummy
+    uniqueId: "",
+    existingParts: [],
     partsIdRules: [v => !!v || "Please select a part or create a new entry"],
 
     partsName: null,
@@ -99,37 +101,46 @@ export default {
     pricePerUnit: null,
     pricePerUnitRules: [v => !!v || "This field cannot be blank"],
 
-    useInModel: null,
-    useInModelList: ["A1", "A2", "A3", "A4"],
+    useInModel: [],
+    useInModelList: [],
     useInModelRules: [v => !!v || "This field cannot be blank"]
   }),
 
   methods: {
     generateNewId() {
-      this.partsId = "PN" + this.uniqueId; //dummy
+      this.resetAllFields();
+      this.partsId = "PN" + this.uniqueId;
+      this.actionType = 0;
+      this.getCurrentData();
     },
 
     async refreshData() {
       let currentList = await axios
         .get(
-          "//localhost:80/MachineMaintenance/public/api/editpart/getCurrentIds",
+          "//localhost:80/MachineMaintenance/public/api/partsEdit/getCurrentIds",
           {}
         )
         .then(response => {
           this.existingParts = response.data;
         });
+
+      let partsCount = await axios
+        .get("//localhost:80/MachineMaintenance/public/api/partsEdit/count", {})
+        .then(response => {
+          this.uniqueId = response.data;
+        });
     },
 
     async getCurrentData() {
       let allData = await axios.get(
-        "//localhost:80/MachineMaintenance/public/api/editpart" + this.xxx,
+        "//localhost:80/MachineMaintenance/public/api/partsEdit/all/" + this.partsId,
         {}
       );
 
-      (this.partsId = allData.data[0].partsId),
         (this.partsName = allData.data[0].partsName),
         (this.pricePerUnit = allData.data[0].pricePerUnit),
         (this.useInModel = allData.data[0].useInModel);
+        (this.useInModelList = allData.data[0].allModel);
     },
 
     resetAllFields() {
@@ -147,7 +158,7 @@ export default {
     deleteData() {
       this.actionType = 2;
       this.commitChanges().then(response => {
-        if (response == true)
+        if (response == 11)
           this.openSnackbar("success", "Delete successfully");
         else this.openSnackbar("error", "Delete error");
       });
@@ -158,7 +169,7 @@ export default {
     },
     commitChanges() {
       return axios
-        .post("//localhost:80/MachineMaintenance/public/api/editpart/submit", {
+        .post("//localhost:80/MachineMaintenance/public/api/partsEdit/submit", {
           actionType: this.actionType,
           partsId: this.partsId,
           partsName: this.partsName,
@@ -177,7 +188,12 @@ export default {
 
     validate() {
       if (this.$refs.EditPartForm.validate()) {
-        this.openSnackbar("success", "Sucessfully save");
+        this.commitChanges().then(response => {
+          if(response == 11)
+            this.openSnackbar("success", "Insert/Update success");
+          else
+            this.openSnackbar("error", "Insert/Update error" + this.response);
+        });
       } else {
         this.openSnackbar("error", "An error had occured, please try again.");
       }
