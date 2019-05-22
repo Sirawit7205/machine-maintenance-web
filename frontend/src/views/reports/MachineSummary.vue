@@ -84,16 +84,17 @@ export default {
     ],
     summaryItems: [],
 
-    customerId: "CS0001",
+    customerId: "",
     customerName: ""
   }),
 
   created: async function() {
-  let summary = await axios.get("//localhost:80/MachineMaintenance/public/api/machine/byCustomer/"+this.customerId, {
+  let summary = await axios.get("//localhost:80/MachineMaintenance/public/api/machine/byCustomer/"+this.$root.authInfo.userId, {
   });
-  let name = await axios.get("//localhost:80/MachineMaintenance/public/api/customer/getName/"+this.customerId, {
+  let name = await axios.get("//localhost:80/MachineMaintenance/public/api/customer/getName/"+this.$root.authInfo.userId, {
   });
 
+  this.customerId = this.$root.authInfo.userId;
   this.summaryItems = summary.data;
   this.customerName = name.data;
   }
