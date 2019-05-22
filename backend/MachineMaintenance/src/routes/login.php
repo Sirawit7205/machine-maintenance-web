@@ -13,19 +13,32 @@ $app->post("/api/loginCheck", function(Request $request, Response $response) {
   $respDetails = new loginResponse;
   $username = $request->getParsedBody()['username'];
   $password = $request->getParsedBody()['password'];
-  $sqlUsrCheckStaff = "SELECT EXISTS(SELECT * FROM staff WHERE staffUsername = \"$username\") AS exist";
-  $sqlUsrCheckCustr = "SELECT EXISTS(SELECT * FROM customer WHERE customerUsername = \"$username\") AS exist";
-  $sqlPswCheckStaff = "SELECT staffPassword, staffID, position FROM staff WHERE staffUsername = \"$username\"";
-  $sqlPswCheckCustr = "SELECT customerPassword, customerID FROM customer WHERE customerUsername = \"$username\"";
+  $sqlUsrCheckStaff = "SELECT EXISTS(SELECT * FROM staff WHERE staffUsername = :username) AS exist";
+  $sqlUsrCheckCustr = "SELECT EXISTS(SELECT * FROM customer WHERE customerUsername = :username) AS exist";
+  $sqlPswCheckStaff = "SELECT staffPassword, staffID, position FROM staff WHERE staffUsername = :username";
+  $sqlPswCheckCustr = "SELECT customerPassword, customerID FROM customer WHERE customerUsername = :username";
 
   try {
     $db = new db();
     $db = $db->connect();
 
-    $stmtUsrCheckStaff = $db->query($sqlUsrCheckStaff);
-    $stmtUsrCheckCustr = $db->query($sqlUsrCheckCustr);
-    $stmtPswCheckStaff = $db->query($sqlPswCheckStaff);
-    $stmtPswCheckCustr = $db->query($sqlPswCheckCustr);
+    //prepare template
+    $stmtUsrCheckStaff = $db->prepare($sqlUsrCheckStaff);
+    $stmtUsrCheckCustr = $db->prepare($sqlUsrCheckCustr);
+    $stmtPswCheckStaff = $db->prepare($sqlPswCheckStaff);
+    $stmtPswCheckCustr = $db->prepare($sqlPswCheckCustr);
+
+    //bind params
+    $stmtUsrCheckStaff->bindParam(':username', $username, PDO::PARAM_STR);
+    $stmtUsrCheckCustr->bindParam(':username', $username, PDO::PARAM_STR);
+    $stmtPswCheckStaff->bindParam(':username', $username, PDO::PARAM_STR);
+    $stmtPswCheckCustr->bindParam(':username', $username, PDO::PARAM_STR);
+
+    //query
+    $stmtUsrCheckStaff->execute();
+    $stmtUsrCheckCustr->execute();
+    $stmtPswCheckStaff->execute();
+    $stmtPswCheckCustr->execute();
 
     $dataUsrCheckStaff = $stmtUsrCheckStaff->fetchColumn();
     $dataUsrCheckCustr = $stmtUsrCheckCustr->fetchColumn();

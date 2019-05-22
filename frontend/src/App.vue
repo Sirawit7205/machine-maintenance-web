@@ -93,48 +93,32 @@ export default {
     return {
       formItems: [
         { title: "Home", icon: "home", to: "/" },
-        { title: "Add/Edit Staff", icon: "account_box", to: "/forms/staff" },
         { title: "Add/Edit Contract", icon: "book", to: "/forms/contract" },
         { title: "Add/Edit Machine", icon: "developer_board", to: "/forms/machine" },
-        { title: "Add/Edit parts", icon: "toys", to: "/forms/editpart" },
+        { title: "Add/Edit Parts", icon: "toys", to: "/forms/editpart" },
+        { title: "Add/Edit Staff", icon: "account_box", to: "/forms/staff" },
         { title: "Add log", icon: "assignment", to: "/forms/addlog" },
         { title: "Job assignment", icon: "edit", to: "/forms/jobas" },
-        {
-          title: "Parts transasctions",
-          icon: "compare_arrows",
-          to: "/forms/partsInOut"
-        }
+        { title: "Parts transasctions", icon: "compare_arrows", to: "/forms/partsInOut" }
       ],
 
       reportItems: [
         { title: "Contract", icon: "book", to: "/reports/contract" },
-        {
-          title: "Repair duration",
-          icon: "alarm",
-          to: "/reports/repairDuration"
-        },
-        {
-          title: "Transaction",
-          icon: "attach_money",
-          to: "/reports/transaction"
-        },
-        {
-          title: "Preventive Maintenance",
-          icon: "check_circle",
-          to: "/reports/preventive"
-        },
-        { title: "Repair", icon: "build", to: "/reports/repair" },
-        { title: "Current Job", icon: "list_alt", to: "/reports/currentJob" },
         { title: "Customer Loyalty", icon: "sentiment_satisfied_alt", to: "/reports/customerLoyalty"},
-        { title: "Staff Salary", icon: "account_balance_wallet", to: "/reports/staffSalary" },
-        { title: "Technician Performance", icon: "show_chart", to: "/reports/technicianPerformance"},
-        { title: "Technician Job List", icon: "format_list_numbered", to: "/reports/technicianJobList"},
-        { title: "Staff Vacation", icon: "brightness_5", to: "/reports/staffVacation"},
         { title: "Machine Details", icon: "developer_board", to: "/reports/machineDetails"},
+        { title: "Machine Summary", icon: "view_module", to: "/reports/machineSummary"},
+        { title: "Current Job", icon: "list_alt", to: "/reports/currentJob" },
         { title: "Job assignment", icon: "assignment_turned_in", to: "/reports/jobAssignmentReport"},
-        { title: "Log Summary", icon: "library_books", to: "/reports/logSummary"},
+        { title: "Technician Job List", icon: "format_list_numbered", to: "/reports/technicianJobList"},
+        { title: "Technician Performance", icon: "show_chart", to: "/reports/technicianPerformance"},
         { title: "Parts Report", icon: "toys", to: "/reports/partsReport"},
-        { title: "Machine Summary", icon: "view_module", to: "/reports/machineSummary"}
+        { title: "Staff Salary", icon: "account_balance_wallet", to: "/reports/staffSalary" },
+        { title: "Staff Vacation", icon: "brightness_5", to: "/reports/staffVacation"},
+        { title: "Log Summary", icon: "library_books", to: "/reports/logSummary"},
+        { title: "Preventive Maintenance", icon: "check_circle", to: "/reports/preventive" },
+        { title: "Repair", icon: "build", to: "/reports/repair" },
+        { title: "Repair duration", icon: "alarm", to: "/reports/repairDuration" },
+        { title: "Transaction", icon: "attach_money", to: "/reports/transaction" }
       ],
 
       right: null,

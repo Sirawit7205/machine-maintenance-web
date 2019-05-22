@@ -87,12 +87,16 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
     valid: true,
     snackbarActivate: false,
     snackbarMode: null,
     snackbarMessage: null,
+
+    customerId: null,
 
     username: "",
     usernameRules: [
@@ -142,15 +146,39 @@ export default {
     this.snackbarActivate = true;
     },
 
+    commitChanges() {
+      return axios.post("//localhost:80/MachineMaintenance/public/api/register/submit", {
+        customerId: this.customerId,
+        customerUsername: this.username,
+        customerPassword: this.password,
+        customerName: this.name,
+        address: this.address,
+        phone: this.phone,
+        email: this.email
+      }).then(response => response.data).catch(error => console.log(error));
+    },
+
     validate() {
       if(this.password != this.cfmPassword) {
         this.openSnackbar("error", "Password not matched");
       } else if (this.$refs.loginForm.validate()) {
-        this.openSnackbar("success", "Sucessfully registered");
+        this.commitChanges().then(response => {
+          if(response == 1) {
+            this.openSnackbar("success", "Sucessfully registered");
+            this.$router.push({ path: "/"});
+          }
+          else
+            this.openSnackbar("error", "An error had occured, please try again.");
+      });
       } else {
-        this.openSnackbar("error", "An error had occured, please try again.");
+        this.openSnackbar("error", "Please check your input and try again.");
       }
     }
+  },
+
+  created: async function() {
+      let customerCount = await axios.get("//localhost:80/MachineMaintenance/public/api/customer/count", {
+      }).then(response => { this.customerId = "CS" + response.data });
   }
 };
 </script>
