@@ -99,7 +99,7 @@
 <script>
 import DatePicker from "../../components/DatePicker.vue";
 import TimePicker from "../../components/TimePicker.vue";
-import axios from "axois";
+import axios from "axios";
 
 export default {
   components: {

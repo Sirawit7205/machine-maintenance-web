@@ -19,17 +19,19 @@
                   </v-radio-group>
                 </v-flex>
                 <v-flex xs8>
-                  <v-autocomplete
+                  <v-text-field
                     v-model="partsId"
                     :rules="partsIdRules"
-                    :items="existingPartsId"
+                    type="text"
                     label="Parts ID"
-                    placeholder="Search..."
-                  ></v-autocomplete>
+                    disabled
+                  ></v-text-field>
                   <v-autocomplete
-                    v-model="partsName"
+                    v-model="partsId"
                     :rules="partsNameRules"
-                    :items="existingPartsName"
+                    :items="existingPartsId"
+                    item-text="partsName"
+                    item-value="partsId"
                     label="Parts name"
                     placeholder="Search..."
                   ></v-autocomplete>
@@ -60,7 +62,7 @@
 </template>
 
 <script>
-import axios from "axois";
+import axios from "axios";
 
 export default {
   data: () => ({
@@ -81,63 +83,60 @@ export default {
     existingPartsId: [],
     partsIdRules: [v => !!v || "This field cannot be blank"],
 
-    partsName: null,
     existingPartsName: [],
     partsNameRules: [v => !!v || "This field cannot be blank"],
 
     amount: null,
     amountRules: [v => !!v || "This field cannot be blank"],
 
-    details: null
+    details: null,
+
+    rowCounts: []
   }),
 
   methods: {
-    generateNewId() {
-      this.resetAllFields();
-      this.partsId = "ST" + this.uniqueId;
-    },
     async refreshData() {
       let currentList = await axios
         .get(
-          "//localhost:80/MachineMaintenance/public/api/partsInOut/getCurrentIds",
+          "//localhost:80/MachineMaintenance/public/api/partsInOut/getCurrentId",
           {}
         )
         .then(response => {
           this.existingPartsId = response.data;
         });
+      
+      let countList = await axios
+        .get(
+          "//localhost:80/MachineMaintenance/public/api/partsInOut/count",
+          {}
+        )
+        .then(response => {
+          this.rowCounts = response.data;
+          this.rowCounts[0].piCount = "PI" + this.rowCounts[0].piCount;
+          this.rowCounts[0].poCount = "PO" + this.rowCounts[0].poCount;
+          this.rowCounts[0].toCount = "TO" + this.rowCounts[0].toCount;
+        });
     },
 
-    async getCurrentData() {
-      let allData = await axios.get(
-        "//localhost:80/MachineMaintenance/public/api/partsInOut/all/" +
-          this.partsId,
-        {}
-      );
-
-      (this.partsType = allData.data[0].partsType),
-        (this.partsId = allData.data[0].partsId),
-        (this.partsName = allData.data[0].paratsName),
-        (this.amount = allData.data[0].amount),
-        (this.details = allData.data[0].details);
-    },
     resetAllFields() {
-      (this.partsType = null),
         (this.partsId = null),
-        (this.partsName = null),
         (this.amount = null),
         (this.details = null);
     },
+
     commitChanges() {
       return axios
         .post(
           "//localhost:80/MachineMaintenance/public/api/partsInOut/submit",
           {
-            actionType: this.actionType,
-            partsType: this.partsType,
             partsId: this.partsId,
-            partsName: this.partsName,
+            partsInId: this.rowCounts[0].piCount,
+            partsOutId: this.rowCounts[0].poCount,
+            transOutId: this.rowCounts[0].toCount,
+            partsType: this.partsType,
             amount: this.amount,
-            details: this.details
+            details: this.details,
+            staffId: this.$root.authInfo.userId
           }
         )
         .then(response => response.data)
@@ -152,9 +151,18 @@ export default {
 
     validate() {
       if (this.$refs.PartsInOutForm.validate()) {
-        this.openSnackbar("success", "Sucessfully save");
+        this.commitChanges().then(response => {
+          if (response == 1) {
+            this.openSnackbar("success", "Insert successfully");
+
+            //update dropdown
+            this.resetAllFields();
+            this.refreshData();
+          }
+          else this.openSnackbar("error", "Insert error");
+        });
       } else {
-        this.openSnackbar("error", "An error had occured, please try again.");
+        this.openSnackbar("error", "Error, please check your input.");
       }
     }
   },
