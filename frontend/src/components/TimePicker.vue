@@ -31,13 +31,20 @@ export default {
     time: "00:00"
   }),
   props: {
-    label: String
+    label: String,
+    setTime: String
   },
 
   methods: {
     emitTime() {
       this.$emit("input", this.time);
       this.timePickerMenu = false;
+    }
+  },
+
+  watch: {
+    setTime: function(val, oldVal) {
+      this.time = val;
     }
   }
 };

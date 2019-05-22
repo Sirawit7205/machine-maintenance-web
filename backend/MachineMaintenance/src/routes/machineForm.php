@@ -145,6 +145,22 @@ $app->post("/api/machine/submit", function(Request $request, Response $response)
   }
 });
 
+$app->get("/api/machineModel/count", function(Request $request, Response $response) {
+  $sql = "SELECT COUNT(*) AS count FROM machinemodel";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchColumn();
+    $db = null;
+    
+    echo sprintf('%04d', $data + 1);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
 $app->post("/api/machineModel/submit", function(Request $request, Response $response) {
   $actionType = $request->getParsedBody()['actionType'];
   $modelCode = $request->getParsedBody()['modelCode'];

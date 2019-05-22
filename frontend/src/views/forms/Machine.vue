@@ -62,7 +62,7 @@
                   <br>
                   <br>
                   <br>
-                  <add-machine-model/>
+                  <add-machine-model v-model="lastAddedModel"/>
                 </v-flex>
               </v-layout>
             </v-form>
@@ -100,6 +100,7 @@ export default {
     valid: true,
 
     actionType: 0,
+    lastAddedModel: null,
 
     snackbarActivate: false,
     snackbarMode: null,
@@ -235,6 +236,12 @@ export default {
       } else {
         this.openSnackbar("error", "Error, please check your input.");
       }
+    }
+  },
+
+  watch: {
+    lastAddedModel: function(newVal, oldVal) {
+      this.getAllModels();
     }
   },
 
