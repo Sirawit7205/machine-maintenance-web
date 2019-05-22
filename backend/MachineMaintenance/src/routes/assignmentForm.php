@@ -3,6 +3,22 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+$app->get("/api/job/getCurrentIds", function(Request $request, Response $response) {
+  $sql = "SELECT jobID AS jobId FROM job ORDER BY jobId";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
 $app->post("/api/job/submit", function(Request $request, Response $response) {
     $actionType = $request->getParsedBody()['actionType'];
     $jobId = $request->getParsedBody()['jobId'];

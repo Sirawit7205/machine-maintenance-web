@@ -26,11 +26,31 @@
                     :items="subLogTypeList"
                     label="Sub-log type"
                   ></v-select>
+                  <v-select
+                    v-if="logType === 'mach'"
+                    v-model="problemType"
+                    :rules="problemTypeRules"
+                    :items="problemTypeList"
+                    label="Problem type"
+                  ></v-select>
                   <v-autocomplete
+                    v-if="logType != 'main'"
                     v-model="machine"
                     :rules="machineRules"
                     :items="machineList"
+                    item-text="machineId"
+                    item-value="machineId"
                     label="Machine"
+                    placeholder="Search..."
+                  ></v-autocomplete>
+                  <v-autocomplete
+                    v-if="logType === 'main'"
+                    v-model="job"
+                    :rules="jobRules"
+                    :items="jobList"
+                    item-text="jobId"
+                    item-value="jobId"
+                    label="Job"
                     placeholder="Search..."
                   ></v-autocomplete>
                   <v-textarea v-model="details" :rules="detailsRules" label="Log details"></v-textarea>
@@ -71,6 +91,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import DatePicker from "../../components/DatePicker.vue";
 import TimePicker from "../../components/TimePicker.vue";
 
@@ -86,6 +107,10 @@ export default {
     snackbarActivate: false,
     snackbarMode: null,
     snackbarMessage: null,
+
+    actionType: 0,
+
+    allCount: [],
 
     logType: "case",
     logTypeList: [
@@ -105,9 +130,24 @@ export default {
     ],
     subLogTypeRules: [v => !!v || "This field cannot be blank"],
 
+    problemType: null,
+    problemTypeList: [
+      "Sensor",
+      "Control",
+      "Electrical",
+      "Mechanical",
+      "Computer",
+      "Other"
+    ],
+    problemTypeRules: [v => !!v || "This field cannot be blank"],
+
     machine: null,
-    machineList: ["A1", "A2"],
+    machineList: [],
     machineRules: [v => !!v || "This field cannot be blank"],
+
+    job: null,
+    jobList: [],
+    jobRules: [v => !!v || "This field cannot be blank"],
 
     details: null,
     detailsRules: [v => !!v || "This field cannot be blank"],
@@ -126,13 +166,66 @@ export default {
       this.snackbarActivate = true;
     },
 
+    commitChanges() {
+      return axios
+        .post("//localhost:80/MachineMaintenance/public/api/log/submit", {
+          newJobId: this.allCount[0].jobCount,
+          machLogId: this.allCount[0].mLogCount,
+          opLogId: this.allCount[0].oLogCount,
+          actionType: this.actionType,
+          logType: this.logType,
+          subLogType: this.subLogType,
+          details: this.details,
+          startDate: this.startDate,
+          startTime: this.startTime,
+          machineId: this.machine,
+          jobId: this.job,
+          problemType: this.problemType
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error));
+    },
+
     validate() {
       if (this.$refs.AddLogForm.validate()) {
-        this.openSnackbar("success", "Sucessfully save");
+        this.commitChanges().then(response => {
+          if(response == 1)
+            this.openSnackbar("success", "Insert/Update success");
+          else
+            this.openSnackbar("error", "Insert/Update error");
+        });
       } else {
-        this.openSnackbar("error", "An error had occured, please try again.");
+        this.openSnackbar("error", "Error, please check your input.");
       }
+    },
+
+    async refreshData() {
+      let machineList = await axios
+      .get("//localhost:80/MachineMaintenance/public/api/machine/getCurrentIds", {})
+      .then(response => { 
+        this.machineList = response.data;
+      });
+
+      let jobList = await axios
+      .get("//localhost:80/MachineMaintenance/public/api/job/getCurrentIds", {})
+      .then(response => { 
+        this.jobList = response.data;
+      });
+
+      let allCount = await axios
+      .get("//localhost:80/MachineMaintenance/public/api/log/count", {})
+      .then(response => {
+        this.allCount = response.data;
+        this.allCount[0].jobCount = "JB" + this.allCount[0].jobCount;
+        this.allCount[0].mLogCount = "LM" + this.allCount[0].mLogCount;
+        this.allCount[0].oLogCount = "LO" + this.allCount[0].oLogCount;
+      });
     }
+    
+  },
+
+  created: async function() {
+    this.refreshData();
   }
 };
 </script>
