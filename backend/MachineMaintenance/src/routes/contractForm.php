@@ -127,20 +127,24 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
     $details = $request->getParsedBody()['details'];
     $amount = $request->getParsedBody()['amount'];
     $staffId = $request->getParsedBody()['staffId'];
-
+    $machineId = $request->getParsedBody()['machineId'];
 
 
   
     $sqlInsertInsert = "INSERT INTO customer (customerID, customerName, address, phone, email) VALUES (:customerId, :customerName, :address, :phone, :email);
     INSERT INTO contract(contractID,startDate,endDate,price,customerID) VALUES(:contractId,:startDate,:endDate,:price,:customerId);
-    INSERT INTO income(transID,timestamp,transType,details,amount,contractID,staffID) VALUES(:transId,CURRENT_TIMESTAMP,:transType,:details,:amount,:contractId,:staffId);";
+    INSERT INTO income(transID,timestamp,transType,details,amount,contractID,staffID) VALUES(:transId,CURRENT_TIMESTAMP,:transType,:details,:amount,:contractId,:staffId);
+    UPDATE machine SET contractID=:contractId WHERE machineID =:machineId;";
     $sqlInsertUpdate = "INSERT INTO contract(contractID,startDate,endDate,price,customerID) VALUES(:contractId,:startDate,:endDate,:price,:customerId);
     UPDATE customer SET customerName=:customerName,address=:address,email=:email,phone=:phone WHERE customerID=:customerId;
-    INSERT INTO income(transID,timestamp,transType,details,amount,contractID,staffID) VALUES(:transId,CURRENT_TIMESTAMP,:transType,:details,:amount,:contractId,:staffId);";
+    INSERT INTO income(transID,timestamp,transType,details,amount,contractID,staffID) VALUES(:transId,CURRENT_TIMESTAMP,:transType,:details,:amount,:contractId,:staffId);
+    UPDATE machine SET contractID=:contractId WHERE machineID =:machineId;";
     $sqlUpdate = "UPDATE contract SET startDate = :startDate, endDate = :endDate, price = :price WHERE contractID = :contractId;
     UPDATE customer SET customerName=:customerName,address=:address,email=:email,phone=:phone WHERE customerID=:customerId;
-    UPDATE income SET timestamp=CURRENT_TIMESTAMP,transType=:transType,details=:details,amount=:amount,staffID=:staffId WHERE transID=:transId;";
-    $sqlDelete = "DELETE FROM income WHERE transID=:transId;
+    UPDATE income SET timestamp=CURRENT_TIMESTAMP,transType=:transType,details=:details,amount=:amount,staffID=:staffId WHERE transID=:transId;
+    UPDATE machine SET contractID=:contractId WHERE machineID=:machineId;";
+    $sqlDelete = "UPDATE machine SET contractID=NULL WHERE machineID = :machineId;
+    DELETE FROM income WHERE transID=:transId;
     DELETE FROM contract WHERE contractID = :contractId;";
     
     try {
@@ -168,7 +172,7 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt->bindParam(':details', $details, PDO::PARAM_STR);
         $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
         $stmt->bindParam(':staffId',$staffId,PDO::PARAM_STR);
-
+        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
       }
       //INSERT CONT UPDATE CUST
       else if($contActionType == 0 && $custActionType == 1) {
@@ -185,6 +189,8 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt->bindParam(':address', $address, PDO::PARAM_STR);        
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
+
       }
       //UPDATE CONT UPDATE CUST
       else if($contActionType == 1) {
@@ -206,6 +212,7 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt->bindParam(':details', $details, PDO::PARAM_STR);
         $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
         $stmt->bindParam(':staffId',$staffId,PDO::PARAM_STR);
+        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
 
       }
       //DELETE
@@ -214,6 +221,7 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt = $db->prepare($sqlDelete);
   
         //bind parameters
+        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
         $stmt->bindParam(':transId', $transId, PDO::PARAM_STR);     
         $stmt->bindParam(':contractId', $contractId, PDO::PARAM_STR);     
       }
