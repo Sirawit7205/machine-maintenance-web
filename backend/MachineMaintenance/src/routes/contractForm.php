@@ -122,15 +122,30 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
     $address = $request->getParsedBody()['address'];
     $email = $request->getParsedBody()['email'];
     $phone = $request->getParsedBody()['phone'];
-    
+    $transId = $request->getParsedBody()['transId'];
+    $transType = $request->getParsedBody()['transType'];
+    $details = $request->getParsedBody()['details'];
+    $amount = $request->getParsedBody()['amount'];
+    $staffId = $request->getParsedBody()['staffId'];
+    $machineId = $request->getParsedBody()['machineId'];
+
+
   
     $sqlInsertInsert = "INSERT INTO customer (customerID, customerName, address, phone, email) VALUES (:customerId, :customerName, :address, :phone, :email);
-    INSERT INTO contract(contractID,startDate,endDate,price,customerID) VALUES(:contractId,:startDate,:endDate,:price,:customerId)";
+    INSERT INTO contract(contractID,startDate,endDate,price,customerID) VALUES(:contractId,:startDate,:endDate,:price,:customerId);
+    INSERT INTO income(transID,timestamp,transType,details,amount,contractID,staffID) VALUES(:transId,CURRENT_TIMESTAMP,:transType,:details,:amount,:contractId,:staffId);
+    UPDATE machine SET contractID=:contractId WHERE machineID =:machineId;";
     $sqlInsertUpdate = "INSERT INTO contract(contractID,startDate,endDate,price,customerID) VALUES(:contractId,:startDate,:endDate,:price,:customerId);
-    UPDATE customer SET customerName=:customerName,address=:address,email=:email,phone=:phone WHERE customerID=:customerId;";
+    UPDATE customer SET customerName=:customerName,address=:address,email=:email,phone=:phone WHERE customerID=:customerId;
+    INSERT INTO income(transID,timestamp,transType,details,amount,contractID,staffID) VALUES(:transId,CURRENT_TIMESTAMP,:transType,:details,:amount,:contractId,:staffId);
+    UPDATE machine SET contractID=:contractId WHERE machineID =:machineId;";
     $sqlUpdate = "UPDATE contract SET startDate = :startDate, endDate = :endDate, price = :price WHERE contractID = :contractId;
-    UPDATE customer SET customerName=:customerName,address=:address,email=:email,phone=:phone WHERE customerID=:customerId;";
-    $sqlDelete = "DELETE FROM contract WHERE contractID = :contractId";
+    UPDATE customer SET customerName=:customerName,address=:address,email=:email,phone=:phone WHERE customerID=:customerId;
+    UPDATE income SET timestamp=CURRENT_TIMESTAMP,transType=:transType,details=:details,amount=:amount,staffID=:staffId WHERE transID=:transId;
+    UPDATE machine SET contractID=:contractId WHERE machineID=:machineId;";
+    $sqlDelete = "UPDATE machine SET contractID=NULL WHERE machineID = :machineId;
+    DELETE FROM income WHERE transID=:transId;
+    DELETE FROM contract WHERE contractID = :contractId;";
     
     try {
       $db = new db();
@@ -152,6 +167,12 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt->bindParam(':address', $address, PDO::PARAM_STR);        
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+        $stmt->bindParam(':transId', $transId, PDO::PARAM_STR);
+        $stmt->bindParam(':transType', $transType, PDO::PARAM_STR);
+        $stmt->bindParam(':details', $details, PDO::PARAM_STR);
+        $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+        $stmt->bindParam(':staffId',$staffId,PDO::PARAM_STR);
+        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
       }
       //INSERT CONT UPDATE CUST
       else if($contActionType == 0 && $custActionType == 1) {
@@ -168,6 +189,8 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt->bindParam(':address', $address, PDO::PARAM_STR);        
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
+
       }
       //UPDATE CONT UPDATE CUST
       else if($contActionType == 1) {
@@ -184,6 +207,13 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt->bindParam(':address', $address, PDO::PARAM_STR);        
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+        $stmt->bindParam(':transId', $transId, PDO::PARAM_STR);
+        $stmt->bindParam(':transType', $transType, PDO::PARAM_STR);
+        $stmt->bindParam(':details', $details, PDO::PARAM_STR);
+        $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+        $stmt->bindParam(':staffId',$staffId,PDO::PARAM_STR);
+        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
+
       }
       //DELETE
       else {
@@ -191,6 +221,8 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt = $db->prepare($sqlDelete);
   
         //bind parameters
+        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
+        $stmt->bindParam(':transId', $transId, PDO::PARAM_STR);     
         $stmt->bindParam(':contractId', $contractId, PDO::PARAM_STR);     
       }
   
@@ -216,11 +248,9 @@ $app->post("/api/machine/submit", function(Request $request, Response $response)
     $serviceType = $request->getParsedBody()['serviceType'];
     $notes = $request->getParsedBody()['notes'];  
     $status = $request->getParsedBody()['status'];
-    $contractId = $request->getParsedBody()['contractId'];
-    
   
-    $sqlInsert = "INSERT INTO machine(machineID,modelCode,serialNumber,serviceType,notes,status,contractID) VALUES(:machineId,:modelCode,:serialNumber,:serviceType,:notes,:status,:contractId)";
-    $sqlUpdate = "UPDATE machine SET modelCode=:modelCode,serialNumber=:serialNumber,serviceType=:serviceType,notes=:notes,status=:status,contractID=:contractId WHERE machineID = :machineId";
+    $sqlInsert = "INSERT INTO machine(machineID,modelCode,serialNumber,serviceType,notes,status) VALUES(:machineId,:modelCode,:serialNumber,:serviceType,:notes,:status)";
+    $sqlUpdate = "UPDATE machine SET modelCode=:modelCode,serialNumber=:serialNumber,serviceType=:serviceType,notes=:notes,status=:status WHERE machineID = :machineId";
     $sqlDelete = "DELETE FROM machine WHERE machineID = :machineId";
     
     try {
@@ -240,7 +270,6 @@ $app->post("/api/machine/submit", function(Request $request, Response $response)
         $stmt->bindParam(':serviceType', $serviceType, PDO::PARAM_STR);
         $stmt->bindParam(':notes', $notes, PDO::PARAM_STR);
         $stmt->bindParam(':status', $status, PDO::PARAM_STR);
-        $stmt->bindParam(':contractId', $contractId, PDO::PARAM_STR);
       }
       //UPDATE
       else if($actionType == 1) {
@@ -254,7 +283,7 @@ $app->post("/api/machine/submit", function(Request $request, Response $response)
         $stmt->bindParam(':serviceType', $serviceType, PDO::PARAM_STR);
         $stmt->bindParam(':notes', $notes, PDO::PARAM_STR);
         $stmt->bindParam(':status', $status, PDO::PARAM_STR);
-        $stmt->bindParam(':contractId', $contractId, PDO::PARAM_STR);      }
+      }
       //DELETE
       else {
         //prepare template
