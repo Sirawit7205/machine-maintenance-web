@@ -104,8 +104,8 @@ $app->post("/api/log/submit", function(Request $request, Response $response) {
         $stmt->bindParam(':estDuration', $estDuration, PDO::PARAM_STR);
         $stmt->bindParam(':machineID', $machineID, PDO::PARAM_STR);
         $stmt->bindParam(':details', $details, PDO::PARAM_STR);
-        $stmt->bindParam(':priority', $priority, PDO::PARAM_STR);
-        $stmt->bindParam(':severity', $severity, PDO::PARAM_STR);
+        $stmt->bindParam(':priority', $priority, PDO::PARAM_INT);
+        $stmt->bindParam(':severity', $severity, PDO::PARAM_INT);
         $stmt->bindParam(':jobStatus', $jobStatus, PDO::PARAM_STR);
       }
       else if($logType == "mach"){
