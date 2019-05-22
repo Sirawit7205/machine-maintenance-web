@@ -122,19 +122,17 @@ $app->post("/api/assignment/submit", function(Request $request, Response $respon
       }
       //UPDATE
       else if($actionType == 1) {
-        $sqlUpdate1 = "DELETE FROM assignment WHERE jobID=:jobId";
-        $stmt1 = $db->prepare($sqlUpdate1);
-        $stmt1->bindParam(':jobId', $jobId, PDO::PARAM_STR);
-        $stmt1->bindParam(':staffId', $staffId, PDO::PARAM_STR);       
-        $result = $stmt1->execute();
+        $staffId = json_decode($staffId);
+        $sqlUpdate = "DELETE FROM assignment WHERE jobID=:jobId;";
+        foreach($staffId as $idx => $item){
+          $sqlUpdate .= "INSERT INTO assignment(jobID,staffID) VALUES(:jobId,'".$item."');";
+        }
+        echo $sqlUpdate;
 
-        $sqlUpdate2 = "INSERT INTO assignment(jobID,staffID) VALUES(:jobId,:staffId)";
-        $stmt2 = $db->prepare($sqlUpdate2);
+        $stmt = $db->prepare($sqlUpdate);
+        $stmt->bindParam(':jobId', $jobId, PDO::PARAM_STR);
 
-        foreach()
-        $stmt2->bindParam(':jobId', $jobId, PDO::PARAM_STR);
-        $stmt2->bindParam(':staffId', $staffId, PDO::PARAM_STR);       
-        $result = $stmt2->execute();
+        $result = $stmt->execute();
 
       }
       //DELETE
