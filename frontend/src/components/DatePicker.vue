@@ -32,13 +32,20 @@ export default {
   }),
 
   props: {
-    label: String
+    label: String,
+    setDate: String
   },
 
   methods: {
     emitDate() {
       this.$emit("input", this.date);
       this.datePickerMenu = false;
+    }
+  },
+
+  watch: {
+    setDate: function(val, oldVal) {
+      this.date = val;
     }
   }
 };

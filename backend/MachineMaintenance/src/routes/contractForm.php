@@ -3,9 +3,99 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-$app->get("/api/customer/info/{customerId}", function(Request $request, Response $response) {
+$app->get("/api/contract/getCurrentIds", function(Request $request, Response $response) {
+  $sql = "SELECT contractID AS contractId FROM contract ORDER BY contractId";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
+$app->get("/api/contract/count", function(Request $request, Response $response) {
+  $sql = "SELECT COUNT(*) AS count FROM contract";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchColumn();
+    $db = null;
+    
+    echo sprintf('%04d', $data + 1);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
+$app->get("/api/customer/getCurrentIds", function(Request $request, Response $response) {
+  $sql = "SELECT customerID AS customerId, customerName FROM customer ORDER BY customerId";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+
+    echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
+$app->get("/api/existsCustomer/count", function(Request $request, Response $response) {
+  $sql = "SELECT COUNT(*) AS count FROM customer";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchColumn();
+    $db = null;
+    
+    echo sprintf('%04d', $data + 1);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+$app->get("/api/contract/all/{contractId}", function(Request $request, Response $response) {
+  $contractId = $request->getAttribute('contractId');
+  $sql = "SELECT startDate, endDate, price, customerID FROM contract WHERE contractID = \"$contractId\"";
+  $sqlCurrentMachineList = "SELECT machineID FROM machine WHERE contractID = \"$contractId\"";
+  $sqlAllMachineList = "SELECT machineID FROM machine WHERE contractID = \"$contractId\" OR contractID IS NULL";
+
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $stmtM = $db->query($sqlCurrentMachineList);
+    $stmtAM = $db->query($sqlAllMachineList);
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $dataM = $stmtM->fetchAll(PDO::FETCH_OBJ);
+    $dataAM = $stmtAM->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+    
+    @$data[0]->machineList = $dataM;
+    @$data[0]->allMachineList = $dataAM;
+
+    echo json_encode($data);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
+$app->get("/api/customer/all/{customerId}", function(Request $request, Response $response) {
     $customerId = $request->getAttribute('customerId');
-    $sql = "SELECT customerID AS customerId, customerName, address,phone,email FROM customer WHERE customerId=\"$customerId\"";
+    $sql = "SELECT customerName, address, phone, email FROM customer WHERE customerId=\"$customerId\"";
     try {
       $db = new db();
       $db = $db->connect();
@@ -21,7 +111,8 @@ $app->get("/api/customer/info/{customerId}", function(Request $request, Response
   });
   
 $app->post("/api/contract/submit", function(Request $request, Response $response) {
-    $actionType = $request->getParsedBody()['actionType'];
+    $contActionType = $request->getParsedBody()['contActionType'];
+    $custActionType = $request->getParsedBody()['custActionType'];
     $contractId = $request->getParsedBody()['contractId'];
     $startDate = $request->getParsedBody()['startDate'];
     $endDate = $request->getParsedBody()['endDate'];
@@ -33,7 +124,9 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
     $phone = $request->getParsedBody()['phone'];
     
   
-    $sqlInsert = "INSERT INTO contract(contractID,startDate,endDate,price,customerID) VALUES(:contractId,:startDate,:endDate,:price,:customerId);
+    $sqlInsertInsert = "INSERT INTO customer (customerID, customerName, address, phone, email) VALUES (:customerId, :customerName, :address, :phone, :email);
+    INSERT INTO contract(contractID,startDate,endDate,price,customerID) VALUES(:contractId,:startDate,:endDate,:price,:customerId)";
+    $sqlInsertUpdate = "INSERT INTO contract(contractID,startDate,endDate,price,customerID) VALUES(:contractId,:startDate,:endDate,:price,:customerId);
     UPDATE customer SET customerName=:customerName,address=:address,email=:email,phone=:phone WHERE customerID=:customerId;";
     $sqlUpdate = "UPDATE contract SET startDate = :startDate, endDate = :endDate, price = :price WHERE contractID = :contractId;
     UPDATE customer SET customerName=:customerName,address=:address,email=:email,phone=:phone WHERE customerID=:customerId;";
@@ -44,10 +137,10 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
       $db = $db->connect();
 
 
-      //INSERT
-      if($actionType == 0) {
+      //INSERT BOTH
+      if($contActionType == 0 && $custActionType == 0) {
         //prepare template
-        $stmt = $db->prepare($sqlInsert);
+        $stmt = $db->prepare($sqlInsertInsert);
   
         //bind parameters
         $stmt->bindParam(':contractId', $contractId, PDO::PARAM_STR);
@@ -60,8 +153,24 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
       }
-      //UPDATE
-      else if($actionType == 1) {
+      //INSERT CONT UPDATE CUST
+      else if($contActionType == 0 && $custActionType == 1) {
+        //prepare template
+        $stmt = $db->prepare($sqlInsertUpdate);
+  
+        //bind parameters
+        $stmt->bindParam(':contractId', $contractId, PDO::PARAM_STR);
+        $stmt->bindParam(':startDate', $startDate, PDO::PARAM_STR);
+        $stmt->bindParam(':endDate', $endDate, PDO::PARAM_STR);
+        $stmt->bindParam(':price', $price, PDO::PARAM_STR);
+        $stmt->bindParam(':customerId',$customerId,PDO::PARAM_STR);
+        $stmt->bindParam(':customerName', $customerName, PDO::PARAM_STR);
+        $stmt->bindParam(':address', $address, PDO::PARAM_STR);        
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+      }
+      //UPDATE CONT UPDATE CUST
+      else if($contActionType == 1) {
         //prepare template
         $stmt = $db->prepare($sqlUpdate);
   
