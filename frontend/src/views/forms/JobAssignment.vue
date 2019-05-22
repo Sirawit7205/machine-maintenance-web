@@ -163,7 +163,7 @@ export default {
   methods: {
     generateNewId() {
       this.resetAllFields();
-      this.jobId = "ST" + this.uniqueId;
+      this.jobId = "JB" + this.uniqueId;
     },
 
     openSnackbar(mode, message) {

@@ -53,7 +53,7 @@
         src="./assets/logo.png"
         alt="Logo"
         width="auto"
-        height="90%"
+        height="65%"
         style="cursor: pointer"
       >
       <v-toolbar-title class="headline">
@@ -94,31 +94,87 @@ export default {
       formItems: [
         { title: "Home", icon: "home", to: "/" },
         { title: "Add/Edit Contract", icon: "book", to: "/forms/contract" },
-        { title: "Add/Edit Machine", icon: "developer_board", to: "/forms/machine" },
+        {
+          title: "Add/Edit Machine",
+          icon: "developer_board",
+          to: "/forms/machine"
+        },
         { title: "Add/Edit Parts", icon: "toys", to: "/forms/editpart" },
         { title: "Add/Edit Staff", icon: "account_box", to: "/forms/staff" },
         { title: "Add log", icon: "assignment", to: "/forms/addlog" },
         { title: "Job assignment", icon: "edit", to: "/forms/jobas" },
-        { title: "Parts transasctions", icon: "compare_arrows", to: "/forms/partsInOut" }
+        {
+          title: "Parts transasctions",
+          icon: "compare_arrows",
+          to: "/forms/partsInOut"
+        }
       ],
 
       reportItems: [
         { title: "Contract", icon: "book", to: "/reports/contract" },
-        { title: "Customer Loyalty", icon: "sentiment_satisfied_alt", to: "/reports/customerLoyalty"},
-        { title: "Machine Details", icon: "developer_board", to: "/reports/machineDetails"},
-        { title: "Machine Summary", icon: "view_module", to: "/reports/machineSummary"},
+        {
+          title: "Customer Loyalty",
+          icon: "sentiment_satisfied_alt",
+          to: "/reports/customerLoyalty"
+        },
+        {
+          title: "Machine Details",
+          icon: "developer_board",
+          to: "/reports/machineDetails"
+        },
+        {
+          title: "Machine Summary",
+          icon: "view_module",
+          to: "/reports/machineSummary"
+        },
         { title: "Current Job", icon: "list_alt", to: "/reports/currentJob" },
-        { title: "Job assignment", icon: "assignment_turned_in", to: "/reports/jobAssignmentReport"},
-        { title: "Technician Job List", icon: "format_list_numbered", to: "/reports/technicianJobList"},
-        { title: "Technician Performance", icon: "show_chart", to: "/reports/technicianPerformance"},
-        { title: "Parts Report", icon: "toys", to: "/reports/partsReport"},
-        { title: "Staff Salary", icon: "account_balance_wallet", to: "/reports/staffSalary" },
-        { title: "Staff Vacation", icon: "brightness_5", to: "/reports/staffVacation"},
-        { title: "Log Summary", icon: "library_books", to: "/reports/logSummary"},
-        { title: "Preventive Maintenance", icon: "check_circle", to: "/reports/preventive" },
+        {
+          title: "Job assignment",
+          icon: "assignment_turned_in",
+          to: "/reports/jobAssignmentReport"
+        },
+        {
+          title: "Technician Job List",
+          icon: "format_list_numbered",
+          to: "/reports/technicianJobList"
+        },
+        {
+          title: "Technician Performance",
+          icon: "show_chart",
+          to: "/reports/technicianPerformance"
+        },
+        { title: "Parts Report", icon: "toys", to: "/reports/partsReport" },
+        {
+          title: "Staff Salary",
+          icon: "account_balance_wallet",
+          to: "/reports/staffSalary"
+        },
+        {
+          title: "Staff Vacation",
+          icon: "brightness_5",
+          to: "/reports/staffVacation"
+        },
+        {
+          title: "Log Summary",
+          icon: "library_books",
+          to: "/reports/logSummary"
+        },
+        {
+          title: "Preventive Maintenance",
+          icon: "check_circle",
+          to: "/reports/preventive"
+        },
         { title: "Repair", icon: "build", to: "/reports/repair" },
-        { title: "Repair duration", icon: "alarm", to: "/reports/repairDuration" },
-        { title: "Transaction", icon: "attach_money", to: "/reports/transaction" }
+        {
+          title: "Repair duration",
+          icon: "alarm",
+          to: "/reports/repairDuration"
+        },
+        {
+          title: "Transaction",
+          icon: "attach_money",
+          to: "/reports/transaction"
+        }
       ],
 
       right: null,
@@ -128,9 +184,9 @@ export default {
   },
   methods: {
     goToHome() {
-      if(this.$root.authInfo.authStatus == 1) {
+      if (this.$root.authInfo.authStatus == 1) {
         return this.$router.push("/internalHome");
-      } else {  
+      } else {
         return this.$router.push("/");
       }
     },
@@ -145,17 +201,20 @@ export default {
   },
 
   updated: async function() {
-  let staffName = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/getName/"+this.$root.authInfo.userId, {
-  });
-  let custrName = await axios.get("//localhost:80/MachineMaintenance/public/api/customer/getName/"+this.$root.authInfo.userId, {
-  });
+    let staffName = await axios.get(
+      "//localhost:80/MachineMaintenance/public/api/staff/getName/" +
+        this.$root.authInfo.userId,
+      {}
+    );
+    let custrName = await axios.get(
+      "//localhost:80/MachineMaintenance/public/api/customer/getName/" +
+        this.$root.authInfo.userId,
+      {}
+    );
 
-  if(!staffName.data && custrName.data)
-    this.name = custrName.data;
-  else if(staffName.data && !custrName.data)
-    this.name = staffName.data;
-  else
-    this.name = null;
+    if (!staffName.data && custrName.data) this.name = custrName.data;
+    else if (staffName.data && !custrName.data) this.name = staffName.data;
+    else this.name = null;
   }
 };
 </script>
