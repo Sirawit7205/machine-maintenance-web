@@ -10,7 +10,10 @@
               <v-autocomplete
                 v-model="contractId"
                 :items="existingContract"
+                item-text="contractId"
+                item-value="contractId"
                 placeholder="Search..."
+                @change="updateCont"
               ></v-autocomplete>
               <p class="text-xs-center">----- OR -----</p>Add new contract:
               <br>
@@ -37,8 +40,11 @@
                   <v-autocomplete
                     v-model="customerId"
                     :items="existingCustomer"
+                    item-text="customerName"
+                    item-value="customerId"
                     label="Search for existing customer:"
                     placeholder="Search..."
+                    @change="updateCust"
                   ></v-autocomplete>
                   <p class="text-xs-center">Or add new customer data:</p>
                   <v-text-field
@@ -58,6 +64,8 @@
                     :rules="machineInContractRules"
                     :items="machineInContractList"
                     label="Machines in this contract"
+                    item-text="machineID"
+                    item-value="machineID"
                     placeholder="Search..."
                     multiple
                     chips
@@ -68,9 +76,9 @@
                     type="number"
                     label="Contract Price"
                   ></v-text-field>
-                  <DatePicker v-model="startDate" :rules="startDateRules" label="Start Date"/>
+                  <DatePicker v-model="startDate" :setDate="startDate" :rules="startDateRules" label="Start Date"/>
                   <br>
-                  <DatePicker v-model="endDate" :rules="endDateRules" label="End Date"/>
+                  <DatePicker v-model="endDate" :setDate="endDate" :rules="endDateRules" label="End Date"/>
                 </v-flex>
               </v-layout>
             </v-form>
@@ -107,21 +115,23 @@ export default {
   data: () => ({
     valid: true,
 
-    actionType: 0,
+    contActionType: 0,
+    custActionType: 0,
 
     snackbarActivate: false,
     snackbarMode: null,
     snackbarMessage: null,
 
     contractId: null,
-    uniqueId: "0001", //dummy
-    existingContract: ["CN1001", "CN1002"], //dummy
+    uniqueContId: "0001",
+    existingContract: [], 
     contractIdRules: [
       v => !!v || "Please select a contract or create a new entry"
     ],
 
     customerId: null,
-    existingCustomer: ["CS1001", "CS1002"], //dummy
+    uniqueCustId: "0001",
+    existingCustomer: [],
 
     customerName: null,
     customerNameRules: [
@@ -143,13 +153,13 @@ export default {
     ],
 
     machineInContract: null,
-    machineInContractList: ["A1", "A2", "A3", "A4"], //dummy
+    machineInContractList: [],
     machineInContractRules: [v => !!v || "This field cannot be blank"],
 
     price: null,
     priceRules: [v => !!v || "This field cannot be blank"],
 
-    startDate: null,
+    startDate: "2019-01-01",
     startDateRules: [v => !!v || "This field cannot be blank"],
 
     endDate: null,
@@ -158,32 +168,65 @@ export default {
 
   methods: {
     generateNewId() {
-      this.contractId = "CN" + this.uniqueId; //dummy
+      this.contActionType = 0;
+      this.contractId = "CN" + this.uniqueContId;
+      this.getCurrentCont();
     },
+    
     async refreshData() {
-      let currentList = await axios.get(
-        "//localhost:80/Machine/public/api/contract/getCurrentIds",
-        {}
-      );
+      let currentList = await axios
+      .get("//localhost:80/MachineMaintenance/public/api/contract/getCurrentIds", {})
+      .then(response => { 
+        this.existingContract = response.data;
+      });
+
+      let contractCount = await axios
+      .get("//localhost:80/MachineMaintenance/public/api/contract/count", {})
+      .then(response => {
+        this.uniqueContId = response.data;
+      });
+
+      let currentCustList = await axios
+      .get("//localhost:80/MachineMaintenance/public/api/customer/getCurrentIds", {})
+      .then(response => { 
+        this.existingCustomer = response.data;
+      });
+
+      let customerCount = await axios
+      .get("//localhost:80/MachineMaintenance/public/api/existsCustomer/count", {})
+      .then(response => {
+        this.uniqueCustId = response.data;
+      });
     },
 
-    async getCurrentData() {
+    async getCurrentCont() {
       let allData = await axios.get(
         "//localhost:80/MachineMaintenance/public/api/contract/all/" +
           this.contractId,
         {}
       );
 
-      (this.contractId = allData.data[0].contractId),
-        (this.customerId = allData.data[0].customerId),
-        (this.customerName = allData.data[0].customerName),
-        (this.address = allData.data[0].address),
-        (this.phone = allData.data[0].phone),
-        (this.email = allData.data[0].email),
-        (this.machineInContract = allData.data[0].machineInContract),
-        (this.price = allData.data[0].price),
-        (this.startDate = allData.data[0].startDate),
-        (this.endDate = allData.data[0].endDate);
+      (this.customerId = allData.data[0].customerID),
+      (this.price = allData.data[0].price),
+      (this.startDate = allData.data[0].startDate),
+      (this.endDate = allData.data[0].endDate),
+      (this.machineInContractList = allData.data[0].allMachineList),
+      (this.machineInContract = allData.data[0].machineList)
+
+      if(this.contActionType == 1) this.updateCust();
+    },
+
+    async getCurrentCust() {
+      let allData = await axios.get(
+        "//localhost:80/MachineMaintenance/public/api/customer/all/" +
+          this.customerId,
+        {}
+      );
+
+      (this.customerName = allData.data[0].customerName),
+      (this.address = allData.data[0].address),
+      (this.phone = allData.data[0].phone),
+      (this.email = allData.data[0].email);
     },
 
     resetAllFields() {
@@ -199,13 +242,37 @@ export default {
         (this.endDate = null);
     },
 
-    setUpdate() {
-      this.actionType = 1;
-      this.getCurrentData();
+    updateCont() {
+      this.contActionType = 1;
+      this.getCurrentCont();
+    },
+
+    updateCust() {
+      this.custActionType = 1;
+      this.getCurrentCust();
+    },
+
+    commitChanges() {
+      return axios
+        .post("//localhost:80/MachineMaintenance/public/api/contract/submit", {
+          contActionType: this.contActionType,
+          custActionType: this.custActionType,
+          contractId: this.contractId,
+          customerId: this.customerId,
+          customerName: this.customerName,
+          address: this.address,
+          phone: this.phone,
+          email: this.email,
+          price: this.price,
+          startDate: this.startDate,
+          endDate: this.endDate
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error));
     },
 
     deleteData() {
-      this.actionType = 2;
+      this.contActionType = 2;
       this.commitChanges().then(response => {
         if (response == true)
           this.openSnackbar("success", "Delete successfully");
@@ -217,25 +284,6 @@ export default {
       this.resetAllFields();
     },
 
-    commitChanges() {
-      return axios
-        .post("//localhost:80/MachineMaintenance/public/api/contract/submit", {
-          actionType: this.actionType,
-          contractId: this.contractId,
-          customerId: this.customerId,
-          customerName: this.customerName,
-          address: this.address,
-          phone: this.phone,
-          email: this.email,
-          machineInContract: this.machineInContract,
-          price: this.price,
-          startData: this.startDate,
-          endDate: this.endDate
-        })
-        .then(response => response.data)
-        .catch(error => console.log(error));
-    },
-
     openSnackbar(mode, message) {
       this.snackbarMode = mode;
       this.snackbarMessage = message;
@@ -244,9 +292,14 @@ export default {
 
     validate() {
       if (this.$refs.ContractForm.validate()) {
-        this.openSnackbar("success", "Sucessfully save");
+        this.commitChanges().then(response => {
+          if(response == 1)
+            this.openSnackbar("success", "Insert/Update success");
+          else
+            this.openSnackbar("error", "Insert/Update error");
+        });
       } else {
-        this.openSnackbar("error", "An error had occured, please try again.");
+        this.openSnackbar("error", "Error, please check your input.");
       }
     }
   },
