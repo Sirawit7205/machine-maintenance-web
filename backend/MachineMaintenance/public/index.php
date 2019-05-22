@@ -51,6 +51,7 @@ require "../src/routes/login.php";
 require "../src/routes/register.php";
 
 require "../src/routes/staffForm.php";
+require "../src/routes/logForm.php";
 
 $app->run();
 ?>
