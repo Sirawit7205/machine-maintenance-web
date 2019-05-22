@@ -97,6 +97,7 @@
 
 <script>
 import DatePicker from "../../components/DatePicker.vue";
+import axios from "axios";
 
 export default {
   components: {
@@ -104,6 +105,8 @@ export default {
   },
   data: () => ({
     valid: true,
+
+    actionType: 0,
 
     snackbarActivate: false,
     snackbarMode: null,
@@ -156,6 +159,76 @@ export default {
     generateNewId() {
       this.contractId = "CN" + this.uniqueId; //dummy
     },
+    async refreshData() {},
+
+    async getCurrentData() {
+      let allData = await axios.get(
+        "//localhost:80/MachineMaintenance/public/api/contract/all/" +
+          this.contractId,
+        {}
+      );
+
+      (this.contractId = allData.data[0].contractId),
+        (this.customerId = allData.data[0].customerId),
+        (this.customerName = allData.data[0].customerName),
+        (this.address = allData.data[0].address),
+        (this.phone = allData.data[0].phone),
+        (this.email = allData.data[0].email),
+        (this.machineInContract = allData.data[0].machineInContract),
+        (this.price = allData.data[0].price),
+        (this.startDate = allData.data[0].startDate),
+        (this.endDate = allData.data[0].endDate);
+    },
+
+    resetAllFields() {
+      (this.contractId = null),
+        (this.customerId = null),
+        (this.customerName = null),
+        (this.address = null),
+        (this.phone = null),
+        (this.email = null),
+        (this.machineInContract = null),
+        (this.price = null),
+        (this.startDate = null),
+        (this.endDate = null);
+    },
+
+    setUpdate() {
+      this.actionType = 1;
+      this.getCurrentData();
+    },
+
+    deleteData() {
+      this.actionType = 2;
+      this.commitChanges().then(response => {
+        if (response == true)
+          this.openSnackbar("success", "Delete successfully");
+        else this.openSnackbar("error", "Delete error");
+      });
+
+      //clear deleted data from the form
+      this.refreshData();
+      this.resetAllFields();
+    },
+
+    commitChanges() {
+      return axios.post(
+        "//localhost:80/MachineMaintenance/public/api/contract/submit",
+        {
+          actionType: this.actionType,
+          contractId: this.contractId,
+          customerId: this.customerId,
+          customerName: this.customerName,
+          address: this.address,
+          phone: this.phone,
+          email: this.email,
+          machineInContract: this.machineInContract,
+          price: this.price,
+          startData: this.startDate,
+          endDate: this.endDate
+        }
+      );
+    },
 
     openSnackbar(mode, message) {
       this.snackbarMode = mode;
@@ -170,6 +243,9 @@ export default {
         this.openSnackbar("error", "An error had occured, please try again.");
       }
     }
+  },
+  created: async function() {
+    this.refreshData();
   }
 };
 </script>

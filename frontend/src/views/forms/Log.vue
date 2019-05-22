@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
-      <v-flex lg9 sm12>
+      <v-flex lg8 sm12>
         <div class="headline mb-1">Add log data</div>
         <v-card>
           <v-card-text>
@@ -18,7 +18,7 @@
                     ></v-radio>
                   </v-radio-group>
                 </v-flex>
-                <v-flex xs9>
+                <v-flex xs8>
                   <p>Log details:</p>
                   <v-select
                     v-model="subLogType"

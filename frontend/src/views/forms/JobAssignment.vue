@@ -26,6 +26,7 @@
                     label="Job ID"
                     disabled
                   ></v-text-field>
+                  <br>
                   <v-autocomplete
                     v-model="machineId"
                     :rules="machineIdRules"
@@ -98,6 +99,7 @@
 <script>
 import DatePicker from "../../components/DatePicker.vue";
 import TimePicker from "../../components/TimePicker.vue";
+import axios from "axois";
 
 export default {
   components: {
@@ -107,6 +109,8 @@ export default {
 
   data: () => ({
     valid: true,
+
+    actionType: 0,
 
     snackbarActivate: false,
     snackbarMode: null,
@@ -161,6 +165,43 @@ export default {
       this.snackbarActivate = true;
     },
 
+    async refreshData() {},
+
+    async getCurrentData() {
+      let allData = await axios.get(
+        "//localhost:80/MachineMaintenance/public/api/jobas/all" + this.jobId,
+        {}
+      );
+
+      (this.jobId = allData.data[0].jobId),
+        (this.machineId = allData.data[0].machineId),
+        (this.jobType = allData.data[0].jobType),
+        (this.staff = allData.data[0].staff),
+        (this.details = allData.data[0].details),
+        (this.startDate = allData.data[0].startDate),
+        (this.startTime = allData.data[0].startTime),
+        (this.estimateDuration = allData.data[0].estimateDuration),
+        (this.priority = allData.data[0].priority),
+        (this.severity = allData.data[0].severity);
+    },
+
+    resetAllFields() {
+      (this.jobId = null),
+        (this.machineId = null),
+        (this.jobType = null),
+        (this.staff = null),
+        (this.details = null),
+        (this.startDate = null),
+        (this.startTime = null),
+        (this.estimateDuration = null),
+        (this.priority = null),
+        (this.severity = null);
+    },
+
+    setUpdate() {
+      this.actionType = 1;
+      this.getCurrentData();
+    },
     validate() {
       if (this.$refs.JobAssignmentForm.validate()) {
         this.openSnackbar("success", "Sucessfully save");
