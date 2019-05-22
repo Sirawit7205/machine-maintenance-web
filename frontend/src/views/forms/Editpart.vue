@@ -75,9 +75,13 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
     valid: true,
+
+    actionType: 0,
 
     snackbarActivate: false,
     snackbarMode: null,
@@ -104,6 +108,60 @@ export default {
       this.partsId = "PN" + this.uniqueId; //dummy
     },
 
+    async refreshData() {
+      let currentList = await axios.get("", {}).then(response => {});
+    },
+
+    async getCurrentData() {
+      let allData = await axios.get(
+        "//localhost:80/MachineMaintenance/public/api/editpart" + this.xxx,
+        {}
+      );
+
+      (this.partsId = allData.data[0].partsId),
+        (this.partsName = allData.data[0].partsName),
+        (this.pricePerUnit = allData.data[0].pricePerUnit),
+        (this.useInModel = allData.data[0].useInModel);
+    },
+
+    resetAllFields() {
+      (this.partsId = null),
+        (this.partsName = null),
+        (this.pricePerUnit = null),
+        (this.useInModel = null);
+    },
+
+    setUpdate() {
+      this.actionType = 1;
+      this.getCurrentData();
+    },
+
+    commitChanges() {
+      return axios
+        .post("//localhost:80/MachineMaintenance/public/api/editpart/submit", {
+          actionType: this.actionType,
+          partsId: this.partsId,
+          partsName: this.partsName,
+          pricePerUnit: this.pricePerUnit,
+          useInModel: this.useInModel
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error));
+    },
+
+    deleteData() {
+      this.actionType = 2;
+      this.commitChanges().then(response => {
+        if (response == true)
+          this.openSnackbar("success", "Delete successfully");
+        else this.openSnackbar("error", "Delete error");
+      });
+
+      //clear deleted data from the form
+      this.refreshData();
+      this.resetAllFields();
+    },
+
     openSnackbar(mode, message) {
       this.snackbarMode = mode;
       this.snackbarMessage = message;
@@ -117,6 +175,9 @@ export default {
         this.openSnackbar("error", "An error had occured, please try again.");
       }
     }
+  },
+  created: async function() {
+    this.refreshData();
   }
 };
 </script>

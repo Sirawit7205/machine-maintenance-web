@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-md fill-height>
     <v-layout align-start justify-center fill-height wrap>
-      <v-flex lg9 sm12>
+      <v-flex lg8 sm12>
         <div class="headline mb-1">Parts Order and Usage</div>
         <v-card>
           <v-card-text>
@@ -18,7 +18,7 @@
                     ></v-radio>
                   </v-radio-group>
                 </v-flex>
-                <v-flex xs9>
+                <v-flex xs8>
                   <v-autocomplete
                     v-model="partsId"
                     :rules="partsIdRules"
@@ -60,6 +60,8 @@
 </template>
 
 <script>
+import axios from "axois";
+
 export default {
   data: () => ({
     valid: true,
@@ -68,6 +70,7 @@ export default {
     snackbarMode: null,
     snackbarMessage: null,
 
+    uniqueId: "",
     partsType: "in",
     partsTypeList: [
       { label: "Parts in", value: "in" },
@@ -75,11 +78,11 @@ export default {
     ],
 
     partsId: null,
-    existingPartsId: ["PN1001", "PN1002"], //dummy
+    existingPartsId: [],
     partsIdRules: [v => !!v || "This field cannot be blank"],
 
     partsName: null,
-    existingPartsName: ["PN1001", "PN1002"], //dummy
+    existingPartsName: [],
     partsNameRules: [v => !!v || "This field cannot be blank"],
 
     amount: null,
@@ -89,6 +92,58 @@ export default {
   }),
 
   methods: {
+    generateNewId() {
+      this.resetAllFields();
+      this.partsId = "ST" + this.uniqueId;
+    },
+    async refreshData() {
+      let currentList = await axios
+        .get(
+          "//localhost:80/MachineMaintenance/public/api/partsInOut/getCurrentIds",
+          {}
+        )
+        .then(response => {
+          this.existingPartsId = response.data;
+        });
+    },
+
+    async getCurrentData() {
+      let allData = await axios.get(
+        "//localhost:80/MachineMaintenance/public/api/partsInOut/all/" +
+          this.partsId,
+        {}
+      );
+
+      (this.partsType = allData.data[0].partsType),
+        (this.partsId = allData.data[0].partsId),
+        (this.partsName = allData.data[0].paratsName),
+        (this.amount = allData.data[0].amount),
+        (this.details = allData.data[0].details);
+    },
+    resetAllFields() {
+      (this.partsType = null),
+        (this.partsId = null),
+        (this.partsName = null),
+        (this.amount = null),
+        (this.details = null);
+    },
+    commitChanges() {
+      return axios
+        .post(
+          "//localhost:80/MachineMaintenance/public/api/partsInOut/submit",
+          {
+            actionType: this.actionType,
+            partsType: this.partsType,
+            partsId: this.partsId,
+            partsName: this.partsName,
+            amount: this.amount,
+            details: this.details
+          }
+        )
+        .then(response => response.data)
+        .catch(error => console.log(error));
+    },
+
     openSnackbar(mode, message) {
       this.snackbarMode = mode;
       this.snackbarMessage = message;
@@ -102,6 +157,10 @@ export default {
         this.openSnackbar("error", "An error had occured, please try again.");
       }
     }
+  },
+
+  created: async function() {
+    this.refreshData();
   }
 };
 </script>

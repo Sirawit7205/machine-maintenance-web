@@ -14,7 +14,7 @@
                 item-value="staffId"
                 placeholder="Search..."
                 @change="setUpdate"
-                ></v-autocomplete>
+              ></v-autocomplete>
               <p class="text-xs-center">----- OR -----</p>Add new staff:
               <br>
               <v-btn block @click="generateNewId">Add Staff</v-btn>
@@ -45,7 +45,12 @@
                   <v-textarea v-model="address" :rules="addressRules" label="Address"></v-textarea>
                   <v-text-field v-model="phone" :rules="phoneRules" type="number" label="Phone"></v-text-field>
                   <v-text-field v-model="email" :rules="emailRules" type="email" label="Email"></v-text-field>
-                  <v-text-field v-model="username" :rules="usernameRules" type="text" label="Username"></v-text-field>
+                  <v-text-field
+                    v-model="username"
+                    :rules="usernameRules"
+                    type="text"
+                    label="Username"
+                  ></v-text-field>
                 </v-flex>
                 <v-flex xs6>
                   <v-select
@@ -181,8 +186,11 @@ export default {
     password: "",
     cfmPassword: "",
     passwordRules: [
-      v => (v && v.length >= 8 && v.length <= 20) || !v || "Password length must be 8-20 characters"
-    ],
+      v =>
+        (v && v.length >= 8 && v.length <= 20) ||
+        !v ||
+        "Password length must be 8-20 characters"
+    ]
   }),
 
   methods: {
@@ -193,45 +201,57 @@ export default {
     },
 
     async refreshData() {
-      let currentList = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/getCurrentIds", {
-      }).then(response => { this.existingStaff = response.data });
-      let staffCount = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/count", {
-      }).then(response => { this.uniqueId = response.data });
+      let currentList = await axios
+        .get(
+          "//localhost:80/MachineMaintenance/public/api/staff/getCurrentIds",
+          {}
+        )
+        .then(response => {
+          this.existingStaff = response.data;
+        });
+      let staffCount = await axios
+        .get("//localhost:80/MachineMaintenance/public/api/staff/count", {})
+        .then(response => {
+          this.uniqueId = response.data;
+        });
     },
 
     async getCurrentData() {
-      let allData = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/all/"+this.staffId, {
-      });
+      let allData = await axios.get(
+        "//localhost:80/MachineMaintenance/public/api/staff/all/" +
+          this.staffId,
+        {}
+      );
 
-      this.staffId = allData.data[0].staffId,
-      this.username = allData.data[0].staffUsername,
-      this.staffName = allData.data[0].staffName,
-      this.address = allData.data[0].address,
-      this.phone = allData.data[0].phone,
-      this.email = allData.data[0].email,
-      this.position = allData.data[0].position,
-      this.salary = allData.data[0].salary,
-      this.status = allData.data[0].status,
-      this.experience = allData.data[0].experience,
-      this.vacationTotal = allData.data[0].vacationTotal,
-      this.vacationLeft = allData.data[0].vacationLeft
+      (this.staffId = allData.data[0].staffId),
+        (this.username = allData.data[0].staffUsername),
+        (this.staffName = allData.data[0].staffName),
+        (this.address = allData.data[0].address),
+        (this.phone = allData.data[0].phone),
+        (this.email = allData.data[0].email),
+        (this.position = allData.data[0].position),
+        (this.salary = allData.data[0].salary),
+        (this.status = allData.data[0].status),
+        (this.experience = allData.data[0].experience),
+        (this.vacationTotal = allData.data[0].vacationTotal),
+        (this.vacationLeft = allData.data[0].vacationLeft);
     },
 
     resetAllFields() {
-      this.staffId = null,
-      this.username = null,
-      this.password = null,
-      this.cfmPassword = null,
-      this.staffName = null,
-      this.address = null,
-      this.phone = null,
-      this.email = null,
-      this.position = null,
-      this.salary = null,
-      this.status = null,
-      this.experience = null,
-      this.vacationTotal = null,
-      this.vacationLeft = null
+      (this.staffId = null),
+        (this.username = null),
+        (this.password = null),
+        (this.cfmPassword = null),
+        (this.staffName = null),
+        (this.address = null),
+        (this.phone = null),
+        (this.email = null),
+        (this.position = null),
+        (this.salary = null),
+        (this.status = null),
+        (this.experience = null),
+        (this.vacationTotal = null),
+        (this.vacationLeft = null);
     },
 
     setUpdate() {
@@ -240,31 +260,33 @@ export default {
     },
 
     commitChanges() {
-      return axios.post("//localhost:80/MachineMaintenance/public/api/staff/submit", {
-        actionType: this.actionType,
-        staffId: this.staffId,
-        staffUsername: this.username,
-        staffPassword: this.password,
-        staffName: this.staffName,
-        address: this.address,
-        phone: this.phone,
-        email: this.email,
-        position: this.position,
-        salary: this.salary,
-        status: this.status,
-        experience: this.experience,
-        vacationTotal: this.vacationTotal,
-        vacationLeft: this.vacationLeft
-      }).then(response => response.data).catch(error => console.log(error));
+      return axios
+        .post("//localhost:80/MachineMaintenance/public/api/staff/submit", {
+          actionType: this.actionType,
+          staffId: this.staffId,
+          staffUsername: this.username,
+          staffPassword: this.password,
+          staffName: this.staffName,
+          address: this.address,
+          phone: this.phone,
+          email: this.email,
+          position: this.position,
+          salary: this.salary,
+          status: this.status,
+          experience: this.experience,
+          vacationTotal: this.vacationTotal,
+          vacationLeft: this.vacationLeft
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error));
     },
 
     deleteData() {
       this.actionType = 2;
       this.commitChanges().then(response => {
-        if(response == true)
-          this.openSnackbar("success","Delete successfully");
-        else
-          this.openSnackbar("error","Delete error");
+        if (response == true)
+          this.openSnackbar("success", "Delete successfully");
+        else this.openSnackbar("error", "Delete error");
       });
 
       //clear deleted data from the form
@@ -280,18 +302,16 @@ export default {
 
     validate() {
       if (this.$refs.StaffForm.validate()) {
-        if(this.password == this.cfmPassword) {
+        if (this.password == this.cfmPassword) {
           this.commitChanges().then(response => {
-            if(response == true && this.actionType == 0) {
-              this.openSnackbar("success","Insert successfully");
+            if (response == true && this.actionType == 0) {
+              this.openSnackbar("success", "Insert successfully");
 
               //show new data in dropdown
               this.refreshData();
-            }
-            else if(response == true && this.actionType == 1)
-              this.openSnackbar("success","Update successfully");
-            else
-              this.openSnackbar("error","Insert/Update error");
+            } else if (response == true && this.actionType == 1)
+              this.openSnackbar("success", "Update successfully");
+            else this.openSnackbar("error", "Insert/Update error");
           });
         } else {
           this.openSnackbar("error", "Error, password does not matched.");
