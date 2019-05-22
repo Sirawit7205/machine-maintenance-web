@@ -7,25 +7,49 @@ $app->post("/api/log/submit", function(Request $request, Response $response) {
   $actionType = $request->getParsedBody()['actionType'];
   $logType = $request->getParsedBody()['logType'];
   $subLogType = $request->getParsedBody()['subLogType'];
-  $machine = $request->getParsedBody()['machine'];
-  $detail = $request->getParsedBody()['detail'];
-  $startDate = $request->getParsedBody()['startDate'];
-  $startTime = $request->getParsedBody()['startTime'];
+  $details = $request->getParsedBody()['details'];
+
+  if($logType == "case"){
+    $jobID = $request->getParsedBody()['jobId'];
+    $startDate = $request->getParsedBody()['startDate'];
+    $startTime = $request->getParsedBody()['startTime'];
+    $endDate = $request->getParsedBody()['endDate'];
+    $endTime = $request->getParsedBody()['endTime'];
+    $estDuration = $request->getParsedBody()['estDuration'];
+    $machineID = $request->getParsedBody()['machineId'];
+    $priority = $request->getParsedBody()['priority'];
+    $severity = $request->getParsedBody()['severity'];
+    $jobStatus = $request->getParsedBody()['jobStatus'];
+  }
+  else if($logType == "mach"){
+    $logID = $request->getParsedBody()['logId'];
+    $machineID = $request->getParsedBody()['machineId'];
+  }
+  else if($logType == "main"){
+    $logID = $request->getParsedBody()['logId'];
+    $jobID = $request->getParsedBody()['jobId'];
+  }
+  
+  
+  //$machine = $request->getParsedBody()['machine'];
+  //$details = $request->getParsedBody()['details'];
+  //$startDate = $request->getParsedBody()['startDate'];
+  //$startTime = $request->getParsedBody()['startTime'];
 
   //not in frontend
-  $machineID = $request->getParsedBody()['machineId'];
-  $jobID = $request->getParsedBody()['jobId'];
-  $logID = $request->getParsedBody()['logId'];
-  $priority = $request->getParsedBody()['priority'];
-  $severity = $request->getParsedBody()['severity'];
-  $endDate = $request->getParsedBody()['endDate'];
-  $endTime = $request->getParsedBody()['endTime'];
-  $estDuration = $request->getParsedBody()['estDuration'];
-  $jobStatus = $request->getParsedBody()['jobStatus'];
+  //$machineID = $request->getParsedBody()['machineId'];
+  //$jobID = $request->getParsedBody()['jobId'];
+  //$logID = $request->getParsedBody()['logId'];
+  //$priority = $request->getParsedBody()['priority'];
+  //$severity = $request->getParsedBody()['severity'];
+  //$endDate = $request->getParsedBody()['endDate'];
+  //$endTime = $request->getParsedBody()['endTime'];
+  //$estDuration = $request->getParsedBody()['estDuration'];
+  //$jobStatus = $request->getParsedBody()['jobStatus'];
 
-  $sqlCaseReport = "INSERT INTO job (jobID, jobType, date, startTime, endDate, endTime, estimateDuration, machineID, details, priority, severity, jobStatus) VALUES (:jobID, :subLogType, :startDate, :startTime, NULL, NULL, :estDuration, :machineID, :detail, :priority, :severity, 'Pending')";
-  $sqlMachineLog = "INSERT INTO machinelog (logID, timestamp, logType, details, machineID) VALUES (:logID, CURRENT_TIMESTAMP, :subLogType, :detail, :machineID)";
-  $sqlOperationLog = "INSERT INTO operationlog (logID, timestamp, logType, details, jobID) VALUES (:logID, CURRENT_TIMESTAMP, :subLogType, :detail, :jobID)";
+  $sqlCaseReport = "INSERT INTO job (jobID, jobType, date, startTime, endDate, endTime, estimateDuration, machineID, details, priority, severity, jobStatus) VALUES (:jobID, :subLogType, :startDate, :startTime, NULL, NULL, :estDuration, :machineID, :details, :priority, :severity, 'Pending')";
+  $sqlMachineLog = "INSERT INTO machinelog (logID, timestamp, logType, details, machineID) VALUES (:logID, CURRENT_TIMESTAMP, :subLogType, :details, :machineID)";
+  $sqlOperationLog = "INSERT INTO operationlog (logID, timestamp, logType, details, jobID) VALUES (:logID, CURRENT_TIMESTAMP, :subLogType, :details, :jobID)";
   $sqlCaseUpdate = "UPDATE job SET jobType = :subLogType, date = :startDate, startTime = :startTime, endDate = :endDate, endTime = :endTime, estimateDuration = :estimateDuration, machineID = :machineID, details = :details, priority = :priority, severity = :severity, jobStatus = :jobStatus WHERE jobID = :jobID";
   $sqlMachLogUpdate = "UPDATE machinelog SET timestamp = CURRENT_TIMESTAMP, logType = :subLogType, details = :details, machineID = :machineID WHERE logID = :logID";
   $sqlOperationUpdate = "UPDATE operationlog SET timestamp = CURRENT_TIMESTAMP, logType = :subLogType, details = :details, jobID = :jobID WHERE logID = :lodID";
@@ -47,22 +71,22 @@ $app->post("/api/log/submit", function(Request $request, Response $response) {
         $stmt->bindParam(':startTime', $startTime, PDO::PARAM_STR);
         $stmt->bindParam(':estDuration', $estDuration, PDO::PARAM_STR);
         $stmt->bindParam(':machineID', $machineID, PDO::PARAM_STR);
-        $stmt->bindParam(':detail', $detail, PDO::PARAM_STR);
-        $stmt->bindParam(':priority', $priority, PDO::PARAM_STR);
-        $stmt->bindParam(':severity', $severity, PDO::PARAM_STR);
+        $stmt->bindParam(':details', $details, PDO::PARAM_STR);
+        $stmt->bindParam(':priority', $priority, PDO::PARAM_INT);
+        $stmt->bindParam(':severity', $severity, PDO::PARAM_INT);
       }
       else if($logType == 'mach'){
         $stmt = $db->prepare($sqlMachineLog);
         $stmt->bindParam(':logID', $logID, PDO::PARAM_STR);
         $stmt->bindParam(':subLogType', $subLogType, PDO::PARAM_STR);
-        $stmt->bindParam(':detail', $detail, PDO::PARAM_STR);
+        $stmt->bindParam(':details', $details, PDO::PARAM_STR);
         $stmt->bindParam(':machineID', $machineID, PDO::PARAM_STR);
       }
       else if($logType == 'main'){
         $stmt = $db->prepare($sqlOperationLog);
         $stmt->bindParam(':logID', $logID, PDO::PARAM_STR);
         $stmt->bindParam(':subLogType', $subLogType, PDO::PARAM_STR);
-        $stmt->bindParam(':detail', $detail, PDO::PARAM_STR);
+        $stmt->bindParam(':details', $details, PDO::PARAM_STR);
         $stmt->bindParam(':jobID', $jobID, PDO::PARAM_STR);
       }
 
@@ -79,7 +103,7 @@ $app->post("/api/log/submit", function(Request $request, Response $response) {
         $stmt->bindParam(':endTime', $endTime, PDO::PARAM_STR);
         $stmt->bindParam(':estDuration', $estDuration, PDO::PARAM_STR);
         $stmt->bindParam(':machineID', $machineID, PDO::PARAM_STR);
-        $stmt->bindParam(':detail', $detail, PDO::PARAM_STR);
+        $stmt->bindParam(':details', $details, PDO::PARAM_STR);
         $stmt->bindParam(':priority', $priority, PDO::PARAM_STR);
         $stmt->bindParam(':severity', $severity, PDO::PARAM_STR);
         $stmt->bindParam(':jobStatus', $jobStatus, PDO::PARAM_STR);
@@ -88,14 +112,14 @@ $app->post("/api/log/submit", function(Request $request, Response $response) {
         $stmt = $db->prepare($sqlMachLogUpdate);
         $stmt->bindParam(':logID', $logID, PDO::PARAM_STR);
         $stmt->bindParam(':subLogType', $subLogType, PDO::PARAM_STR);
-        $stmt->bindParam(':detail', $detail, PDO::PARAM_STR);
+        $stmt->bindParam(':details', $details, PDO::PARAM_STR);
         $stmt->bindParam(':machineID', $machineID, PDO::PARAM_STR);
       }
       else if($logType == "main"){
         $stmt = $db->prepare($sqlOperationUpdate);
         $stmt->bindParam(':logID', $logID, PDO::PARAM_STR);
         $stmt->bindParam(':subLogType', $subLogType, PDO::PARAM_STR);
-        $stmt->bindParam(':detail', $detail, PDO::PARAM_STR);
+        $stmt->bindParam(':details', $details, PDO::PARAM_STR);
         $stmt->bindParam(':jobID', $jobID, PDO::PARAM_STR);
       }
     }
