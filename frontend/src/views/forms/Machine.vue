@@ -66,6 +66,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
+            <v-btn @click="deleteData">Delete</v-btn>
             <v-spacer/>
             <v-btn @click="validate">Save</v-btn>
           </v-card-actions>
@@ -87,7 +88,7 @@
 
 <script>
 import AddMachineModel from "../../components/AddMachineModel.vue";
-
+import axios from "axios";
 export default {
   components: {
     AddMachineModel
@@ -101,14 +102,14 @@ export default {
     snackbarMessage: null,
 
     machineId: null,
-    uniqueId: "0001", //dummy
-    existingMachine: ["MC1001", "MC1002"], //dummy
+    uniqueId: "", //dummy
+    existingMachine: [], //dummy
     machineIdRules: [
       v => !!v || "Please select a machine or create a new entry"
     ],
 
     modelNumber: null,
-    existingModel: ["ABC1", "DEF2"], //dummy
+    existingModel: [], //dummy
     modelNumberRules: [v => !!v || "This field cannot be blank"],
 
     serialNumber: null,
@@ -121,13 +122,79 @@ export default {
     notes: null,
 
     status: null,
-    statusList: ["Normal", "Down", "Repair pending", "Repairing"],
+    statusList: [],
     statusRules: [v => !!v || "This field cannot be blank"]
   }),
 
   methods: {
     generateNewId() {
+      this.resetAllFields();
       this.machineId = "MC" + this.uniqueId; //dummy
+      this.actionType = 0;
+    },
+
+    async refreshData() {
+      let currentList = await axios
+        .get(
+          "//localhost:80/MachineMaintenance/public/api/machine/getCurrentIds",
+          {}
+        )
+        .then(response => {
+          this.existingMachine = response.data;
+        });
+    },
+    async getCurrentData() {
+      let allData = await axios.get(
+        "//localhost:80/MachineMaintenance/public/api/machine/all/" +
+          this.machineId,
+        {}
+      );
+      (this.machineId = allData.data[0].machineId),
+        (this.modelNumber = allData.data[0].modelNumber),
+        (this.serialNumber = allData.data[0].serialNumber),
+        (this.serviceType = allData.data[0].serviceType),
+        (this.notes = allData.data[0].notes),
+        (this.status = allData.data[0].status);
+    },
+
+    commitChanges() {
+      return axios.post(
+        "//localhost:80/MachineMaintenance/public/api/machine/submit",
+        {
+          machineId: this.machineId,
+          modelNumber: this.modelNumber,
+          serialNumber: this.serialNumber,
+          serviceType: this.serviceType,
+          notes: this.notes,
+          status: this.status
+        }
+      );
+    },
+    resetAllFields() {
+      (this.machineId = null),
+        (this.modelNumber = null),
+        (this.serialNumber = null),
+        (this.serviceType = null),
+        (this.notes = null),
+        (this.status = null);
+    },
+
+    setUpdate() {
+      this.actionType = 1;
+      this.getCurrentData();
+    },
+
+    deleteData() {
+      this.actionType = 2;
+      this.commitChanges().then(response => {
+        if (response == true)
+          this.openSnackbar("success", "Delete successfully");
+        else this.openSnackbar("error", "Delete error");
+      });
+
+      //clear deleted data from the form
+      this.refreshData();
+      this.resetAllFields();
     },
 
     openSnackbar(mode, message) {
@@ -143,6 +210,10 @@ export default {
         this.openSnackbar("error", "An error had occured, please try again.");
       }
     }
+  },
+
+  created: async function() {
+    this.refreshData();
   }
 };
 </script>
