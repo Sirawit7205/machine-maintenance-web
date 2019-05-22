@@ -77,6 +77,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
+            <v-btn @click="deleteData">Delete</v-btn>
             <v-spacer/>
             <v-btn @click="validate">Save</v-btn>
           </v-card-actions>
@@ -99,7 +100,7 @@
 <script>
 import DatePicker from "../../components/DatePicker.vue";
 import TimePicker from "../../components/TimePicker.vue";
-import axios from "axois";
+import axios from "axios";
 
 export default {
   components: {
@@ -116,20 +117,21 @@ export default {
     snackbarMode: null,
     snackbarMessage: null,
 
+    uniqueId: "",
     jobId: null,
-    existingJobs: ["JB1001", "JB1002"], //dummy
+    existingJobs: [], //dummy
     jobIdRules: [v => !!v || "Please select a job"],
 
     machineId: null,
-    machineIdList: ["A1", "A2"],
+    machineIdList: [],
     machineIdRules: [v => !!v || "This field cannot be blank"],
 
     jobType: null,
-    jobTypeList: ["Maintenance", "Repair"],
+    jobTypeList: [],
     jobTypeRules: [v => !!v || "This field cannot be blank"],
 
     staff: null,
-    staffList: ["S1", "S2"],
+    staffList: [],
     staffRules: [v => !!v || "This field cannot be blank"],
 
     details: null,
@@ -159,13 +161,24 @@ export default {
   }),
 
   methods: {
+    generateNewId() {
+      this.resetAllFields();
+      this.jobId = "ST" + this.uniqueId;
+    },
+
     openSnackbar(mode, message) {
       this.snackbarMode = mode;
       this.snackbarMessage = message;
       this.snackbarActivate = true;
     },
 
-    async refreshData() {},
+    async refreshData() {
+      let currentList = await axios
+        .get("//localhost:80/Maintenance/public/api/jobas/getCurrentIds", {})
+        .then(response => {
+          this.existingJobs = response.data;
+        });
+    },
 
     async getCurrentData() {
       let allData = await axios.get(
@@ -184,6 +197,23 @@ export default {
         (this.priority = allData.data[0].priority),
         (this.severity = allData.data[0].severity);
     },
+    setUpdate() {
+      this.actionType = 1;
+      this.getCurrentData();
+    },
+
+    deleteData() {
+      this.actionType = 2;
+      this.commitChanges().then(response => {
+        if (response == true)
+          this.openSnackbar("success", "Delete successfully");
+        else this.openSnackbar("error", "Delete error");
+      });
+
+      //clear deleted data from the form
+      this.refreshData();
+      this.resetAllFields();
+    },
 
     resetAllFields() {
       (this.jobId = null),
@@ -197,11 +227,6 @@ export default {
         (this.priority = null),
         (this.severity = null);
     },
-
-    setUpdate() {
-      this.actionType = 1;
-      this.getCurrentData();
-    },
     validate() {
       if (this.$refs.JobAssignmentForm.validate()) {
         this.openSnackbar("success", "Sucessfully save");
@@ -209,6 +234,9 @@ export default {
         this.openSnackbar("error", "An error had occured, please try again.");
       }
     }
+  },
+  created: async function() {
+    this.refreshData();
   }
 };
 </script>

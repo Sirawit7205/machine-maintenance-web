@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import axios from "axois";
+import axios from "axios";
 
 export default {
   data: () => ({
@@ -105,20 +105,6 @@ export default {
         .then(response => {
           this.existingPartsId = response.data;
         });
-    },
-
-    async getCurrentData() {
-      let allData = await axios.get(
-        "//localhost:80/MachineMaintenance/public/api/partsInOut/all/" +
-          this.partsId,
-        {}
-      );
-
-      (this.partsType = allData.data[0].partsType),
-        (this.partsId = allData.data[0].partsId),
-        (this.partsName = allData.data[0].paratsName),
-        (this.amount = allData.data[0].amount),
-        (this.details = allData.data[0].details);
     },
     resetAllFields() {
       (this.partsType = null),
