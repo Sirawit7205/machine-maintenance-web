@@ -62,16 +62,17 @@ export default {
     ],
     joblistItems: [],
 
-    staffId: "ST0003",
+    staffId: "",
     staffName: String
   }),
 
   created: async function() {
-  let assign = await axios.get("//localhost:80/MachineMaintenance/public/api/job/assignment/"+this.staffId, {
+  let assign = await axios.get("//localhost:80/MachineMaintenance/public/api/job/assignment/"+this.$root.authInfo.userId, {
   });
-  let name = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/getName/"+this.staffId, {
+  let name = await axios.get("//localhost:80/MachineMaintenance/public/api/staff/getName/"+this.$root.authInfo.userId, {
   });
 
+  this.staffId = this.$root.authInfo.userId;
   this.joblistItems = assign.data;
   this.staffName = name.data;
   }

@@ -75,21 +75,25 @@ export default {
       {
         text: "Machine",
         value: "machine",
+        sortable: false,
         align: "center"
       },
       {
         text: "Status",
         value: "status",
+        sortable: false,
         align: "center"
       },
       {
         text: "Severity",
         value: "severity",
+        sortable: false,
         align: "center"
       },
       {
         text: "Priority",
         value: "priority",
+        sortable: false,
         align: "center"
       }
     ],

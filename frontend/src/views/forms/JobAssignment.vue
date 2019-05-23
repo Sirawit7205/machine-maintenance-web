@@ -7,7 +7,7 @@
           <v-card-text>
             <v-form ref="StaffSrcAdd" v-model="valid" lazy-validation>
               Search For Existing Jobs:
-              <v-autocomplete v-model="jobId" :items="existingJobs" placeholder="Search..."></v-autocomplete>
+              <v-autocomplete v-model="jobId" :items="existingJobs" item-text="jobId" item-value="jobId" placeholder="Search..." @change="setUpdate"></v-autocomplete>
             </v-form>
           </v-card-text>
         </v-card>
@@ -26,14 +26,13 @@
                     label="Job ID"
                     disabled
                   ></v-text-field>
-                  <br>
-                  <v-autocomplete
+                  <v-text-field
                     v-model="machineId"
                     :rules="machineIdRules"
-                    :items="machineIdList"
-                    label="Machine"
-                    placeholder="Search..."
-                  ></v-autocomplete>
+                    type="text"
+                    label="Machine ID"
+                    disabled
+                  ></v-text-field>
                   <v-select
                     v-model="jobType"
                     :rules="jobTypeRules"
@@ -44,8 +43,11 @@
                     v-model="staff"
                     :rules="staffRules"
                     :items="staffList"
+                    item-text="staffName"
+                    item-value="staffId"
                     label="Staffs"
                     placeholder="Search..."
+                    chips
                     multiple
                   ></v-autocomplete>
                   <v-textarea
@@ -56,21 +58,38 @@
                   ></v-textarea>
                 </v-flex>
                 <v-flex xs6>
-                  <DatePicker v-model="startDate" :rules="startDateRules" label="Start Date"/>
-                  <br>
-                  <TimePicker v-model="startTime" :rules="startTimeRules" label="Start Time"/>
+                  <v-layout row>
+                    <v-flex xs6>
+                      <DatePicker v-model="startDate" :setDate="startDate" :rules="startDateRules" label="Start Date"/>
+                      <br>
+                      <TimePicker v-model="startTime" :setTime="startTime" :rules="startTimeRules" label="Start Time"/>
+                    </v-flex>
+                    <v-flex xs6>
+                      <DatePicker v-model="endDate" :setDate="endDate" :rules="startDateRules" label="End Date"/>
+                      <br>
+                      <TimePicker v-model="endTime" :setTime="endTime" :rules="startTimeRules" label="End Time"/>
+                    </v-flex>
+                  </v-layout>
                   <v-text-field v-model="estimateDuration" type="number" label="Estimate Duration"></v-text-field>
                   <v-select
                     v-model="priority"
-                    :rules="priorityRules"
                     :items="priorityList"
+                    item-text="text"
+                    item-value="level"
                     label="Priority"
                   ></v-select>
                   <v-select
                     v-model="severity"
-                    :rules="severityRules"
                     :items="priorityList"
+                    item-text="text"
+                    item-value="level"
                     label="Severity"
+                  ></v-select>
+                  <v-select
+                    v-model="jobStatus"
+                    :rules="statusRules"
+                    :items="statusList"
+                    label="Job status"
                   ></v-select>
                 </v-flex>
               </v-layout>
@@ -111,7 +130,7 @@ export default {
   data: () => ({
     valid: true,
 
-    actionType: 0,
+    actionType: 1,
 
     snackbarActivate: false,
     snackbarMode: null,
@@ -119,7 +138,7 @@ export default {
 
     uniqueId: "",
     jobId: null,
-    existingJobs: [], //dummy
+    existingJobs: [],
     jobIdRules: [v => !!v || "Please select a job"],
 
     machineId: null,
@@ -127,7 +146,7 @@ export default {
     machineIdRules: [v => !!v || "This field cannot be blank"],
 
     jobType: null,
-    jobTypeList: [],
+    jobTypeList: ["Maintenance", "Repair"],
     jobTypeRules: [v => !!v || "This field cannot be blank"],
 
     staff: null,
@@ -142,30 +161,33 @@ export default {
 
     startTime: null,
     startTimeRules: [v => !!v || "This field cannot be blank"],
+    
+    endDate: null,
+
+    endTime: null,
 
     estimateDuration: null,
 
-    priority: null,
+    priority: 0,
     priorityList: [
-      "Critical",
-      "High",
-      "Medium",
-      "Low",
-      "Very low",
-      "Undefined"
+      {level: "5", text: "Critical"},
+      {level: "4", text: "High"},
+      {level: "3", text: "Medium"},
+      {level: "2", text: "Low"},
+      {level: "1", text: "Very Low"},
+      {level: "0", text: "Undefined"}
     ],
-    priorityRules: [v => !!v || "This field cannot be blank"],
 
-    severity: null,
-    severityRules: [v => !!v || "This field cannot be blank"]
+    severity: 0,
+
+    jobStatus: null,
+    statusList: ["Pending", "Assigned", "Working", "Finished"],
+    statusRules: [v => !!v || "This field cannot be blank"],
+
+    status: null
   }),
 
   methods: {
-    generateNewId() {
-      this.resetAllFields();
-      this.jobId = "JB" + this.uniqueId;
-    },
-
     openSnackbar(mode, message) {
       this.snackbarMode = mode;
       this.snackbarMessage = message;
@@ -174,7 +196,7 @@ export default {
 
     async refreshData() {
       let currentList = await axios
-        .get("//localhost:80/Maintenance/public/api/jobas/getCurrentIds", {})
+        .get("//localhost:80/MachineMaintenance/public/api/job/getCurrentIds", {})
         .then(response => {
           this.existingJobs = response.data;
         });
@@ -182,21 +204,52 @@ export default {
 
     async getCurrentData() {
       let allData = await axios.get(
-        "//localhost:80/MachineMaintenance/public/api/jobas/all" + this.jobId,
+        "//localhost:80/MachineMaintenance/public/api/job/all/" + this.jobId,
         {}
       );
-
-      (this.jobId = allData.data[0].jobId),
         (this.machineId = allData.data[0].machineId),
         (this.jobType = allData.data[0].jobType),
-        (this.staff = allData.data[0].staff),
+        (this.staff = allData.data[0].staffList),
         (this.details = allData.data[0].details),
-        (this.startDate = allData.data[0].startDate),
+        (this.startDate = allData.data[0].date),
+        (this.endDate = allData.data[0].endDate),
         (this.startTime = allData.data[0].startTime),
+        (this.endTime = allData.data[0].endTime),
         (this.estimateDuration = allData.data[0].estimateDuration),
         (this.priority = allData.data[0].priority),
-        (this.severity = allData.data[0].severity);
+        (this.severity = allData.data[0].severity),
+        (this.jobStatus = allData.data[0].jobStatus),
+        (this.staffList = allData.data[0].allStaffList)
     },
+
+    commitChanges() {
+      if(this.jobStatus == "Finished")
+        this.status = "Normal";
+      else
+        this.status = "Down";
+
+      return axios
+        .post("//localhost:80/MachineMaintenance/public/api/job/submit", {
+          actionType: this.actionType,
+          jobId: this.jobId,
+          jobType: this.jobType,
+          date: this.startDate,
+          startTime: this.startTime,
+          endDate: this.endDate,
+          endTime: this.endTime,
+          estimateDuration: this.estimateDuration,
+          machineId: this.machineId,
+          details: this.details,
+          priority: this.priority,
+          severity: this.severity,
+          jobStatus: this.jobStatus,
+          status: this.status,
+          staff: this.staff
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error));
+    },
+
     setUpdate() {
       this.actionType = 1;
       this.getCurrentData();
@@ -222,16 +275,26 @@ export default {
         (this.staff = null),
         (this.details = null),
         (this.startDate = null),
+        (this.endDate = null),
         (this.startTime = null),
+        (this.endTime = null),
         (this.estimateDuration = null),
         (this.priority = null),
-        (this.severity = null);
+        (this.severity = null),
+        (this.jobStatus = null),
+        (this.staffList = null),
+        (this.status = null);
     },
     validate() {
       if (this.$refs.JobAssignmentForm.validate()) {
-        this.openSnackbar("success", "Sucessfully save");
+        this.commitChanges().then(response => {
+          if(response == 11)
+            this.openSnackbar("success", "Insert/Update success");
+          else
+            this.openSnackbar("error", "Insert/Update error");
+        });
       } else {
-        this.openSnackbar("error", "An error had occured, please try again.");
+        this.openSnackbar("error", "Error, please check your input.");
       }
     }
   },

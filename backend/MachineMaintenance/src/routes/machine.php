@@ -142,7 +142,7 @@ $app->get("/api/machine/leastMaintain", function(Request $request, Response $res
   $sql = "SELECT machinelog.machineID,machineType,modelNumber,MAX(DATE(timestamp)) AS lastCheck
           FROM machinelog,machine,machinemodel
           WHERE logType = 'Maintenance' AND machine.modelCode = machinemodel.modelCode AND machinelog.machineID = machine.machineID
-          GROUP BY machinelog.machineID";
+          GROUP BY machinelog.machineID ORDER BY lastCheck";
   try {
     $db = new db();
     $db = $db->connect();

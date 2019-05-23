@@ -18,7 +18,7 @@
                   required
                 ></v-text-field>
                 <v-select
-                  v-model="type"
+                  v-model="machineType"
                   :rules="typeRules"
                   :items="typeList"
                   label="Machine type"
@@ -41,15 +41,20 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data: () => ({
     menu: false,
     valid: true,
 
+    actionType: 0,
+
+    modelCode: null,
     modelNumber: null,
     modelNumberRules: [v => !!v || "This field cannot be blank"],
 
-    type: null,
+    machineType: null,
     typeList: ["Pump", "Boiler", "Other"],
     typeRules: [v => !!v || "This field cannot be blank"]
   }),
@@ -57,10 +62,40 @@ export default {
   methods: {
     validate() {
       if (this.$refs.AddMachineModelForm.validate()) {
-        this.menu = false;
-        //save to database
+        this.commitChanges().then(response => {
+          if(response == 1) {
+            this.$emit("input", this.modelCode);
+            this.menu = false;
+          }
+
+        });
       }
-    }
+    },
+
+    async refreshData() {
+      let count = await axios
+        .get("//localhost:80/MachineMaintenance/public/api/machineModel/count", {})
+        .then(response => {
+          this.modelCode = "MD" + response.data;
+        });
+    },
+
+    commitChanges() {
+      return axios.post(
+        "//localhost:80/MachineMaintenance/public/api/machineModel/submit",
+        {
+          actionType: this.actionType,
+          modelCode: this.modelCode,
+          modelNumber: this.modelNumber,
+          machineType: this.machineType
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error));
+    },
+  },
+
+  created: async function() {
+    this.refreshData();
   }
 };
 </script>
