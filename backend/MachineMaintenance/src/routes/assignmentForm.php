@@ -127,7 +127,6 @@ $app->post("/api/assignment/submit", function(Request $request, Response $respon
         foreach($staffId as $idx => $item){
           $sqlUpdate .= "INSERT INTO assignment(jobID,staffID) VALUES(:jobId,'".$item."');";
         }
-        echo $sqlUpdate;
 
         $stmt = $db->prepare($sqlUpdate);
         $stmt->bindParam(':jobId', $jobId, PDO::PARAM_STR);
