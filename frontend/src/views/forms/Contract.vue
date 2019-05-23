@@ -163,7 +163,9 @@ export default {
     startDateRules: [v => !!v || "This field cannot be blank"],
 
     endDate: null,
-    endDateRules: [v => !!v || "This field cannot be blank"]
+    endDateRules: [v => !!v || "This field cannot be blank"],
+
+    transInId: null
   }),
 
   methods: {
@@ -196,6 +198,12 @@ export default {
       .get("//localhost:80/MachineMaintenance/public/api/existsCustomer/count", {})
       .then(response => {
         this.uniqueCustId = response.data;
+      });
+
+      let transInCount = await axios
+      .get("//localhost:80/MachineMaintenance/public/api/existsCustomer/count", {})
+      .then(response => {
+        this.transInId = "TI" + response.data;
       });
     },
 
@@ -265,7 +273,13 @@ export default {
           email: this.email,
           price: this.price,
           startDate: this.startDate,
-          endDate: this.endDate
+          endDate: this.endDate,
+          transId: this.transInId,
+          transType: "Contracts",
+          details: "Income from contact",
+          amount: this.price,
+          staffId: this.$root.authInfo.userId,
+          machineId: this.machineInContract
         })
         .then(response => response.data)
         .catch(error => console.log(error));

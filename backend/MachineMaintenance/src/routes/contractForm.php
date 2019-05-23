@@ -66,6 +66,23 @@ $app->get("/api/existsCustomer/count", function(Request $request, Response $resp
     echo '{"error":{"text": '.$e->getMessage().'}}';
   }
 });
+
+$app->get("/api/transIn/count", function(Request $request, Response $response) {
+  $sql = "SELECT COUNT(*) AS count FROM income";
+  try {
+    $db = new db();
+    $db = $db->connect();
+
+    $stmt = $db->query($sql);
+    $data = $stmt->fetchColumn();
+    $db = null;
+    
+    echo sprintf('%04d', $data + 1);
+  } catch(PDOException $e) {
+    echo '{"error":{"text": '.$e->getMessage().'}}';
+  }
+});
+
 $app->get("/api/contract/all/{contractId}", function(Request $request, Response $response) {
   $contractId = $request->getAttribute('contractId');
   $sql = "SELECT startDate, endDate, price, customerID FROM contract WHERE contractID = \"$contractId\"";
@@ -129,7 +146,7 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
     $staffId = $request->getParsedBody()['staffId'];
     $machineId = $request->getParsedBody()['machineId'];
 
-    $machineId = json_decode($machineId);
+    $machineId = json_decode(json_encode($machineId), true);
 
     $sqlInsertInsert = "INSERT INTO customer (customerID, customerName, address, phone, email) VALUES (:customerId, :customerName, :address, :phone, :email);
     INSERT INTO contract(contractID,startDate,endDate,price,customerID) VALUES(:contractId,:startDate,:endDate,:price,:customerId);
