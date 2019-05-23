@@ -129,8 +129,8 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
     $staffId = $request->getParsedBody()['staffId'];
     $machineId = $request->getParsedBody()['machineId'];
 
+    $machineId = json_decode($machineId);
 
-  
     $sqlInsertInsert = "INSERT INTO customer (customerID, customerName, address, phone, email) VALUES (:customerId, :customerName, :address, :phone, :email);
     INSERT INTO contract(contractID,startDate,endDate,price,customerID) VALUES(:contractId,:startDate,:endDate,:price,:customerId);
     INSERT INTO income(transID,timestamp,transType,details,amount,contractID,staffID) VALUES(:transId,CURRENT_TIMESTAMP,:transType,:details,:amount,:contractId,:staffId);";
@@ -151,7 +151,6 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
 
       //INSERT BOTH
       if($contActionType == 0 && $custActionType == 0) {
-        $machineId = json_decode(json_encode($machineId), true);
         foreach($machineId as $idx => $item){
         $sqlInsertInsert .= "UPDATE machine SET contractID=:contractId WHERE machineID ='".$item."';";
         }
@@ -172,16 +171,13 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt->bindParam(':details', $details, PDO::PARAM_STR);
         $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
         $stmt->bindParam(':staffId',$staffId,PDO::PARAM_STR);
-        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
       }
       //INSERT CONT UPDATE CUST
       else if($contActionType == 0 && $custActionType == 1) {
         //prepare template
-        $machineId = json_decode(json_encode($machineId), true);
         foreach($machineId as $idx => $item){
-        $sqlInsertUpdate .= "UPDATE machine SET contractID=:contractId WHERE machineID ='".$item."';";
+          $sqlInsertUpdate .= "UPDATE machine SET contractID=:contractId WHERE machineID ='".$item."';";
         }
-        echo $sqlInsertUpdate;
         $stmt = $db->prepare($sqlInsertUpdate);
   
         //bind parameters
@@ -194,12 +190,15 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt->bindParam(':address', $address, PDO::PARAM_STR);        
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
-        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
+        $stmt->bindParam(':transId', $transId, PDO::PARAM_STR);
+        $stmt->bindParam(':transType', $transType, PDO::PARAM_STR);
+        $stmt->bindParam(':details', $details, PDO::PARAM_STR);
+        $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+        $stmt->bindParam(':staffId',$staffId,PDO::PARAM_STR);
       }
       //UPDATE CONT UPDATE CUST
       else if($contActionType == 1) {
         //prepare template
-        $machineId = json_decode(json_encode($machineId), true);
         foreach($machineId as $idx => $item){
         $sqlUpdate .= "UPDATE machine SET contractID=:contractId WHERE machineID ='".$item."';";
         }
@@ -220,7 +219,6 @@ $app->post("/api/contract/submit", function(Request $request, Response $response
         $stmt->bindParam(':details', $details, PDO::PARAM_STR);
         $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
         $stmt->bindParam(':staffId',$staffId,PDO::PARAM_STR);
-        $stmt->bindParam(':machineId',$machineId,PDO::PARAM_STR);
       }
       //DELETE
       else {
